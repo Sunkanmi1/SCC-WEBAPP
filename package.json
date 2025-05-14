@@ -1,0 +1,25 @@
+{
+  "name": "scc-webapp",
+  "version": "1.0.0",
+  "description": "## Overview   The **Supreme Court Cases (SCC) Web App** is an open-source platform designed to provide a **searchable database of Supreme Court cases in Ghana**. This tool is aimed at **legal professionals, students, researchers, and the general public**, offering easy access to case details through an intuitive search and filtering system.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "SCC-WEBAPP"
+  },
+  "keywords": [
+    "supreme",
+    "court",
+    "cases"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@comunica/query-sparql": "^4.2.0",
+    "sparql-client-2": "^0.6.3"
+  }
+}
