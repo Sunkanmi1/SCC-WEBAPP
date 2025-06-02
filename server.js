@@ -1,15 +1,26 @@
+// Importing required modules
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
 const morgan = require('morgan');
 
+// Initialize Express app and set the port
 const app = express();
 const PORT = process.env.PORT || 3030;
 
+// Set EJS as the view engine
 app.set('view engine', 'ejs');
+
+// Serve static files from the 'public' directory
 app.use(express.static('public'));
+
+// Enable Cross-Origin Resource Sharing
 app.use(cors());
+
+// Parse incoming JSON requests
 app.use(express.json());
+
+// Log HTTP requests in 'dev' format
 app.use(morgan('dev'));
 
 // Home page
