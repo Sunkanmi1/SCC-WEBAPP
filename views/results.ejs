@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Search Results</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="results.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <a class="icon" aria-hidden="true">⚖<span>SCC</span></a>
+            </div>
+            <div class="nav-tab">
+                <a href="/" class="btn">Back to Search</a>
+            </div>
+        </nav>
+    </header>
+
+
+    <main>
+        <section class="main-content">
+            <% if (error) { %>
+                <div class="alert"><%= error %></div>
+                    <% } else if (results.length === 0) { %>
+                <h2 class="alert">No cases found.</h2>
+                <% } else { %>
+                    <ul>
+                        <% results.forEach(function(caseItem) { %>
+                        <li style="font-size: 2rem;"><%= caseItem.title %></li>
+                        <li><strong>Date : <%= caseItem.date %></strong></li>
+                        <li><strong>Citation : <%= caseItem.citation %></strong></li>
+                        <li><strong>Court : <%= caseItem.court %></strong></li>
+                        <li><strong>Judges : <%= caseItem.judges %></strong></li>
+                        <li><strong>Majority Opinion : <%= caseItem.majorityOpinion %></strong></li>
+                        <li><strong>Source : <%= caseItem.sourceLabel %></strong></li>
+                        <li><strong>Description: <%= caseItem.description %></strong></li>
+                        <li>
+                            <a href="<%= caseItem.articleUrl %>" target="_blank" rel="noopener">
+                                Wikidata
+                            </a>
+                        </li>
+                        <% }); %>
+                    </ul>
+            <% } %>
+        </section>
+    </main>
+    <footer>
+        <h4>A PROJECT BY</h4>
+        <div class="logo-footer">
+            <img src="/GOiF_Logo.png" alt="Global Open Initiative Foundation Logo" />
+        </div>
+    </footer>
+
+    <!--script src="script.js"></script-->
+</body>
+</html>

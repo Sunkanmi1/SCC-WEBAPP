@@ -1,0 +1,232 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+}
+
+.hero {
+  background-image: url('/123.jpg');
+  background-size: cover;
+  background-position: center;
+  height: 60vh;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.hero-overlay {
+  background-color: rgba(0,0,128,0.8);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.nav {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
+  position: fixed;
+  top: 0;
+  background: #000080e6;
+  z-index: 100;
+}
+
+.logo {
+  color: white;
+  font-size: 20px;
+}
+
+.logo .icon {
+  font-size: 35px;
+}
+
+.menu-icon div {
+  width: 30px;
+  height: 4px;
+  background: white;
+  margin: 5px 0;
+  cursor: pointer;
+  margin-right: 20px;
+}
+
+h1 {
+  margin-top: 50px;
+  margin-bottom: 20px;
+  font-size: 3em;
+  color: rgb(255, 255, 255);
+}
+
+.search-container {
+  width: 100%;
+  max-width: 500px;
+  position: relative;
+}
+
+.search-box {
+  display: flex;
+  border: 2px solid navy;
+  border-radius: 30px;
+  overflow: hidden;
+}
+
+.search-box input {
+  flex: 1;
+  border: none;
+  padding: 10px 15px;
+  font-size: 14px;
+  outline: none;
+}
+
+button {
+  background-color: #fff;
+  border: 0;
+  font-size: 1.5rem;
+}
+
+button:hover {
+  color: navy; 
+}
+
+.far.fa-search {
+  color: black;
+}
+
+.suggestions {
+  position: absolute;
+  top: 48px;
+  left: 0;
+  right: 0;
+  border: 3px solid #fff;
+  border-top: none;
+  background: navy;
+  max-height: 150px;
+  overflow-y: auto;
+  border-radius: 5px 5px 10px 10px;
+  display: none;
+  z-index: 1001;
+}
+
+.suggestions div {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.suggestions div:hover {
+  background: #fff;
+  color: navy;
+}
+
+.filter-toggle {
+  margin: 10px 0;
+  background: white;
+  border: 2px solid navy;
+  border-radius: 20px;
+  padding: 8px 16px;
+  cursor: pointer;
+  color: navy;
+  font-weight: 700;
+  user-select: none;
+  text-align: center;
+  width: 100%;
+  max-width: 500px;
+}
+
+.filter-options {
+  max-width: 500px;
+  background: rgb(0, 0, 185);
+  border: 2px solid #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  margin-bottom: 20px;
+  padding: 0 15px;
+}
+
+.filter-options.open {
+  max-height: 400px;
+  padding: 15px;
+}
+
+.filter-group {
+  margin-bottom: 15px;
+}
+
+label {
+  margin-right: 8px;
+  font-weight: 600;
+}
+
+select, input[type="date"] {
+  padding: 5px;
+  border: 1px solid navy;
+  border-radius: 4px;
+}
+
+.checkbox-group label {
+  font-weight: bold;
+  margin-right: 70px;
+  cursor: pointer;
+}
+
+.box {
+  background: white;
+  border: 2px solid navy;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  position: relative;
+  width: 100%; 
+}
+
+.box p {
+  margin: 8px 0;
+  font-size: 1.1em;
+}
+
+.btn {
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+  background: navy;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 20px;
+  font-size: 0.9em;
+}
+
+.btn:hover {
+  background: darkblue;
+}
+
+#essayBox {
+  display: none;
+  white-space: pre-wrap;
+  margin-top: 20px;
+}
+
+footer {
+  text-align: center;
+  padding: 40px 20px;
+  font-weight: bold;
+  color: #0a0a23;
+  margin-top: 90px;
+}
+
+.logo-footer img {
+  max-height: 60px;
+  width: auto;
+  margin-bottom: 10px;
+}
