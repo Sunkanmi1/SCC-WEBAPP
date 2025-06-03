@@ -1,1 +1,73 @@
+Ghana Supreme Court Cases Web App Documentation
+Table of Contents
+1.	 Project Overview 
+2.	 Functional Scope 
+      Core Features
+3.	Technical Requirements 
+      Frontend Stack
+      Backend Stack
+4.	System Architecture 
+5.	User Interface Design 
+6.	Performance Metrics 
+7.	Deployment Instructions 
+8.	Future Enhancements
+
+Project Overview
+•	Purpose: Create an open-source web application to provide a searchable database of Supreme Court cases in Ghana.
+•	Target Audience: Legal professionals, students, researchers, and the general public.
+•	Goals: 
+o	Build an intuitive, easy-to-navigate web application.
+o	Enable users to quickly access case details using a reliable search and filtering system.
+o	Ensure responsiveness and accessibility on both mobile and desktop.
+
+Functional Scope
+Core Features
+1.	Search Functionality:
+o	Search Bar: Users can enter keywords related to cases, such as case title, involved parties, date,
+ or specific terms within case descriptions.
+o	Search Suggestions: As users type, suggestions appear to assist in quickly identifying cases.
+o	Advanced Filters: Users can refine search results by applying filters for: 
+  Date Range: Search by specific dates or a range.
+  Type of Case: Distinguish between civil, criminal, or other case types.
+  Involved Parties: Narrow down cases based on key individuals or entities involved.
+
+2.	Case Detail Pages:
+o	Case Summary: Displays key information (case title, date, involved parties, court summary).
+o	Full Text View: Detailed information of the case for deeper analysis.
+3.	Wikidata Integration:
+o	Pulls data from Wikidata using SPARQL queries for real-time data retrieval.
+
+Technical Requirements
+Frontend Stack
+•	Framework: Uses EJS for templating with HTML.
+•	CSS: Styled using Tailwind CSS or Bootstrap for responsive design.
+•	JavaScript: Custom scripts to enhance user experience (e.g., search functionality).
+Backend Stack
+•	Framework: Built using Node.js for handling API requests.
+•	Database Integration: Connects to Wikidata via SPARQL queries for data retrieval.
+
+System Architecture
+•	Frontend: 
+o	Users interact with a responsive interface built with EJS and styled with CSS.
+•	Backend: 
+o	Node.js serves as the API layer, handling requests and utilizing axios for API calls to Wikidata.
+
+User Interface Design
+•	Home Page: Features a central search bar and clear navigation.
+•	Search Results Page: Displays relevant case search results with pagination.
+•	Case Detail Page: Provides comprehensive information about each case, including links to related cases.
+
+Performance Metrics
+•	Search Speed: Average response time should be less than 2 seconds.
+•	Filter Accuracy: Filters should yield accurate and relevant results.
+•	User Engagement: Track user retention and session duration.
+
+Future Enhancements
+•	Implement additional filtering options based on user feedback.
+•	Enhance mobile responsiveness for better user experience.
+•	Introduce user accounts for saving searches and preferences.
+
+
+This documentation provides a comprehensive overview of the Supreme Court Cases Web App, detailing its purpose, 
+features, technical specifications, and instructions for use. 
 
