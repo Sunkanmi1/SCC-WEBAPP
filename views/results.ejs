@@ -30,20 +30,21 @@
                 <% } else { %>
                     <ul>
                         <% results.forEach(function(caseItem) { %>
-                        <li style="font-size: 2rem;"><%= caseItem.title %></li>
-                        <li><strong>Date : <%= caseItem.date %></strong></li>
-                        <li><strong>Citation : <%= caseItem.citation %></strong></li>
-                        <li><strong>Court : <%= caseItem.court %></strong></li>
-                        <li><strong>Judges : <%= caseItem.judges %></strong></li>
-                        <li><strong>Majority Opinion : <%= caseItem.majorityOpinion %></strong></li>
-                        <li><strong>Source : <%= caseItem.sourceLabel %></strong></li>
-                        <li><strong>Description: <%= caseItem.description %></strong></li>
-                        <li>
+                        <li style="font-size: 2rem;"><strong><%= caseItem.title %></strong></li>
+                        <li>Date : <%= caseItem.date %></li>
+                        <li>Citation : <%= caseItem.citation %></li>
+                        <li>Court : <%= caseItem.court %></li>
+                        <li>Judges : <%= caseItem.judges %></li>
+                        <li>Majority Opinion : <%= caseItem.majorityOpinion %></li>
+                        <li>Source : <%= caseItem.sourceLabel %></li>
+                        <li>Description: <%= caseItem.description %></li>
+                        <li style="margin-bottom: 3rem;">
                             <a href="<%= caseItem.articleUrl %>" target="_blank" rel="noopener">
-                                Wikidata
+                                <%= caseItem.articleUrl %>
                             </a>
                         </li>
                         <% }); %>
+                        <br><br><br>
                     </ul>
             <% } %>
         </section>

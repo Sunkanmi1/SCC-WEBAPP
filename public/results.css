@@ -46,7 +46,12 @@ main{
 .main-content {
     width: 90%;
     max-width: 1200px;
-    margin: 6% auto;
+    margin: 9% auto;
+}
+@media (max-width: 720px){
+    .main-content{
+        margin-top: 4%;
+    }
 }
 .main-content ul {
     list-style: none;
@@ -55,14 +60,10 @@ main{
     margin: 10px;
 }
 .main-content ul li a {
-    text-decoration: none;
-    background-color: #000080e6;
+    text-decoration: underline;
     font-weight: 500;
-    border-radius: 8px;
-    padding: 10px;
-    color: #fff;
-    transition: 0.3s;
-    font-size: 1.2rem;
+    color: #1708e6;
+    font-size: 1rem;
     margin-top: 7px;
 }
 .main-content ul li a:hover {

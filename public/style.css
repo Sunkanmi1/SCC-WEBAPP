@@ -7,10 +7,10 @@
 }
 
 .hero {
-  background-image: url('/123.jpg');
+  background-image: linear-gradient( rgba(0,0,128,0.8), rgba(0,0,128,0.8)), url('/123.jpg');
   background-size: cover;
   background-position: center;
-  height: 60vh;
+  height: 60dvh;
   color: white;
   display: flex;
   flex-direction: column;
@@ -20,21 +20,19 @@
 }
 
 .hero-overlay {
-  background-color: rgba(0,0,128,0.8);
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 20px;
 }
 
 .nav {
   width: 100%;
   display: flex;
   justify-content: space-between;
-  padding: 10px;
+  padding: 15px;
   position: fixed;
   top: 0;
   background: #000080e6;
@@ -86,7 +84,9 @@ h1 {
   font-size: 14px;
   outline: none;
 }
-
+.search-box button i {
+  padding-right: 12px;
+}
 button {
   background-color: #fff;
   border: 0;
@@ -219,7 +219,6 @@ select, input[type="date"] {
 
 footer {
   text-align: center;
-  padding: 40px 20px;
   font-weight: bold;
   color: #0a0a23;
   margin-top: 90px;
