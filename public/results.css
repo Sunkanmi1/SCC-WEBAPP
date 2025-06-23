@@ -6,13 +6,13 @@
 
 header{
   width: 100%;
-  position: fixed;
   top: 0;
   background: #000080e6;
 }
 nav {
     width: 90%;
-    margin: 10px auto;
+    margin: 0px auto;
+    padding: 18px;
     display: flex;
     justify-content: space-between;
 }
@@ -25,12 +25,11 @@ nav {
 }
 .logo a span{
     font-size: 70%;
-} 
+}
 .nav-tab a{
     text-decoration: none;
     color: #fff;
     font-weight: 300;
-    padding: 4px;
     background: #021c90;
     font-size: 1rem;
 }
@@ -46,11 +45,11 @@ main{
 .main-content {
     width: 90%;
     max-width: 1200px;
-    margin: 9% auto;
+    margin: 6% auto;
 }
 @media (max-width: 720px){
     .main-content{
-        margin-top: 4%;
+        margin-top: 5%;
     }
 }
 .main-content ul {

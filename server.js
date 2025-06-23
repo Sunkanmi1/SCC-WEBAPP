@@ -6,7 +6,7 @@ const morgan = require('morgan');
 
 // Initialize Express app and set the port
 const app = express();
-const PORT = process.env.PORT || 3040;
+const PORT = process.env.PORT || 5040;
 
 // Set EJS as the view engine
 app.set('view engine', 'ejs');
