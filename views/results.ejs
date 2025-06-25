@@ -11,10 +11,10 @@
     <header>
         <nav>
             <div class="logo">
-                <a class="icon" aria-hidden="true">⚖<span>SCC</span></a>
+                <a href="/" class="icon" aria-label="Home">⚖<span>SCC</span></a>
             </div>
             <div class="nav-tab">
-                <a href="/" class="btn">Back to Search</a>
+                <a href="/" class="btn"><i class="fas fa-arrow-left"></i> Back to Search</a>
             </div>
         </nav>
     </header>
@@ -30,21 +30,17 @@
                 <% } else { %>
                     <ul>
                         <% results.forEach(function(caseItem) { %>
-                        <li style="font-size: 2rem;"><strong><%= caseItem.title %></strong></li>
-                        <li>Date : <%= caseItem.date %></li>
-                        <li>Citation : <%= caseItem.citation %></li>
-                        <li>Court : <%= caseItem.court %></li>
-                        <li>Judges : <%= caseItem.judges %></li>
-                        <li>Majority Opinion : <%= caseItem.majorityOpinion %></li>
-                        <li>Source : <%= caseItem.sourceLabel %></li>
-                        <li>Description: <%= caseItem.description %></li>
-                        <!--li style="margin-bottom: 3rem;">
-                            <a href="<%= caseItem.articleUrl %>" target="_blank" rel="noopener">
-                                <%= caseItem.articleUrl %>
-                            </a>
-                        </li-->
+                        <li class="case-list-item">
+                            <strong style="font-size: 1.3rem;"><%= caseItem.title %></strong><br>
+                            Date: <%= caseItem.date %><br>
+                            Citation: <%= caseItem.citation %><br>
+                            Court: <%= caseItem.court %><br>
+                            Judges: <%= caseItem.judges %><br>
+                            Majority Opinion: <%= caseItem.majorityOpinion %><br>
+                            Source: <%= caseItem.sourceLabel %><br>
+                            Description: <%= caseItem.description %>
+                        </li>
                         <% }); %>
-                        <br><br><br>
                     </ul>
             <% } %>
         </section>

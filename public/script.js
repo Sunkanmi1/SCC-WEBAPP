@@ -1,4 +1,4 @@
-document.getElementById('readMoreBtn').addEventListener('click', (e) => {
+/*document.getElementById('readMoreBtn').addEventListener('click', (e) => {
     e.preventDefault();
     const caseInfo = document.getElementById('caseInfo');
 
@@ -7,4 +7,4 @@ document.getElementById('readMoreBtn').addEventListener('click', (e) => {
     document.getElementById('close').addEventListener('click', () => {
         caseInfo.style.display = 'none'
     })
-})
+})*/

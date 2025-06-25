@@ -9,8 +9,8 @@ The **Supreme Court Cases (SCC) Web App** is an open-source platform designed to
 - **Responsive UI** – Optimized for both mobile and desktop use, ensuring accessibility.  
 
 ## Tech Stack  
-**Frontend:** React.js or Vue.js with Tailwind CSS or Bootstrap.  
-**Backend:** Node.js or Python (Django), integrated with **Wikidata** for case information.  
+**Frontend:** EJS, CSS and JS.  
+**Backend:** Node.js with express.js framework, integrated with **Wikidata** for case information.  
 **Testing:** Automated testing with Jest or Cypress to ensure performance and reliability.  
 
 ## Installation  
