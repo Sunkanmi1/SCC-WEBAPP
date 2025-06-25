@@ -10,9 +10,7 @@ The **Supreme Court Cases (SCC) Web App** is an open-source platform designed to
 
 ## Tech Stack  
 **Frontend:** EJS, CSS and JS.  
-**Backend:** Node.js with express.js framework, integrated with **Wikidata** for case information.  
-## Contributor
-This project was worked on by the Tech Relief team.
+**Backend:** Node.js with express.js framework, integrated with **Wikidata** for case information. 
 
 **Testing:** Automated testing with Jest or Cypress to ensure performance and reliability.  
 
