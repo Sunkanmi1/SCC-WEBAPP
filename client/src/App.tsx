@@ -39,7 +39,7 @@ function App() {
     setCurrentView('results');
 
     try {
-      const response = await fetch(`http://localhost:5040/search?q=${encodeURIComponent(query)}`);
+      const response = await fetch(`http://localhost:9090/search?q=${encodeURIComponent(query)}`);
 
       if (!response.ok) {
         throw new Error('Search request failed');
