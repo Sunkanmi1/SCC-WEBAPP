@@ -1,0 +1,10 @@
+# .toolforge.yaml
+type: webservice
+runtime: node20
+healthcheck_path: /api/health
+memory: 512Mi
+cpu: 0.5
+replicas: 1
+build:
+  - npm install
+  - npm run build
