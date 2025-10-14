@@ -7,7 +7,7 @@
 
 .footer-container {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   max-width: 1400px;
   margin: 0 auto;
@@ -16,15 +16,17 @@
 }
 
 .footer-logos {
+  width: 80%;
   display: flex;
   align-items: center;
   gap: 20px;
-  justify-content: center;
+  justify-content: space-evenly;
   flex-wrap: wrap;
 
 }
 
 .footer-logo {
+  max-width:20%;
   height: 60px;
 }
 
