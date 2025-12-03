@@ -1,4 +1,3 @@
-// server.ts
 import express, { Request, Response } from "express";
 import axios from "axios";
 import cors from "cors";
@@ -9,44 +8,58 @@ const PORT = process.env.PORT || 9090;
 app.use(cors());
 app.use(express.json());
 
+// ✅ Root endpoint
+app.get("/", (req: Request, res: Response) => {
+    res.json({
+        message: "Supreme Court of Ghana Cases API",
+        version: "1.0.0",
+        description: "API for searching Supreme Court of Ghana cases from Wikidata",
+        endpoints: {
+            search_all_cases: "GET /search",
+            search_with_query: "GET /search?q={query}",
+            examples: [
+                "http://localhost:9090/search",
+                "http://localhost:9090/search?q=human+rights",
+                "http://localhost:9090/search?q=constitution"
+            ]
+        },
+        documentation: "Use /search endpoint to get case data"
+    });
+});
+
 // ✅ Search endpoint returning JSON
 app.get("/search", async (req: Request, res: Response) => {
     const userQuery = (req.query.q as string)?.trim().toLowerCase() || "";
 
     const sparqlQuery = `
-    SELECT DISTINCT ?item ?itemLabel ?itemDescription ?date ?legal_citation ?courtLabel 
-      ?majority_opinionLabel ?sourceLabel 
-      (GROUP_CONCAT(DISTINCT ?judge; separator=", ") AS ?judges)
-    WHERE {
+    SELECT DISTINCT ?item ?itemLabel ?itemDescription ?date ?legal_citation ?courtLabel ?majority_opinionLabel ?sourceLabel (GROUP_CONCAT(DISTINCT ?judge; SEPARATOR = ", ") AS ?judges) WHERE {
       {
         SELECT DISTINCT * WHERE {
-          ?item (wdt:P31/(wdt:P279*)) wd:Q114079647.
-          ?item (wdt:P17/(wdt:P279*)) wd:Q117.
-          ?item (wdt:P1001/(wdt:P279*)) wd:Q117.
-          ?item (wdt:P793/(wdt:P279*)) wd:Q7099379.
-          ?item wdt:P4884 ?court.
-          ?court wdt:P279* wd:Q1513611.
+          ?item (wdt:P31/(wdt:P279*)) wd:Q114079647;
+            (wdt:P17/(wdt:P279*)) wd:Q117;
+            (wdt:P1001/(wdt:P279*)) wd:Q117;
+            (wdt:P793/(wdt:P279*)) wd:Q7099379;
+            wdt:P4884 ?court.
+          ?court (wdt:P279*) wd:Q1513611.
         }
-        LIMIT 1000
+        LIMIT 5000
       }
-      ?item wdt:P577 ?date.
-      ?item wdt:P1031 ?legal_citation.
-      ?item wdt:P5826 ?majority_opinion.
-      ?item wdt:P1433 ?source.
-      ?item wdt:P1594 [rdfs:label ?judge].
-      FILTER(LANG(?judge)="en")
+      ?item wdt:P577 ?date;
+        wdt:P1031 ?legal_citation;
+        wdt:P1433 ?source;
+        wdt:P1594 _:b3.
+      _:b3 rdfs:label ?judge.
+      FILTER((LANG(?judge)) = "en")
       SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],mul,en". }
     }
-    GROUP BY ?item ?itemLabel ?itemDescription ?date ?legal_citation 
-             ?courtLabel ?majority_opinionLabel ?sourceLabel
-    ORDER BY ?date
-  `;
+    GROUP BY ?item ?itemLabel ?itemDescription ?date ?legal_citation ?courtLabel ?majority_opinionLabel ?sourceLabel
+    ORDER BY (?date)`;
 
     try {
         const url = `https://query.wikidata.org/sparql?query=${encodeURIComponent(sparqlQuery)}&format=json`;
         const { data } = await axios.get(url, { timeout: 10000 });
 
-        const cases = data.results.bindings
+        const cases = (data as any).results.bindings
             .map((item: any) => ({
                 caseId: item.item?.value.split("/").pop() || "Not Available",
                 title: item.itemLabel?.value || "Not Available",
@@ -59,7 +72,17 @@ app.get("/search", async (req: Request, res: Response) => {
                 judges: item.judges?.value || "Judges unavailable",
                 articleUrl: item.item?.value || ""
             }))
-            .filter((caseData: any) => caseData.title.toLowerCase().includes(userQuery));
+            .filter((caseData: any) => {
+                if (!userQuery) return true; // Return all if no query
+                
+                return (
+                    caseData.title.toLowerCase().includes(userQuery) ||
+                    (caseData.description && caseData.description.toLowerCase().includes(userQuery)) ||
+                    (caseData.judges && caseData.judges.toLowerCase().includes(userQuery)) ||
+                    (caseData.citation && caseData.citation.toLowerCase().includes(userQuery)) ||
+                    (caseData.court && caseData.court.toLowerCase().includes(userQuery))
+                );
+            });
 
         res.json({ success: true, results: cases });
     } catch (error) {

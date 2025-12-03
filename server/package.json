@@ -2,11 +2,11 @@
   "name": "supreme-court-cases-backend",
   "version": "1.0.0",
   "description": "Express + TypeScript backend for Supreme Court Cases search",
-  "main": "server/server.ts",
+  "main": "dist/server.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only server.ts",
     "build": "tsc",
-    "start": "node server/server.ts"
+    "start": "node dist/server.js"
   },
   "dependencies": {
     "axios": "^1.7.7",

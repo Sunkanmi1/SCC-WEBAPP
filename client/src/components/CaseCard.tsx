@@ -1,5 +1,5 @@
 import React from 'react';
-import { Case } from '../App';
+import { Case } from '../../App';
 import '../styles/CaseCard.css';
 
 interface CaseCardProps {
