@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import HomePage from './components/HomePage';
 import SearchResultsPage from './components/SearchResultsPage';
+import AboutUs from './components/AboutUs';
 import './styles/App.css';
 
 export interface Case {
@@ -24,7 +25,7 @@ export interface SearchState {
 }
 
 function App() {
-  const [currentView, setCurrentView] = useState<'home' | 'results'>('home');
+  const [currentView, setCurrentView] = useState<'home' | 'results' | 'about'>('home');
   const [searchState, setSearchState] = useState<SearchState>({
     query: '',
     results: [],
@@ -39,7 +40,8 @@ function App() {
     setCurrentView('results');
 
     try {
-      const response = await fetch(`http://localhost:9090/search?q=${encodeURIComponent(query)}`);
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:9090';
+      const response = await fetch(`${apiBaseUrl}/search?q=${encodeURIComponent(query)}`);
 
       if (!response.ok) {
         throw new Error('Search request failed');
@@ -69,10 +71,21 @@ function App() {
     setSearchState(prev => ({ ...prev, query: '', results: [], error: null }));
   };
 
+  const handleNavigateToAbout = () => {
+    setCurrentView('about');
+  };
+
+  const handleNavigateToHome = () => {
+    setCurrentView('home');
+    setSearchState(prev => ({ ...prev, query: '', results: [], error: null }));
+  };
+
   return (
     <div className="app">
       {currentView === 'home' ? (
-        <HomePage onSearch={handleSearch} />
+        <HomePage onSearch={handleSearch} onNavigateToAbout={handleNavigateToAbout} />
+      ) : currentView === 'about' ? (
+        <AboutUs onNavigateToHome={handleNavigateToHome} />
       ) : (
         <SearchResultsPage
           searchState={searchState}
