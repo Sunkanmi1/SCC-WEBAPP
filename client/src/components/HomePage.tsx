@@ -5,9 +5,10 @@ import '../styles/HomePage.css';
 
 interface HomePageProps {
   onSearch: (query: string) => void;
+  onNavigateToAbout?: () => void;
 }
 
-const HomePage: React.FC<HomePageProps> = ({ onSearch }) => {
+const HomePage: React.FC<HomePageProps> = ({ onSearch, onNavigateToAbout }) => {
   const [query, setQuery] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -19,7 +20,7 @@ const HomePage: React.FC<HomePageProps> = ({ onSearch }) => {
 
   return (
     <div className="home-page">
-      <Header showBackButton={false} />
+      <Header showBackButton={false} onNavigateToAbout={onNavigateToAbout} />
       
       <main className="hero-section">
         <div className="hero-overlay">
@@ -44,7 +45,7 @@ const HomePage: React.FC<HomePageProps> = ({ onSearch }) => {
         </div>
       </main>
 
-      <Footer />
+      <Footer onNavigateToAbout={onNavigateToAbout} />
     </div>
   );
 };
