@@ -2,6 +2,8 @@ import express, { Request, Response } from "express";
 import axios from "axios";
 import cors from "cors";
 import dotenv from "dotenv";
+import session from "express-session";
+import { storeSearch } from "./utils";
 
 // Load environment variables
 dotenv.config();
@@ -11,48 +13,72 @@ const PORT = process.env.PORT || 9090;
 const CORS_ORIGIN = process.env.CORS_ORIGIN || "http://localhost:5173";
 
 // Configure CORS
-app.use(cors({
-    origin: CORS_ORIGIN,
-    credentials: true
-}));
+app.use(
+	cors({
+		origin: CORS_ORIGIN,
+		credentials: true,
+	}),
+);
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(
+	session({
+		name: "search_session",
+		secret: process.env.SESSION_SECRET
+			? process.env.SESSION_SECRET
+			: (() => {
+					throw new Error("SESSION_SECRET not set in environment variables");
+				})(),
+		resave: false,
+		saveUninitialized: false,
+		cookie: {
+			maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+			httpOnly: true,
+			secure: process.env.NODE_ENV === "production",
+		},
+	}),
+);
 
 // ✅ Health check endpoint (required for deployment)
 app.get("/api/health", (req: Request, res: Response) => {
-    res.json({
-        status: "healthy",
-        timestamp: new Date().toISOString(),
-        uptime: process.uptime(),
-        environment: process.env.NODE_ENV || "development"
-    });
+	res.json({
+		status: "healthy",
+		timestamp: new Date().toISOString(),
+		uptime: process.uptime(),
+		environment: process.env.NODE_ENV || "development",
+	});
 });
 
 // ✅ Root endpoint
 app.get("/", (req: Request, res: Response) => {
-    res.json({
-        message: "Supreme Court of Ghana Cases API",
-        version: "1.0.0",
-        description: "API for searching Supreme Court of Ghana cases from Wikidata",
-        endpoints: {
-            health: "GET /api/health",
-            search_all_cases: "GET /search",
-            search_with_query: "GET /search?q={query}",
-            examples: [
-                "http://localhost:9090/api/health",
-                "http://localhost:9090/search",
-                "http://localhost:9090/search?q=human+rights",
-                "http://localhost:9090/search?q=constitution"
-            ]
-        },
-        documentation: "Use /search endpoint to get case data"
-    });
+	res.json({
+		message: "Supreme Court of Ghana Cases API",
+		version: "1.0.0",
+		description: "API for searching Supreme Court of Ghana cases from Wikidata",
+		endpoints: {
+			health: "GET /api/health",
+			search_all_cases: "GET /search",
+			search_with_query: "GET /search?q={query}",
+			examples: [
+				"http://localhost:9090/api/health",
+				"http://localhost:9090/search",
+				"http://localhost:9090/search?q=human+rights",
+				"http://localhost:9090/search?q=constitution",
+			],
+		},
+		documentation: "Use /search endpoint to get case data",
+	});
 });
 
 // ✅ Search endpoint returning JSON
 app.get("/search", async (req: Request, res: Response) => {
-    const userQuery = (req.query.q as string)?.trim().toLowerCase() || "";
+	const userQuery = (req.query.q as string)?.trim().toLowerCase() || "";
 
-    const sparqlQuery = `
+	if (userQuery) {
+		await storeSearch(req, userQuery);
+	}
+
+	const sparqlQuery = `
     SELECT DISTINCT ?item ?itemLabel ?itemDescription ?date ?legal_citation ?courtLabel ?majority_opinionLabel ?sourceLabel (GROUP_CONCAT(DISTINCT ?judge; SEPARATOR = ", ") AS ?judges) WHERE {
       {
         SELECT DISTINCT * WHERE {
@@ -76,43 +102,59 @@ app.get("/search", async (req: Request, res: Response) => {
     GROUP BY ?item ?itemLabel ?itemDescription ?date ?legal_citation ?courtLabel ?majority_opinionLabel ?sourceLabel
     ORDER BY (?date)`;
 
-    try {
-        const url = `https://query.wikidata.org/sparql?query=${encodeURIComponent(sparqlQuery)}&format=json`;
-        const { data } = await axios.get(url, { timeout: 10000 });
+	try {
+		const url = `https://query.wikidata.org/sparql?query=${encodeURIComponent(
+			sparqlQuery,
+		)}&format=json`;
+		const { data } = await axios.get(url, { timeout: 10000 });
 
-        const cases = (data as any).results.bindings
-            .map((item: any) => ({
-                caseId: item.item?.value.split("/").pop() || "Not Available",
-                title: item.itemLabel?.value || "Not Available",
-                description: item.itemDescription?.value || "No description available",
-                date: item.date?.value?.split("T")[0] || "Date not recorded",
-                citation: item.legal_citation?.value || "Citation unavailable",
-                court: item.courtLabel?.value || "Court not specified",
-                majorityOpinion: item.majority_opinionLabel?.value || "Majority opinion unavailable",
-                sourceLabel: item.sourceLabel?.value || "Source unavailable",
-                judges: item.judges?.value || "Judges unavailable",
-                articleUrl: item.item?.value || ""
-            }))
-            .filter((caseData: any) => {
-                if (!userQuery) return true; // Return all if no query
-                
-                return (
-                    caseData.title.toLowerCase().includes(userQuery) ||
-                    (caseData.description && caseData.description.toLowerCase().includes(userQuery)) ||
-                    (caseData.judges && caseData.judges.toLowerCase().includes(userQuery)) ||
-                    (caseData.citation && caseData.citation.toLowerCase().includes(userQuery)) ||
-                    (caseData.court && caseData.court.toLowerCase().includes(userQuery))
-                );
-            });
+		const cases = (data as any).results.bindings
+			.map((item: any) => ({
+				caseId: item.item?.value.split("/").pop() || "Not Available",
+				title: item.itemLabel?.value || "Not Available",
+				description: item.itemDescription?.value || "No description available",
+				date: item.date?.value?.split("T")[0] || "Date not recorded",
+				citation: item.legal_citation?.value || "Citation unavailable",
+				court: item.courtLabel?.value || "Court not specified",
+				majorityOpinion:
+					item.majority_opinionLabel?.value || "Majority opinion unavailable",
+				sourceLabel: item.sourceLabel?.value || "Source unavailable",
+				judges: item.judges?.value || "Judges unavailable",
+				articleUrl: item.item?.value || "",
+			}))
+			.filter((caseData: any) => {
+				if (!userQuery) return true; // Return all if no query
 
-        res.json({ success: true, results: cases });
-    } catch (error) {
-        console.error("❌ API Error:", error);
-        res.status(500).json({ success: false, error: "Please check your internet connection!" });
-    }
+				return (
+					caseData.title.toLowerCase().includes(userQuery) ||
+					(caseData.description &&
+						caseData.description.toLowerCase().includes(userQuery)) ||
+					(caseData.judges &&
+						caseData.judges.toLowerCase().includes(userQuery)) ||
+					(caseData.citation &&
+						caseData.citation.toLowerCase().includes(userQuery)) ||
+					(caseData.court && caseData.court.toLowerCase().includes(userQuery))
+				);
+			});
+
+		res.json({ success: true, results: cases });
+	} catch (error) {
+		console.error("❌ API Error:", error);
+		res.status(500).json({
+			success: false,
+			error: "Please check your internet connection!",
+		});
+	}
+});
+
+app.get("/recent-search", (req: Request, res: Response) => {
+	return res.json({
+		success: true,
+		results: req.session.recentSearches || [],
+	});
 });
 
 // Start server
 app.listen(PORT, () => {
-    console.log(`✅ Server running on http://localhost:${PORT}`);
+	console.log(`✅ Server running on http://localhost:${PORT}`);
 });
