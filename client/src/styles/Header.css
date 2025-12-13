@@ -39,6 +39,7 @@
   color: var(--primary-blue);
   transition: all var(--transition-base);
   cursor: pointer;
+  text-decoration: none;
 }
 
 .logo-link:hover .logo {
@@ -95,7 +96,11 @@
   align-items: center;
   gap: var(--space-2);
   padding: var(--space-3) var(--space-5);
-  background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
+  background: linear-gradient(
+    135deg,
+    var(--primary-blue),
+    var(--primary-blue-light)
+  );
   color: var(--white);
   border-radius: var(--border-radius-full);
   font-weight: 600;
@@ -105,7 +110,11 @@
 }
 
 .back-button:hover {
-  background: linear-gradient(135deg, var(--primary-blue-dark), var(--primary-blue));
+  background: linear-gradient(
+    135deg,
+    var(--primary-blue-dark),
+    var(--primary-blue)
+  );
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
 }
@@ -130,26 +139,26 @@
     padding: var(--space-3) var(--space-4);
     height: 60px;
   }
-  
+
   .logo {
     font-size: var(--font-size-lg);
     gap: var(--space-2);
   }
-  
+
   .logo-icon {
     font-size: var(--font-size-xl);
   }
-  
+
   .back-button {
     padding: var(--space-2) var(--space-4);
     font-size: var(--font-size-xs);
     gap: var(--space-1);
   }
-  
+
   .back-button span {
     display: none;
   }
-  
+
   .back-button i {
     font-size: var(--font-size-base);
   }
@@ -164,15 +173,15 @@
   .nav {
     padding: var(--space-2) var(--space-3);
   }
-  
+
   .logo {
     font-size: var(--font-size-base);
   }
-  
+
   .logo-icon {
     font-size: var(--font-size-lg);
   }
-  
+
   .back-button {
     padding: var(--space-2) var(--space-3);
   }
@@ -186,7 +195,7 @@
   .back-button i {
     transition: none;
   }
-  
+
   .logo:hover,
   .logo:hover .logo-icon,
   .back-button:hover {
