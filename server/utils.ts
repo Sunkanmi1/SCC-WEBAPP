@@ -1,4 +1,5 @@
-export const storeSearch = async (req: Express.Request, query: string) => {
+import { Request } from "express";
+export const storeSearch = (req: Request, query: string) => {
 	if (!query || typeof query !== "string") return;
 
 	const now = Date.now();

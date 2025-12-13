@@ -20,7 +20,6 @@ app.use(
 	}),
 );
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 app.use(
 	session({
 		name: "search_session",
@@ -75,7 +74,7 @@ app.get("/search", async (req: Request, res: Response) => {
 	const userQuery = (req.query.q as string)?.trim().toLowerCase() || "";
 
 	if (userQuery) {
-		await storeSearch(req, userQuery);
+		storeSearch(req, userQuery);
 	}
 
 	const sparqlQuery = `
