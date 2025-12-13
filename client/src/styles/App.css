@@ -188,3 +188,75 @@ input:focus, textarea:focus {
     --font-size-2xl: 1.25rem;
   }
 }
+
+/* -------------------------
+   DISABLE HOVER / ANIMATIONS
+   (Added to remove hover transforms / animations across the app)
+   ------------------------- */
+
+/* Global: remove animations and transitions */
+*,
+*::before,
+*::after {
+  animation: none !important;
+  transition: none !important;
+  -webkit-animation: none !important;
+  -webkit-transition: none !important;
+}
+
+/* Remove transforms, box-shadows and other hover visual changes for common interactive selectors */
+a:hover,
+button:hover,
+input:hover,
+select:hover,
+textarea:hover,
+.nav-link:hover,
+.back-button:hover,
+.logo:hover,
+.logo-link:hover,
+.logo:hover .logo-icon,
+.search-box:hover,
+.search-button:hover,
+.feature-card:hover,
+.case-card:hover,
+.audience-item:hover,
+.external-link:hover,
+.suggestions div:hover,
+.btn:hover,
+.main-content ul li a:hover,
+.nav-tab .btn:hover,
+.case-info button:hover,
+.footer-link:hover {
+  transform: none !important;
+  -webkit-transform: none !important;
+  box-shadow: none !important;
+  background: none !important;
+  color: inherit !important;
+  text-shadow: none !important;
+  filter: none !important;
+}
+
+/* Disable pointer-based hover changes on pseudo elements too */
+*:hover::before,
+*:hover::after {
+  transform: none !important;
+  box-shadow: none !important;
+  content: inherit !important;
+}
+
+/* For any explicit keyframes defined in components, stop them */
+@keyframes none {
+  from { opacity: 1; transform: none; }
+  to { opacity: 1; transform: none; }
+}
+
+/* Keep accessibility preference respected (still allows users who prefer reduced motion) */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* If you later want to re-enable animations for specific components,
+   add targeted rules (without !important) after this block or remove this block. */
