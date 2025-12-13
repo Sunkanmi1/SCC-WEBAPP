@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import '../styles/Header.css';
 
 interface HeaderProps {
@@ -8,11 +9,22 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ showBackButton = false, onBackClick, onNavigateToAbout }) => {
+  const navigate = useNavigate();
+
   const handleLogoClick = () => {
     if (onBackClick) {
       onBackClick();
-    } else if (onNavigateToAbout === undefined) {
-      window.location.href = '/';
+    } else {
+      navigate('/');
+    }
+  };
+
+  const handleAboutClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    if (onNavigateToAbout) {
+      onNavigateToAbout();
+    } else {
+      navigate('/about');
     }
   };
 
@@ -20,22 +32,19 @@ const Header: React.FC<HeaderProps> = ({ showBackButton = false, onBackClick, on
     <header className="header">
       <nav className="nav">
         <div className="nav-left">
-          <div className="logo" onClick={handleLogoClick} role="button" tabIndex={0} onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              handleLogoClick();
-            }
-          }}>
-            <span className="logo-icon">⚖</span>
-            <span className="logo-text">SCC</span>
-          </div>
+          <Link to="/" onClick={handleLogoClick} className="logo-link">
+            <div className="logo">
+              <span className="logo-icon">⚖</span>
+              <span className="logo-text">SCC</span>
+            </div>
+          </Link>
         </div>
         
         <div className="nav-right">
-          {!showBackButton && onNavigateToAbout && (
-            <button onClick={onNavigateToAbout} className="nav-link">
+          {!showBackButton && (
+            <Link to="/about" onClick={handleAboutClick} className="nav-link">
               About Us
-            </button>
+            </Link>
           )}
           {showBackButton && (
             <button onClick={onBackClick} className="back-button">

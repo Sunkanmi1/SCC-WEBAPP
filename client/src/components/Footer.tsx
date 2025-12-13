@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import '../styles/Footer.css';
 
 interface FooterProps {
@@ -8,8 +9,12 @@ interface FooterProps {
 const Footer: React.FC<FooterProps> = ({ onNavigateToAbout }) => {
   const handleAboutClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
+    // Always try to use the prop if available
     if (onNavigateToAbout) {
       onNavigateToAbout();
+    } else {
+      // Dispatch custom event for navigation when prop is not available
+      window.dispatchEvent(new CustomEvent('navigateToAbout'));
     }
   };
 
@@ -24,12 +29,9 @@ const Footer: React.FC<FooterProps> = ({ onNavigateToAbout }) => {
         <div className="footer-content">
           <nav className="footer-nav">
             <div className="footer-nav-links">
-              {onNavigateToAbout && (
-                <a href="#" onClick={handleAboutClick} className="footer-link">
-                  About Us
-                </a>
-              )}
-              {/* Additional page links can be added here */}
+              <Link to="/about" onClick={handleAboutClick} className="footer-link">
+                About Us
+              </Link>
             </div>
           </nav>
 

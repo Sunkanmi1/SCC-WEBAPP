@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import HomePage from './components/HomePage';
 import SearchResultsPage from './components/SearchResultsPage';
 import AboutUs from './components/AboutUs';
@@ -32,6 +32,18 @@ function App() {
     loading: false,
     error: null
   });
+
+  // Listen for custom event from Footer to navigate to About page
+  useEffect(() => {
+    const handleNavigateToAbout = () => {
+      setCurrentView('about');
+    };
+
+    window.addEventListener('navigateToAbout', handleNavigateToAbout);
+    return () => {
+      window.removeEventListener('navigateToAbout', handleNavigateToAbout);
+    };
+  }, []);
 
   const handleSearch = async (query: string) => {
     if (!query.trim()) return;

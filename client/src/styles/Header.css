@@ -25,6 +25,11 @@
   align-items: center;
 }
 
+.logo-link {
+  text-decoration: none;
+  display: inline-block;
+}
+
 .logo {
   display: flex;
   align-items: center;
@@ -36,7 +41,7 @@
   cursor: pointer;
 }
 
-.logo:hover {
+.logo-link:hover .logo {
   transform: scale(1.05);
 }
 
@@ -70,6 +75,8 @@
   font-size: var(--font-size-sm);
   transition: all var(--transition-base);
   cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
 }
 
 .nav-link:hover {
