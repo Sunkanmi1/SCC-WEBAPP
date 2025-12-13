@@ -28,6 +28,15 @@ const Header: React.FC<HeaderProps> = ({ showBackButton = false, onBackClick, on
     }
   };
 
+  const handleBackClick = () => {
+    if (onBackClick) {
+      onBackClick();
+    } else {
+      // Fallback navigation if onBackClick is not provided
+      navigate('/');
+    }
+  };
+
   return (
     <header className="header">
       <nav className="nav">
@@ -47,7 +56,7 @@ const Header: React.FC<HeaderProps> = ({ showBackButton = false, onBackClick, on
             </Link>
           )}
           {showBackButton && (
-            <button onClick={onBackClick} className="back-button">
+            <button onClick={handleBackClick} className="back-button">
               <i className="fas fa-arrow-left"></i>
               <span>Back to Search</span>
             </button>
