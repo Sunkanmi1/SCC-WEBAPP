@@ -10,7 +10,7 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-light) 50%, var(--accent-gold) 100%);
+  background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-light) 60%, var(--primary-blue-dark) 100%);
   background-size: 400% 400%;
   animation: gradientShift 8s ease-in-out infinite;
   padding: var(--space-8) var(--space-4);
@@ -131,7 +131,7 @@
 
 .search-button {
   padding: var(--space-6) var(--space-8);
-  background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
+  background: var(--primary-blue);
   color: var(--white);
   border: none;
   cursor: pointer;
@@ -140,15 +140,27 @@
   align-items: center;
   justify-content: center;
   min-width: 80px;
+  border-radius: 0 var(--border-radius-2xl) var(--border-radius-2xl) 0;
+  font-weight: 600;
+  box-shadow: var(--shadow-base);
+  min-height: 44px;
 }
 
-.search-button:hover {
-  background: linear-gradient(135deg, var(--primary-blue-dark), var(--primary-blue));
-  transform: translateX(-2px);
+.search-button:hover:not(:disabled) {
+  background: var(--primary-blue-dark);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
 }
 
-.search-button:active {
-  transform: translateX(-2px) scale(0.98);
+.search-button:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: var(--shadow-base);
+}
+
+.search-button:focus-visible {
+  outline: 2px solid var(--white);
+  outline-offset: -2px;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3);
 }
 
 .search-button i {
