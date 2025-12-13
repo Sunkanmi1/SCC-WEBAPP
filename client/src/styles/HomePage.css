@@ -97,20 +97,20 @@
   border-radius: var(--border-radius-2xl);
   box-shadow: var(--shadow-xl);
   overflow: hidden;
-  transition: all var(--transition-base);
+  transition: none; /* removed hover transition */
   transform: scale(1);
 }
 
 .search-box:hover {
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  transform: scale(1.02);
+  box-shadow: var(--shadow-xl);  /* no change */
+  transform: scale(1);            /* no zoom */
 }
 
 .search-box:focus-within {
   box-shadow: 
     0 25px 50px -12px rgba(0, 0, 0, 0.25),
     0 0 0 4px rgba(59, 130, 246, 0.2);
-  transform: scale(1.02);
+  transform: scale(1); /* removed zoom */
 }
 
 .search-input {
@@ -135,7 +135,7 @@
   color: var(--white);
   border: none;
   cursor: pointer;
-  transition: all var(--transition-base);
+  transition: none; /* removed hover transition */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -143,12 +143,12 @@
 }
 
 .search-button:hover {
-  background: linear-gradient(135deg, var(--primary-blue-dark), var(--primary-blue));
-  transform: translateX(-2px);
+  background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light)); /* same as normal */
+  transform: none; /* no movement */
 }
 
 .search-button:active {
-  transform: translateX(-2px) scale(0.98);
+  transform: none; /* removed scale/move */
 }
 
 .search-button i {
@@ -175,6 +175,7 @@
   .search-button {
     padding: var(--space-4) var(--space-6);
     min-width: 60px;
+    transition: none;
   }
   
   .search-button i {
@@ -196,6 +197,7 @@
   .search-button {
     padding: var(--space-3) var(--space-4);
     min-width: 50px;
+    transition: none;
   }
 }
 
@@ -210,4 +212,15 @@
   .hero-section {
     background: var(--primary-blue);
   }
+}
+
+/* Added hover removal for logo and footer (beginner-safe) */
+.site-logo:hover {
+  transform: none !important;
+  transition: none !important;
+}
+
+.footer-license:hover {
+  color: inherit !important;
+  text-decoration: none !important;
 }
