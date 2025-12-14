@@ -39,14 +39,17 @@ app.get("/", (req: Request, res: Response) => {
             health: "GET /api/health",
             search_all_cases: "GET /search",
             search_with_query: "GET /search?q={query}",
+            translations: "GET /api/translations",
+            case_translations: "GET /api/translations/:caseId",
             examples: [
                 "http://localhost:9090/api/health",
                 "http://localhost:9090/search",
                 "http://localhost:9090/search?q=human+rights",
-                "http://localhost:9090/search?q=constitution"
+                "http://localhost:9090/api/translations",
+                "http://localhost:9090/api/translations/Q123456"
             ]
         },
-        documentation: "Use /search endpoint to get case data"
+        documentation: "Use /search endpoint to get case data, /api/translations for available translations"
     });
 });
 
@@ -136,6 +139,174 @@ app.get("/search", async (req: Request, res: Response) => {
     } catch (error) {
         console.error("❌ API Error:", error);
         res.status(500).json({ success: false, error: "Please check your internet connection!" });
+    }
+});
+
+// ✅ Translation availability endpoint - Get all available translations for cases
+app.get("/api/translations", async (req: Request, res: Response) => {
+    // Simplified query to get cases and their language information
+    const sparqlQuery = `
+    SELECT DISTINCT ?item ?itemLabel ?language ?languageLabel WHERE {
+      ?item (wdt:P31/(wdt:P279*)) wd:Q114079647;
+        (wdt:P17/(wdt:P279*)) wd:Q117;
+        (wdt:P1001/(wdt:P279*)) wd:Q117;
+        (wdt:P793/(wdt:P279*)) wd:Q7099379;
+        wdt:P4884 ?court.
+      ?court (wdt:P279*) wd:Q1513611.
+      
+      # Get language information - either direct language or from translations
+      OPTIONAL { ?item wdt:P407 ?language. }
+      
+      SERVICE wikibase:label { 
+        bd:serviceParam wikibase:language "[AUTO_LANGUAGE],mul,en". 
+      }
+    }
+    LIMIT 50`;
+
+    try {
+        const url = `https://query.wikidata.org/sparql?query=${encodeURIComponent(sparqlQuery)}&format=json`;
+        const { data } = await axios.get(url, { timeout: 20000 });
+
+        const translationsMap = new Map();
+
+        (data as any).results.bindings.forEach((item: any) => {
+            const caseId = item.item?.value.split("/").pop() || "Unknown";
+            const caseTitle = item.itemLabel?.value || "Unknown Case";
+            const languageCode = item.language?.value?.split("/").pop() || "en";
+            const languageLabel = item.languageLabel?.value || "English";
+
+            if (!translationsMap.has(caseId)) {
+                translationsMap.set(caseId, {
+                    caseId,
+                    caseTitle,
+                    availableLanguages: []
+                });
+            }
+
+            const caseData = translationsMap.get(caseId);
+            const existingLang = caseData.availableLanguages.find((lang: any) => lang.languageCode === languageCode);
+            
+            if (!existingLang && languageCode) {
+                caseData.availableLanguages.push({
+                    languageCode,
+                    languageLabel,
+                    wikidataUrl: item.item?.value,
+                    source: "Wikidata"
+                });
+            }
+        });
+
+        // Add default English for cases without explicit language info
+        translationsMap.forEach((caseData) => {
+            if (caseData.availableLanguages.length === 0) {
+                caseData.availableLanguages.push({
+                    languageCode: "en",
+                    languageLabel: "English",
+                    wikidataUrl: `https://www.wikidata.org/entity/${caseData.caseId}`,
+                    source: "Wikidata (Default)"
+                });
+            }
+        });
+
+        const results = Array.from(translationsMap.values())
+            .sort((a, b) => a.caseTitle.localeCompare(b.caseTitle));
+
+        res.json({
+            success: true,
+            totalCases: results.length,
+            results
+        });
+
+    } catch (error) {
+        console.error("❌ Translation API Error:", error);
+        res.status(500).json({ 
+            success: false, 
+            error: "Failed to fetch translation data. Please check your internet connection!" 
+        });
+    }
+});
+
+// ✅ Get translations for a specific case
+app.get("/api/translations/:caseId", async (req: Request, res: Response) => {
+    const { caseId } = req.params;
+    
+    if (!caseId || caseId.trim() === "") {
+        return res.status(400).json({
+            success: false,
+            error: "Case ID is required"
+        });
+    }
+
+    const sparqlQuery = `
+    SELECT DISTINCT ?item ?itemLabel ?language ?languageLabel WHERE {
+      VALUES ?item { wd:${caseId} }
+      
+      # Get language information for the specific case
+      OPTIONAL { ?item wdt:P407 ?language. }
+      
+      SERVICE wikibase:label { 
+        bd:serviceParam wikibase:language "[AUTO_LANGUAGE],mul,en". 
+      }
+    }`;
+
+    try {
+        const url = `https://query.wikidata.org/sparql?query=${encodeURIComponent(sparqlQuery)}&format=json`;
+        const { data } = await axios.get(url, { timeout: 10000 });
+
+        const bindings = (data as any).results.bindings;
+        
+        if (bindings.length === 0) {
+            return res.status(404).json({
+                success: false,
+                error: `Case not found with ID: ${caseId}. Please verify the case ID exists in Wikidata.`
+            });
+        }
+
+        const caseTitle = bindings[0]?.itemLabel?.value || "Unknown Case";
+        
+        // Extract unique languages
+        const languagesSet = new Set();
+        const availableLanguages: any[] = [];
+
+        bindings.forEach((item: any) => {
+            const languageCode = item.language?.value?.split("/").pop();
+            const languageLabel = item.languageLabel?.value;
+            
+            if (languageCode && !languagesSet.has(languageCode)) {
+                languagesSet.add(languageCode);
+                availableLanguages.push({
+                    languageCode,
+                    languageLabel: languageLabel || "Unknown Language",
+                    wikidataUrl: `https://www.wikidata.org/entity/${caseId}`,
+                    source: "Wikidata"
+                });
+            }
+        });
+
+        // If no languages found, add English as default
+        if (availableLanguages.length === 0) {
+            availableLanguages.push({
+                languageCode: "en",
+                languageLabel: "English",
+                wikidataUrl: `https://www.wikidata.org/entity/${caseId}`,
+                source: "Wikidata (Default)"
+            });
+        }
+
+        res.json({
+            success: true,
+            caseId,
+            caseTitle,
+            totalLanguages: availableLanguages.length,
+            availableLanguages
+        });
+
+    } catch (error) {
+        console.error("❌ Case Translation API Error:", error);
+        res.status(500).json({ 
+            success: false, 
+            error: "Failed to fetch case translation data. Please check your internet connection!" 
+        });
     }
 });
 
