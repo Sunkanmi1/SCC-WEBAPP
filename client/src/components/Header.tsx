@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Github } from 'lucide-react';
 import '../styles/Header.css';
 
 interface HeaderProps {
@@ -51,9 +52,20 @@ const Header: React.FC<HeaderProps> = ({ showBackButton = false, onBackClick, on
         
         <div className="nav-right">
           {!showBackButton && (
-            <Link to="/about" onClick={handleAboutClick} className="nav-link">
-              About Us
-            </Link>
+            <>
+              <Link to="/about" onClick={handleAboutClick} className="nav-link">
+                About Us
+              </Link>
+              <a 
+                href="https://github.com/Sunkanmi1/SCC-WEBAPP.git" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="nav-link github-link"
+                title="View on GitHub"
+              >
+                <Github size={20} />
+              </a>
+            </>
           )}
           {showBackButton && (
             <button onClick={handleBackClick} className="back-button">
