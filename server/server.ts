@@ -1,32 +1,53 @@
 import express, { Request, Response } from "express";
 import axios from "axios";
 import cors from "cors";
+import dotenv from "dotenv";
+
+// Load environment variables
+dotenv.config();
 
 
 
 const app = express();
 const PORT = process.env.PORT || 9090;
+const CORS_ORIGIN = process.env.CORS_ORIGIN || "http://localhost:5173";
 
-app.use(cors());
+// Configure CORS
+app.use(cors({
+    origin: CORS_ORIGIN,
+    credentials: true
+}));
 app.use(express.json());
+
+// ✅ Health check endpoint (required for deployment)
+app.get("/api/health", (req: Request, res: Response) => {
+    res.json({
+        status: "healthy",
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+        environment: process.env.NODE_ENV || "development"
+    });
+});
 
 // ✅ Root endpoint
 app.get("/", (req: Request, res: Response) => {
-  res.json({
-    message: "Supreme Court of Ghana Cases API",
-    version: "1.0.0",
-    description: "API for searching Supreme Court of Ghana cases from Wikidata",
-    endpoints: {
-      search_all_cases: "GET /search",
-      search_with_query: "GET /search?q={query}",
-      examples: [
-        "http://localhost:9090/search",
-        "http://localhost:9090/search?q=human+rights",
-        "http://localhost:9090/search?q=constitution",
-      ],
-    },
-    documentation: "Use /search endpoint to get case data",
-  });
+    res.json({
+        message: "Supreme Court of Ghana Cases API",
+        version: "1.0.0",
+        description: "API for searching Supreme Court of Ghana cases from Wikidata",
+        endpoints: {
+            health: "GET /api/health",
+            search_all_cases: "GET /search",
+            search_with_query: "GET /search?q={query}",
+            examples: [
+                "http://localhost:9090/api/health",
+                "http://localhost:9090/search",
+                "http://localhost:9090/search?q=human+rights",
+                "http://localhost:9090/search?q=constitution"
+            ]
+        },
+        documentation: "Use /search endpoint to get case data"
+    });
 });
 
 // ✅ Search endpoint returning JSON
