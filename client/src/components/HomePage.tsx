@@ -64,16 +64,12 @@ const HomePage: React.FC<HomePageProps> = ({ onSearch }) => {
     if (judge) params.append("judge", judge);
     if (country) params.append("country", country);
 
-    console.log("params", params);
-
     setLoading(true);
 
     const response = await fetch(
       `http://localhost:9090/browse?${params.toString()}`
     );
     const data = await response.json();
-
-    console.log("Filtered results:", data);
 
     if (data.success) {
       setResults(data.results);
