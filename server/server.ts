@@ -15,15 +15,15 @@ app.get("/", (req: Request, res: Response) => {
         version: "1.0.0",
         description: "API for searching Supreme Court of Ghana cases from Wikidata",
         endpoints: {
-            search_all_cases: "GET /search",
-            search_with_query: "GET /search?q={query}",
+            search_all_cases: "GET",
+            search_with_query: "GET?q={query}",
             examples: [
-                "http://localhost:9090/search",
-                "http://localhost:9090/search?q=human+rights",
-                "http://localhost:9090/search?q=constitution"
+                "http://localhost:9090",
+                "http://localhost:9090?q=human+rights",
+                "http://localhost:9090?q=constitution"
             ]
         },
-        documentation: "Use /search endpoint to get case data"
+        documentation: "Use endpoint to get case data"
     });
 });
 
