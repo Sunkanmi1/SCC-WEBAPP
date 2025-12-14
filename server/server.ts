@@ -29,45 +29,123 @@ app.get("/api/health", (req: Request, res: Response) => {
     });
 });
 
+// ✅ Available countries endpoint
+app.get("/api/countries", (req: Request, res: Response) => {
+    const countries = Object.keys(COUNTRY_MAPPING).map(key => ({
+        code: key,
+        name: key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' '),
+        wikidataId: COUNTRY_MAPPING[key]
+    }));
+
+    res.json({
+        success: true,
+        totalCountries: countries.length,
+        countries: countries.sort((a, b) => a.name.localeCompare(b.name))
+    });
+});
+
 // ✅ Root endpoint
 app.get("/", (req: Request, res: Response) => {
     res.json({
         message: "Supreme Court of Ghana Cases API",
         version: "1.0.0",
-        description: "API for searching Supreme Court of Ghana cases from Wikidata",
+        description: "API for searching Supreme Court cases from African countries via Wikidata",
         endpoints: {
             health: "GET /api/health",
             search_all_cases: "GET /search",
             search_with_query: "GET /search?q={query}",
+            search_by_country: "GET /search?country={country}",
+            search_with_country_and_query: "GET /search?q={query}&country={country}",
+            available_countries: "GET /api/countries",
             translations: "GET /api/translations",
             case_translations: "GET /api/translations/:caseId",
             examples: [
                 "http://localhost:9090/api/health",
                 "http://localhost:9090/search",
                 "http://localhost:9090/search?q=human+rights",
+                "http://localhost:9090/search?country=nigeria",
+                "http://localhost:9090/search?q=constitutional&country=kenya",
+                "http://localhost:9090/api/countries",
                 "http://localhost:9090/api/translations",
                 "http://localhost:9090/api/translations/Q123456"
             ]
         },
-        documentation: "Use /search endpoint to get case data, /api/translations for available translations"
+        documentation: "Use /search endpoint to get case data with optional country filtering, /api/countries for available countries, /api/translations for available translations"
     });
 });
 
-// Country-specific configurations
+// Country mapping for Wikidata entity IDs
+const COUNTRY_MAPPING: { [key: string]: string } = {
+    "ghana": "Q117",
+    "nigeria": "Q1033",
+    "kenya": "Q114",
+    "south_africa": "Q258",
+    "uganda": "Q1036",
+    "tanzania": "Q924",
+    "botswana": "Q963",
+    "zambia": "Q953",
+    "zimbabwe": "Q954",
+    "malawi": "Q1020",
+    "rwanda": "Q1037",
+    "ethiopia": "Q115",
+    "senegal": "Q1041",
+    "ivory_coast": "Q1008",
+    "burkina_faso": "Q965",
+    "mali": "Q912",
+    "niger": "Q1032",
+    "chad": "Q657",
+    "cameroon": "Q1009",
+    "gabon": "Q1000",
+    "congo": "Q971",
+    "drc": "Q974", // Democratic Republic of Congo
+    "central_african_republic": "Q929",
+    "sudan": "Q1049",
+    "south_sudan": "Q958",
+    "egypt": "Q79",
+    "libya": "Q1016",
+    "tunisia": "Q948",
+    "algeria": "Q262",
+    "morocco": "Q1028",
+    "mauritania": "Q1025",
+    "gambia": "Q1005",
+    "guinea_bissau": "Q1007",
+    "guinea": "Q1006",
+    "sierra_leone": "Q1044",
+    "liberia": "Q1014",
+    "togo": "Q945",
+    "benin": "Q962",
+    "madagascar": "Q1019",
+    "mauritius": "Q1027",
+    "seychelles": "Q1042",
+    "comoros": "Q970",
+    "cape_verde": "Q1011",
+    "sao_tome_and_principe": "Q1039",
+    "equatorial_guinea": "Q983",
+    "djibouti": "Q977",
+    "eritrea": "Q986",
+    "somalia": "Q1045",
+    "lesotho": "Q1013",
+    "swaziland": "Q1050", // Eswatini
+    "namibia": "Q1030",
+    "angola": "Q916",
+    "mozambique": "Q1029"
+};
+
+// Country-specific court configurations
 const COUNTRY_CONFIG: Record<string, { courtId: string; countryId: string }> = {
-    'GH': { 
+    'ghana': { 
         courtId: 'Q1513611',  // Supreme Court of Ghana (parent class)
         countryId: 'Q117'     // Ghana
     },
-    'NG': { 
+    'nigeria': { 
         courtId: 'Q16011598', // Supreme Court of Nigeria
         countryId: 'Q1033'    // Nigeria
     },
-    'KE': { 
+    'kenya': { 
         courtId: 'Q7653543',  // Supreme Court of Kenya
         countryId: 'Q114'     // Kenya
     },
-    'ZA': { 
+    'south_africa': { 
         courtId: 'Q1360033',  // Constitutional Court of South Africa
         countryId: 'Q258'     // South Africa
     }
@@ -76,18 +154,29 @@ const COUNTRY_CONFIG: Record<string, { courtId: string; countryId: string }> = {
 // ✅ Search endpoint with multi-country support
 app.get("/search", async (req: Request, res: Response) => {
     const userQuery = (req.query.q as string)?.trim().toLowerCase() || "";
-    const countryCode = (req.query.country as string)?.trim().toUpperCase() || "GH"; // Default to Ghana
+    const countryParam = (req.query.country as string)?.trim().toLowerCase() || "ghana";
     
-    // Get the config for the selected country
-    const config = COUNTRY_CONFIG[countryCode] || COUNTRY_CONFIG['GH'];
+    // Get Wikidata entity ID for the country
+    const countryEntityId = COUNTRY_MAPPING[countryParam];
+    
+    if (!countryEntityId) {
+        return res.status(400).json({
+            success: false,
+            error: `Unsupported country: ${countryParam}. Supported countries: ${Object.keys(COUNTRY_MAPPING).join(", ")}`,
+            availableCountries: Object.keys(COUNTRY_MAPPING)
+        });
+    }
+    
+    // Get the config for the selected country (fallback to Ghana if not configured)
+    const config = COUNTRY_CONFIG[countryParam] || COUNTRY_CONFIG['ghana'];
 
   const sparqlQuery = `
     SELECT DISTINCT ?item ?itemLabel ?itemDescription ?date ?legal_citation ?courtLabel ?majority_opinionLabel ?sourceLabel (GROUP_CONCAT(DISTINCT ?judge; SEPARATOR = ", ") AS ?judges) WHERE {
       {
         SELECT DISTINCT * WHERE {
           ?item (wdt:P31/(wdt:P279*)) wd:Q114079647;
-            (wdt:P17/(wdt:P279*)) wd:${config.countryId};
-            (wdt:P1001/(wdt:P279*)) wd:${config.countryId};
+            (wdt:P17/(wdt:P279*)) wd:${countryEntityId};
+            (wdt:P1001/(wdt:P279*)) wd:${countryEntityId};
             (wdt:P793/(wdt:P279*)) wd:Q7099379;
             wdt:P4884 ?court.
           ?court (wdt:P279*) wd:${config.courtId}.
@@ -121,7 +210,7 @@ app.get("/search", async (req: Request, res: Response) => {
                 sourceLabel: item.sourceLabel?.value || "Source unavailable",
                 judges: item.judges?.value || "Judges unavailable",
                 articleUrl: item.item?.value || "",
-                country: countryCode // Add country code to response
+                country: countryParam.charAt(0).toUpperCase() + countryParam.slice(1).replace(/_/g, ' ')
             }))
             .filter((caseData: any) => {
                 if (!userQuery) return true; // Return all if no query
@@ -135,7 +224,12 @@ app.get("/search", async (req: Request, res: Response) => {
                 );
             });
 
-        res.json({ success: true, results: cases, country: countryCode });
+        res.json({ 
+            success: true, 
+            results: cases,
+            country: countryParam.charAt(0).toUpperCase() + countryParam.slice(1).replace(/_/g, ' '),
+            totalResults: cases.length
+        });
     } catch (error) {
         console.error("❌ API Error:", error);
         res.status(500).json({ success: false, error: "Please check your internet connection!" });
