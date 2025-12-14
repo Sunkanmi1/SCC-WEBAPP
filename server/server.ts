@@ -50,60 +50,78 @@ app.get("/", (req: Request, res: Response) => {
 
 // ✅ Search endpoint returning JSON
 app.get("/search", async (req: Request, res: Response) => {
+    // Extract query parameters
     const userQuery = (req.query.q as string)?.trim().toLowerCase() || "";
-
-    const sparqlQuery = `
-    SELECT DISTINCT ?item ?itemLabel ?itemDescription ?date ?legal_citation ?courtLabel ?majority_opinionLabel ?sourceLabel (GROUP_CONCAT(DISTINCT ?judge; SEPARATOR = ", ") AS ?judges) WHERE {
-      {
-        SELECT DISTINCT * WHERE {
-          ?item (wdt:P31/(wdt:P279*)) wd:Q114079647;
-            (wdt:P17/(wdt:P279*)) wd:Q117;
-            (wdt:P1001/(wdt:P279*)) wd:Q117;
-            (wdt:P793/(wdt:P279*)) wd:Q7099379;
-            wdt:P4884 ?court.
-          ?court (wdt:P279*) wd:Q1513611.
-        }
-        LIMIT 5000
-      }
-      ?item wdt:P577 ?date;
-        wdt:P1031 ?legal_citation;
-        wdt:P1433 ?source;
-        wdt:P1594 _:b3.
-      _:b3 rdfs:label ?judge.
-      FILTER((LANG(?judge)) = "en")
-      SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],mul,en". }
-    }
-    GROUP BY ?item ?itemLabel ?itemDescription ?date ?legal_citation ?courtLabel ?majority_opinionLabel ?sourceLabel
-    ORDER BY (?date)`;
+    const year = req.query.year as string;           // e.g., "2023"
+    const judge = (req.query.judge as string)?.toLowerCase(); // e.g., "justice mensa"
+    const caseType = (req.query.type as string)?.toLowerCase(); // e.g., "constitutional"
 
     try {
+        // Base SPARQL query
+        let sparqlQuery = `
+        SELECT DISTINCT ?item ?itemLabel ?itemDescription ?date ?legal_citation ?courtLabel ?majority_opinionLabel ?sourceLabel (GROUP_CONCAT(DISTINCT ?judge; SEPARATOR = ", ") AS ?judges) WHERE {
+          {
+            SELECT DISTINCT * WHERE {
+              ?item (wdt:P31/(wdt:P279*)) wd:Q114079647;
+                (wdt:P17/(wdt:P279*)) wd:Q117;
+                (wdt:P1001/(wdt:P279*)) wd:Q117;
+                (wdt:P793/(wdt:P279*)) wd:Q7099379;
+                wdt:P4884 ?court.
+              ?court (wdt:P279*) wd:Q1513611.
+            }
+            LIMIT 5000
+          }
+          ?item wdt:P577 ?date;
+            wdt:P1031 ?legal_citation;
+            wdt:P1433 ?source;
+            wdt:P1594 _:b3.
+          _:b3 rdfs:label ?judge.
+          FILTER((LANG(?judge)) = "en")
+          SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],mul,en". }
+        `;
+
+        // Dynamic filters
+        if (year) {
+            sparqlQuery += `FILTER(YEAR(?date) = ${year})\n`;
+        }
+        if (judge) {
+            sparqlQuery += `FILTER(CONTAINS(LCASE(?judge), "${judge}"))\n`;
+        }
+        if (caseType) {
+            // Assuming `caseType` maps to a SPARQL property or keyword, adjust if needed
+            sparqlQuery += `?item wdt:P793 ?caseTypeEntity.
+                            ?caseTypeEntity rdfs:label ?caseTypeLabel.
+                            FILTER(CONTAINS(LCASE(?caseTypeLabel), "${caseType}"))\n`;
+        }
+
+        sparqlQuery += `}
+        GROUP BY ?item ?itemLabel ?itemDescription ?date ?legal_citation ?courtLabel ?majority_opinionLabel ?sourceLabel
+        ORDER BY (?date)`;
+
         const url = `https://query.wikidata.org/sparql?query=${encodeURIComponent(sparqlQuery)}&format=json`;
         const { data } = await axios.get(url, { timeout: 10000 });
 
-        const cases = (data as any).results.bindings
-            .map((item: any) => ({
-                caseId: item.item?.value.split("/").pop() || "Not Available",
-                title: item.itemLabel?.value || "Not Available",
-                description: item.itemDescription?.value || "No description available",
-                date: item.date?.value?.split("T")[0] || "Date not recorded",
-                citation: item.legal_citation?.value || "Citation unavailable",
-                court: item.courtLabel?.value || "Court not specified",
-                majorityOpinion: item.majority_opinionLabel?.value || "Majority opinion unavailable",
-                sourceLabel: item.sourceLabel?.value || "Source unavailable",
-                judges: item.judges?.value || "Judges unavailable",
-                articleUrl: item.item?.value || ""
-            }))
-            .filter((caseData: any) => {
-                if (!userQuery) return true; // Return all if no query
-                
-                return (
-                    caseData.title.toLowerCase().includes(userQuery) ||
-                    (caseData.description && caseData.description.toLowerCase().includes(userQuery)) ||
-                    (caseData.judges && caseData.judges.toLowerCase().includes(userQuery)) ||
-                    (caseData.citation && caseData.citation.toLowerCase().includes(userQuery)) ||
-                    (caseData.court && caseData.court.toLowerCase().includes(userQuery))
-                );
-            });
+        const cases = (data as any).results.bindings.map((item: any) => ({
+            caseId: item.item?.value.split("/").pop() || "Not Available",
+            title: item.itemLabel?.value || "Not Available",
+            description: item.itemDescription?.value || "No description available",
+            date: item.date?.value?.split("T")[0] || "Date not recorded",
+            citation: item.legal_citation?.value || "Citation unavailable",
+            court: item.courtLabel?.value || "Court not specified",
+            majorityOpinion: item.majority_opinionLabel?.value || "Majority opinion unavailable",
+            sourceLabel: item.sourceLabel?.value || "Source unavailable",
+            judges: item.judges?.value || "Judges unavailable",
+            articleUrl: item.item?.value || ""
+        })).filter((caseData: any) => {
+            if (!userQuery) return true;
+            return (
+                caseData.title.toLowerCase().includes(userQuery) ||
+                (caseData.description && caseData.description.toLowerCase().includes(userQuery)) ||
+                (caseData.judges && caseData.judges.toLowerCase().includes(userQuery)) ||
+                (caseData.citation && caseData.citation.toLowerCase().includes(userQuery)) ||
+                (caseData.court && caseData.court.toLowerCase().includes(userQuery))
+            );
+        });
 
         res.json({ success: true, results: cases });
     } catch (error) {
@@ -111,6 +129,7 @@ app.get("/search", async (req: Request, res: Response) => {
         res.status(500).json({ success: false, error: "Please check your internet connection!" });
     }
 });
+
 
 // Start server
 app.listen(PORT, () => {
