@@ -128,7 +128,6 @@ button {
   border: none;
   background: none;
   font-family: inherit;
-  transition: all var(--transition-base);
 }
 
 button:disabled {
@@ -140,12 +139,8 @@ button:disabled {
 a {
   color: var(--primary-blue);
   text-decoration: none;
-  transition: color var(--transition-fast);
 }
 
-a:hover {
-  color: var(--primary-blue-dark);
-}
 
 /* Input Styles */
 input, textarea {
@@ -154,7 +149,6 @@ input, textarea {
   border: 1px solid var(--gray-300);
   border-radius: var(--border-radius-base);
   padding: var(--space-3) var(--space-4);
-  transition: all var(--transition-base);
 }
 
 input:focus, textarea:focus {

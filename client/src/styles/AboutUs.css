@@ -103,13 +103,11 @@
   padding: var(--space-6);
   border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-md);
-  transition: all var(--transition-base);
   text-align: center;
   border: 2px solid transparent;
 }
 
 .feature-card:hover {
-  transform: translateY(-4px);
   box-shadow: var(--shadow-xl);
   border-color: var(--primary-blue-light);
 }
@@ -147,11 +145,9 @@
   border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-md);
   border-left: 4px solid var(--primary-blue);
-  transition: all var(--transition-base);
 }
 
 .audience-item:hover {
-  transform: translateX(4px);
   box-shadow: var(--shadow-lg);
 }
 
