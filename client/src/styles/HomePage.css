@@ -130,7 +130,7 @@
 }
 
 .search-button {
-  padding: var(--space-6) var(--space-8);
+  padding: var(--space-6) var(--space-10);
   background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
   color: var(--white);
   border: none;
@@ -139,20 +139,50 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 80px;
+  min-width: 120px;
+  font-weight: 600;
+  font-size: var(--font-size-lg);
+  border-radius: 0 var(--border-radius-2xl) var(--border-radius-2xl) 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.search-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s ease;
+}
+
+.search-button:hover::before {
+  left: 100%;
 }
 
 .search-button:hover {
   background: linear-gradient(135deg, var(--primary-blue-dark), var(--primary-blue));
-  transform: translateX(-2px);
+  transform: translateX(-2px) scale(1.05);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
 }
 
 .search-button:active {
   transform: translateX(-2px) scale(0.98);
+  box-shadow: 0 5px 15px -3px rgba(0, 0, 0, 0.3);
+}
+
+.search-button:focus {
+  outline: none;
+  box-shadow: 
+    0 0 0 4px rgba(59, 130, 246, 0.3),
+    0 10px 25px -5px rgba(0, 0, 0, 0.2);
 }
 
 .search-button i {
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-2xl);
+  margin-right: var(--space-2);
 }
 
 /* Mobile Responsiveness */
@@ -173,12 +203,13 @@
   }
   
   .search-button {
-    padding: var(--space-4) var(--space-6);
-    min-width: 60px;
+    padding: var(--space-4) var(--space-8);
+    min-width: 80px;
+    font-size: var(--font-size-base);
   }
   
   .search-button i {
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-xl);
   }
 }
 
@@ -194,8 +225,13 @@
   }
   
   .search-button {
-    padding: var(--space-3) var(--space-4);
-    min-width: 50px;
+    padding: var(--space-3) var(--space-6);
+    min-width: 70px;
+    font-size: var(--font-size-sm);
+  }
+  
+  .search-button i {
+    font-size: var(--font-size-lg);
   }
 }
 

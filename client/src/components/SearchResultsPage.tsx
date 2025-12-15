@@ -3,7 +3,7 @@ import Header from './Header';
 import Footer from './Footer';
 import CaseCard from './CaseCard';
 import LoadingSpinner from './LoadingSpinner';
-import { SearchState } from '../../App';
+import { SearchState } from '../App.tsx';
 import '../styles/SearchResultsPage.css';
 
 interface SearchResultsPageProps {
