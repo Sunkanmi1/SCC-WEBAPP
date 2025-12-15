@@ -1,21 +1,51 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import '../styles/Footer.css';
 
-const Footer: React.FC = () => {
+interface FooterProps {
+  onNavigateToAbout?: () => void;
+}
+
+const Footer: React.FC<FooterProps> = ({ onNavigateToAbout }) => {
+  const handleAboutClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    // Always try to use the prop if available
+    if (onNavigateToAbout) {
+      onNavigateToAbout();
+    } else {
+      // Dispatch custom event for navigation when prop is not available
+      window.dispatchEvent(new CustomEvent('navigateToAbout'));
+    }
+  };
+
   return (
     <footer className="footer">
       <div className="footer-container">
-        <div className='footer-logos '>
+        <div className="footer-logos">
           <img src="/logo.png" alt="Logo" className="footer-logo" />
           <img src="wikidata.png" alt="Wikidata logo" className="footer-logo" />
-
+          <Link href="https://www.wikidata.org/wiki/Wikidata:Introduction" target="_blank">
         </div>
 
+        <div className="footer-content">
+          <nav className="footer-nav">
+            <div className="footer-nav-links">
+              <Link to="/about" onClick={handleAboutClick} className="footer-link">
+                About Us
+              </Link>
+            </div>
+          </nav>
 
-        <div className="footer-license">
-          <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">
-            CC BY-SA 4.0
-          </a>
+          <div className="footer-external">
+            <a 
+              href="https://creativecommons.org/licenses/by-sa/4.0/" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="footer-link footer-link-external"
+            >
+              CC BY-SA 4.0
+            </a>
+          </div>
         </div>
       </div>
     </footer>

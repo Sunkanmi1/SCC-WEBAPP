@@ -1,12 +1,31 @@
 import express, { Request, Response } from "express";
 import axios from "axios";
 import cors from "cors";
+import dotenv from "dotenv";
+
+// Load environment variables
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 9090;
+const CORS_ORIGIN = process.env.CORS_ORIGIN || "http://localhost:5173";
 
-app.use(cors());
+// Configure CORS
+app.use(cors({
+    origin: CORS_ORIGIN,
+    credentials: true
+}));
 app.use(express.json());
+
+// ✅ Health check endpoint (required for deployment)
+app.get("/api/health", (req: Request, res: Response) => {
+    res.json({
+        status: "healthy",
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+        environment: process.env.NODE_ENV || "development"
+    });
+});
 
 // ✅ Root endpoint
 app.get("/", (req: Request, res: Response) => {
