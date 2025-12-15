@@ -90,7 +90,7 @@ const CaseCard: React.FC<CaseCardProps> = ({ case: caseItem }) => {
             className="external-link"
           >
             <i className="fas fa-external-link-alt"></i>
-            <span>View Details</span>
+            <span>View details on Wikidata</span>
           </a>
         </div>
       )}
