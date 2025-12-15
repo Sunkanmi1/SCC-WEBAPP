@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import HomePage from './components/HomePage';
 import SearchResultsPage from './components/SearchResultsPage';
+import BrowsePage from './components/BrowsePage';
 import AboutUs from './components/AboutUs';
 import './styles/App.css';
 
@@ -25,7 +26,7 @@ export interface SearchState {
 }
 
 function App() {
-  const [currentView, setCurrentView] = useState<'home' | 'results' | 'about'>('home');
+  const [currentView, setCurrentView] = useState<'home' | 'browse' | 'results' | 'about'>('home');
   const [searchState, setSearchState] = useState<SearchState>({
     query: '',
     results: [],
@@ -78,6 +79,10 @@ function App() {
     }
   };
 
+  const handleNavigateToBrowse = () => {
+    setCurrentView('browse');
+  };
+
   const handleBackToSearch = () => {
     setCurrentView('home');
     setSearchState(prev => ({ ...prev, query: '', results: [], error: null }));
@@ -95,7 +100,16 @@ function App() {
   return (
     <div className="app">
       {currentView === 'home' ? (
-        <HomePage onSearch={handleSearch} onNavigateToAbout={handleNavigateToAbout} />
+        <HomePage 
+          onSearch={handleSearch} 
+          onNavigateToBrowse={handleNavigateToBrowse}
+          onNavigateToAbout={handleNavigateToAbout} 
+        />
+      ) : currentView === 'browse' ? (
+        <BrowsePage 
+          onNavigateToAbout={handleNavigateToAbout}
+          onBackToHome={handleNavigateToHome}
+        />
       ) : currentView === 'about' ? (
         <AboutUs onNavigateToHome={handleNavigateToHome} />
       ) : (
