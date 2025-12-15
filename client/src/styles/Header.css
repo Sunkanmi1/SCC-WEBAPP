@@ -57,6 +57,26 @@
   gap: var(--space-4);
 }
 
+.country-selector {
+  display: flex;
+  align-items: center;
+}
+
+.country-select {
+  padding: var(--space-2) var(--space-4);
+  border: 2px solid var(--primary-blue);
+  border-radius: var(--border-radius-full);
+  background: #fff;
+  color: var(--primary-blue);
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  outline: none;
+}
+
+.country-select:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+}
+
 .nav-link {
   padding: var(--space-3) var(--space-5);
   background: transparent;
@@ -164,6 +184,11 @@
 
   .nav-link {
     padding: var(--space-2) var(--space-4);
+    font-size: var(--font-size-xs);
+  }
+
+  .country-select {
+    padding: var(--space-2) var(--space-3);
     font-size: var(--font-size-xs);
   }
 }

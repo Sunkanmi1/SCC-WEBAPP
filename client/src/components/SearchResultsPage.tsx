@@ -9,17 +9,26 @@ import '../styles/SearchResultsPage.css';
 interface SearchResultsPageProps {
   searchState: SearchState;
   onBackToSearch: () => void;
+  selectedCountryQid?: string;
+  onCountryChange?: (qid: string) => void;
 }
 
 const SearchResultsPage: React.FC<SearchResultsPageProps> = ({
   searchState,
-  onBackToSearch
+  onBackToSearch,
+  selectedCountryQid = 'Q117',
+  onCountryChange
 }) => {
   const { query, results, loading, error } = searchState;
 
   return (
     <div className="search-results-page">
-      <Header showBackButton={true} onBackClick={onBackToSearch} />
+      <Header 
+        showBackButton={true} 
+        onBackClick={onBackToSearch}
+        selectedCountryQid={selectedCountryQid}
+        onCountryChange={onCountryChange}
+      />
 
       <main className="main-content">
         <section className="results-section">
@@ -40,7 +49,7 @@ const SearchResultsPage: React.FC<SearchResultsPageProps> = ({
             <>
               <div className="results-header">
                 <h2>Search Results</h2>
-                <p className="results-count">
+                <p className="results-count" title={`Found ${results.length} result${results.length !== 1 ? 's' : ''} for "${query}"`}>
                   Found {results.length} case{results.length !== 1 ? 's' : ''} for "{query}"
                 </p>
               </div>

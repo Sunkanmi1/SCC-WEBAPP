@@ -26,6 +26,7 @@ export interface SearchState {
 
 function App() {
   const [currentView, setCurrentView] = useState<'home' | 'results' | 'about'>('home');
+  const [countryQid, setCountryQid] = useState<string>(() => localStorage.getItem('countryQid') || 'Q117');
   const [searchState, setSearchState] = useState<SearchState>({
     query: '',
     results: [],
@@ -45,15 +46,19 @@ function App() {
     };
   }, []);
 
-  const handleSearch = async (query: string) => {
+  useEffect(() => {
+    localStorage.setItem('countryQid', countryQid);
+  }, [countryQid]);
+
+  const handleSearch = async (query: string, opts?: { skipNavigation?: boolean }) => {
     if (!query.trim()) return;
 
     setSearchState(prev => ({ ...prev, loading: true, error: null, query }));
-    setCurrentView('results');
+    if (!opts?.skipNavigation) setCurrentView('results');
 
     try {
       const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:9090';
-      const response = await fetch(`${apiBaseUrl}/search?q=${encodeURIComponent(query)}`);
+      const response = await fetch(`${apiBaseUrl}/search?q=${encodeURIComponent(query)}&country=${encodeURIComponent(countryQid)}`);
 
       if (!response.ok) {
         throw new Error('Search request failed');
@@ -78,6 +83,17 @@ function App() {
     }
   };
 
+  // Re-run search when country changes while viewing results
+  useEffect(() => {
+    if (currentView === 'results' && searchState.query) {
+      handleSearch(searchState.query, { skipNavigation: true });
+    }
+  }, [countryQid]);
+
+  const handleCountryChange = (qid: string) => {
+    setCountryQid(qid);
+  };
+
   const handleBackToSearch = () => {
     setCurrentView('home');
     setSearchState(prev => ({ ...prev, query: '', results: [], error: null }));
@@ -95,13 +111,20 @@ function App() {
   return (
     <div className="app">
       {currentView === 'home' ? (
-        <HomePage onSearch={handleSearch} onNavigateToAbout={handleNavigateToAbout} />
+        <HomePage 
+          onSearch={handleSearch} 
+          onNavigateToAbout={handleNavigateToAbout}
+          selectedCountryQid={countryQid}
+          onCountryChange={handleCountryChange}
+        />
       ) : currentView === 'about' ? (
         <AboutUs onNavigateToHome={handleNavigateToHome} />
       ) : (
         <SearchResultsPage
           searchState={searchState}
           onBackToSearch={handleBackToSearch}
+          selectedCountryQid={countryQid}
+          onCountryChange={handleCountryChange}
         />
       )}
     </div>

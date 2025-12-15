@@ -7,9 +7,19 @@ interface HeaderProps {
   showBackButton?: boolean;
   onBackClick?: () => void;
   onNavigateToAbout?: () => void;
+  selectedCountryQid?: string;
+  onCountryChange?: (qid: string) => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ showBackButton = false, onBackClick, onNavigateToAbout }) => {
+const COUNTRIES = [
+  { qid: 'Q117', label: 'Ghana', flag: '🇬🇭' },
+  { qid: 'Q1033', label: 'Nigeria', flag: '🇳🇬' },
+  { qid: 'Q114', label: 'Kenya', flag: '🇰🇪' },
+  { qid: 'Q258', label: 'South Africa', flag: '🇿🇦' },
+  { qid: 'Q1036', label: 'Uganda', flag: '🇺🇬' }
+];
+
+const Header: React.FC<HeaderProps> = ({ showBackButton = false, onBackClick, onNavigateToAbout, selectedCountryQid = 'Q117', onCountryChange }) => {
   const navigate = useNavigate();
 
   const handleLogoClick = () => {
@@ -42,7 +52,7 @@ const Header: React.FC<HeaderProps> = ({ showBackButton = false, onBackClick, on
     <header className="header">
       <nav className="nav">
         <div className="nav-left">
-          <Link to="/" onClick={handleLogoClick} className="logo-link">
+          <Link to="/" onClick={handleLogoClick} className="logo-link" title="Home">
             <div className="logo">
               <span className="logo-icon">⚖</span>
               <span className="logo-text">SCC</span>
@@ -51,9 +61,24 @@ const Header: React.FC<HeaderProps> = ({ showBackButton = false, onBackClick, on
         </div>
         
         <div className="nav-right">
+          <div className="country-selector">
+            <select
+              className="country-select"
+              value={selectedCountryQid}
+              onChange={(e) => onCountryChange && onCountryChange(e.target.value)}
+              aria-label="Select country"
+              title="Filter cases by country"
+            >
+              {COUNTRIES.map((c) => (
+                <option key={c.qid} value={c.qid}>
+                  {c.flag} {c.label}
+                </option>
+              ))}
+            </select>
+          </div>
           {!showBackButton && (
             <>
-              <Link to="/about" onClick={handleAboutClick} className="nav-link">
+              <Link to="/about" onClick={handleAboutClick} className="nav-link" title="About this project">
                 About Us
               </Link>
               <a 
@@ -68,7 +93,7 @@ const Header: React.FC<HeaderProps> = ({ showBackButton = false, onBackClick, on
             </>
           )}
           {showBackButton && (
-            <button onClick={handleBackClick} className="back-button">
+            <button onClick={handleBackClick} className="back-button" title="Back to home search">
               <i className="fas fa-arrow-left"></i>
               <span>Back to Search</span>
             </button>
