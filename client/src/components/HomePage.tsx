@@ -85,10 +85,14 @@ const HomePage: React.FC<HomePageProps> = ({ onSearch }) => {
     setCountry("");
   };
 
+  const onNavigateToAbout = () => {
+    console.log("Function not implemented.");
+  };
+
   return (
     <div className="home-page">
       <Header showBackButton={false} onNavigateToAbout={onNavigateToAbout} />
-      
+
       <main className="hero-section">
         <div className="hero-overlay">
           <h1 className="hero-title">SUPREME COURT CASES</h1>
