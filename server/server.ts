@@ -48,20 +48,30 @@ app.get("/", (req: Request, res: Response) => {
     });
 });
 
-// ✅ Search endpoint returning JSON
+// Country-specific Supreme Court Wikidata IDs
+const COUNTRY_COURTS: Record<string, string> = {
+    'GH': 'Q30261418', // Supreme Court of Ghana
+    'NG': 'Q16011598', // Supreme Court of Nigeria
+    'KE': 'Q7653543',  // Supreme Court of Kenya
+    'ZA': 'Q1360033'   // Constitutional Court of South Africa
+};
+
+// ✅ Search endpoint with multi-country support
 app.get("/search", async (req: Request, res: Response) => {
     const userQuery = (req.query.q as string)?.trim().toLowerCase() || "";
+    const countryCode = (req.query.country as string)?.trim().toUpperCase() || "GH"; // Default to Ghana
+    
+    // Get the Wikidata ID for the selected country's Supreme Court
+    const courtId = COUNTRY_COURTS[countryCode] || COUNTRY_COURTS['GH'];
 
     const sparqlQuery = `
     SELECT DISTINCT ?item ?itemLabel ?itemDescription ?date ?legal_citation ?courtLabel ?majority_opinionLabel ?sourceLabel (GROUP_CONCAT(DISTINCT ?judge; SEPARATOR = ", ") AS ?judges) WHERE {
       {
         SELECT DISTINCT * WHERE {
           ?item (wdt:P31/(wdt:P279*)) wd:Q114079647;
-            (wdt:P17/(wdt:P279*)) wd:Q117;
-            (wdt:P1001/(wdt:P279*)) wd:Q117;
-            (wdt:P793/(wdt:P279*)) wd:Q7099379;
             wdt:P4884 ?court.
-          ?court (wdt:P279*) wd:Q1513611.
+          # Filter by country-specific Supreme Court
+          ?court (wdt:P279*) wd:${courtId}.
         }
         LIMIT 5000
       }
@@ -91,7 +101,8 @@ app.get("/search", async (req: Request, res: Response) => {
                 majorityOpinion: item.majority_opinionLabel?.value || "Majority opinion unavailable",
                 sourceLabel: item.sourceLabel?.value || "Source unavailable",
                 judges: item.judges?.value || "Judges unavailable",
-                articleUrl: item.item?.value || ""
+                articleUrl: item.item?.value || "",
+                country: countryCode // Add country code to response
             }))
             .filter((caseData: any) => {
                 if (!userQuery) return true; // Return all if no query
@@ -105,7 +116,7 @@ app.get("/search", async (req: Request, res: Response) => {
                 );
             });
 
-        res.json({ success: true, results: cases });
+        res.json({ success: true, results: cases, country: countryCode });
     } catch (error) {
         console.error("❌ API Error:", error);
         res.status(500).json({ success: false, error: "Please check your internet connection!" });

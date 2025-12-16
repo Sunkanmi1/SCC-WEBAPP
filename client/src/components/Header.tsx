@@ -1,6 +1,7 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import ThemeToggle from './ThemeToggle';
+import CountryNav from './CountryNav';
 import '../styles/Header.css';
 
 interface HeaderProps {
@@ -11,6 +12,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ showBackButton = false, onBackClick, onNavigateToAbout }) => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogoClick = () => {
     if (onBackClick) {
@@ -38,6 +40,10 @@ const Header: React.FC<HeaderProps> = ({ showBackButton = false, onBackClick, on
     }
   };
 
+  // Extract country code from URL if on country page
+  const countryMatch = location.pathname.match(/\/country\/([a-z]{2})/i);
+  const currentCountry = countryMatch ? countryMatch[1].toUpperCase() : 'GH';
+
   return (
     <header className="header">
       <nav className="nav">
@@ -51,6 +57,7 @@ const Header: React.FC<HeaderProps> = ({ showBackButton = false, onBackClick, on
         </div>
         
         <div className="nav-right">
+          <CountryNav currentCountry={currentCountry} />
           {!showBackButton && (
             <Link to="/about" onClick={handleAboutClick} className="nav-link">
               About Us
