@@ -4,6 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import session from "express-session";
 import { storeSearch } from "./utils";
+import { join } from "node:path";
 
 // Load environment variables
 dotenv.config();
@@ -38,6 +39,36 @@ app.use(
 	}),
 );
 
+const docsPath = join(__dirname, "docs", "html");
+
+// Static middleware for serving documentation assets
+app.use(
+	"/docs",
+	express.static(docsPath, {
+		index: "index.html",
+		dotfiles: "deny",
+		etag: true,
+		lastModified: true,
+		maxAge: process.env.NODE_ENV === "production" ? "1d" : "0",
+		setHeaders: (res: Response, path: string) => {
+			// Security headers for documentation
+			res.setHeader("X-Content-Type-Options", "nosniff");
+			res.setHeader("X-Frame-Options", "SAMEORIGIN");
+			res.setHeader("X-XSS-Protection", "1; mode=block");
+
+			if (path.endsWith(".html")) {
+				res.setHeader("Content-Type", "text/html; charset=UTF-8");
+			} else if (path.endsWith(".css")) {
+				res.setHeader("Content-Type", "text/css; charset=UTF-8");
+			} else if (path.endsWith(".js")) {
+				res.setHeader("Content-Type", "application/javascript; charset=UTF-8");
+			} else if (path.endsWith(".json")) {
+				res.setHeader("Content-Type", "application/json; charset=UTF-8");
+			}
+		},
+	}),
+);
+
 // ✅ Health check endpoint (required for deployment)
 app.get("/api/health", (req: Request, res: Response) => {
 	res.json({
@@ -54,18 +85,7 @@ app.get("/", (req: Request, res: Response) => {
 		message: "Supreme Court of Ghana Cases API",
 		version: "1.0.0",
 		description: "API for searching Supreme Court of Ghana cases from Wikidata",
-		endpoints: {
-			health: "GET /api/health",
-			search_all_cases: "GET /search",
-			search_with_query: "GET /search?q={query}",
-			examples: [
-				"http://localhost:9090/api/health",
-				"http://localhost:9090/search",
-				"http://localhost:9090/search?q=human+rights",
-				"http://localhost:9090/search?q=constitution",
-			],
-		},
-		documentation: "Use /search endpoint to get case data",
+		documentation: "Complete API documentation available at /docs",
 	});
 });
 
@@ -74,7 +94,7 @@ app.get("/search", async (req: Request, res: Response) => {
 	const userQuery = (req.query.q as string)?.trim().toLowerCase() || "";
 
 	if (userQuery) {
-			storeSearch(req, userQuery);
+		storeSearch(req, userQuery);
 	}
 
 	const sparqlQuery = `

@@ -1,0 +1,201 @@
+{
+  "name": "Supreme Court of Ghana Cases API",
+  "version": "1.0.0",
+  "title": "Supreme Court Cases API - Complete Documentation",
+  "url": "http://localhost:9090",
+  "sampleUrl": "http://localhost:9090",
+  "defaultVersion": "1.0.0",
+  "apidoc": "0.54.0",
+  "generator": {
+    "name": "apidoc",
+    "time": "2024-01-15T12:00:00.000Z",
+    "url": "https://apidocjs.com",
+    "version": "1.2.0"
+  },
+  "template": {
+    "forceLanguage": "en",
+    "withCompare": true,
+    "withGenerator": true,
+    "aloneDisplay": false,
+    "showRequiredLabels": true
+  },
+  "header": {
+    "title": "Getting Started",
+    "filename": "docs/header.md"
+  },
+
+  "definePattern": "DEFINE",
+  "definePrefix": "Define_",
+  "markdown": true,
+  "lineEnding": "CRLF",
+  "allowHTML": true,
+  "copyDefinitions": true,
+  "filterBy": [],
+  "excludeFilters": ["node_modules/", "test/", "spec/", "coverage/"],
+  "includeFilters": [".*\\.(js|ts|py|php|rb|go|java|cs)$"],
+  "config": {
+    "verbose": true,
+    "debug": false,
+    "silent": false,
+    "colorize": true,
+    "markdown": {
+      "gfm": true,
+      "tables": true,
+      "breaks": false,
+      "pedantic": false,
+      "sanitize": false,
+      "smartLists": true,
+      "smartypants": false
+    }
+  },
+  "custom": {
+    "companyName": "Wikimedia Foundation",
+    "projectUrl": "https://github.com/Sunkanmi1/SCC-WEBAPP",
+    "contactEmail": "",
+    "license": "MIT",
+    "repositoryUrl": "https://github.com/Sunkanmi1/SCC-WEBAPP",
+    "documentationUrl": "https://scc-api-docs.example.com",
+    "supportUrl": "https://github.com/Sunkanmi1/SCC-WEBAPP/issues"
+  },
+  "parse": {
+    "parsers": {
+      "parse-apidefine": "./node_modules/apidoc-core/lib/parsers/api_define.js",
+      "parse-apierror": "./node_modules/apidoc-core/lib/parsers/api_error.js",
+      "parse-apiexample": "./node_modules/apidoc-core/lib/parsers/api_example.js",
+      "parse-apigroup": "./node_modules/apidoc-core/lib/parsers/api_group.js",
+      "parse-apiheader": "./node_modules/apidoc-core/lib/parsers/api_header.js",
+      "parse-apiname": "./node_modules/apidoc-core/lib/parsers/api_name.js",
+      "parse-apiparam": "./node_modules/apidoc-core/lib/parsers/api_param.js",
+      "parse-apiparameter": "./node_modules/apidoc-core/lib/parsers/api_param.js",
+      "parse-apipermission": "./node_modules/apidoc-core/lib/parsers/api_permission.js",
+      "parse-apisamplerequest": "./node_modules/apidoc-core/lib/parsers/api_sample_request.js",
+      "parse-apisuccess": "./node_modules/apidoc-core/lib/parsers/api_success.js",
+      "parse-apiuse": "./node_modules/apidoc-core/lib/parsers/api_use.js",
+      "parse-apiversion": "./node_modules/apidoc-core/lib/parsers/api_version.js"
+    },
+    "workers": [
+      "./node_modules/apidoc-core/lib/workers/api_structure.js",
+      "./node_modules/apidoc-core/lib/workers/api_default_value.js",
+      "./node_modules/apidoc-core/lib/workers/api_inherit.js",
+      "./node_modules/apidoc-core/lib/workers/api_use.js",
+      "./node_modules/apidoc-core/lib/workers/api_sample_request.js"
+    ]
+  },
+  "logging": {
+    "level": "info",
+    "colors": true,
+    "timestamp": true
+  },
+  "output": {
+    "path": "docs/html",
+    "clean": true,
+    "mkdir": true
+  },
+  "source": {
+    "include": ["server.ts", "docs/api_documentation.js", "docs/_apidoc.js"],
+    "exclude": ["node_modules", "test", "spec", "coverage", "docs/html"]
+  },
+  "metadata": {
+    "title": "Supreme Court Cases API Documentation",
+    "description": "Complete API reference for the Supreme Court of Ghana Cases API with examples, testing guides, and integration instructions",
+    "keywords": [
+      "api",
+      "documentation",
+      "supreme court",
+      "ghana",
+      "legal",
+      "cases",
+      "wikidata",
+      "rest",
+      "json"
+    ],
+    "author": "SCC-WEBAPP Development Team",
+    "status": "stable",
+    "environment": {
+      "development": "http://localhost:9090",
+      "production": "https://api.example.com"
+    }
+  },
+  "features": {
+    "search": {
+      "enabled": true,
+      "placeholder": "Search endpoints, parameters, examples...",
+      "fields": ["title", "description", "url", "group"]
+    },
+    "navigation": {
+      "sticky": true,
+      "collapsible": true,
+      "breadcrumbs": true
+    },
+    "examples": {
+      "runnable": false,
+      "editable": false,
+      "copyable": true
+    },
+    "export": {
+      "formats": ["json", "yaml", "postman"],
+      "enabled": true
+    }
+  },
+  "ui": {
+    "theme": "default",
+    "customCSS": "docs/custom.css",
+    "favicon": "docs/favicon.ico",
+    "logo": "docs/logo.png",
+    "primaryColor": "#2c3e50",
+    "secondaryColor": "#3498db",
+    "fontFamily": "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+    "codeTheme": "github"
+  },
+  "security": {
+    "sanitizeHtml": true,
+    "allowedTags": [
+      "h1",
+      "h2",
+      "h3",
+      "h4",
+      "h5",
+      "h6",
+      "p",
+      "br",
+      "hr",
+      "ul",
+      "ol",
+      "li",
+      "strong",
+      "em",
+      "code",
+      "pre",
+      "a",
+      "img",
+      "table",
+      "thead",
+      "tbody",
+      "tr",
+      "td",
+      "th",
+      "blockquote"
+    ],
+    "allowedAttributes": {
+      "a": ["href", "title"],
+      "img": ["src", "alt", "title", "width", "height"],
+      "code": ["class"],
+      "pre": ["class"]
+    }
+  },
+  "validation": {
+    "required": ["api", "apiName", "apiGroup"],
+    "optional": ["apiVersion", "apiDescription"],
+    "strictMode": false,
+    "warnOnMissing": true
+  },
+  "performance": {
+    "cache": true,
+    "compression": true,
+    "minify": {
+      "html": true,
+      "css": true,
+      "js": true
+    }
+  }
+}
