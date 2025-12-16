@@ -443,7 +443,7 @@
  *       console.log(`Found ${data.results.length} cases from 2019`)
  *     );
  *
- *     browseCase({ year: '2020', judge: 'torkornoo' }).then(data =>
+ *     browseCases({ year: '2020', judge: 'torkornoo' }).then(data =>
  *       console.log(`Found ${data.results.length} cases from 2020 with Justice Torkornoo`)
  *     );
  *
