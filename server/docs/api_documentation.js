@@ -275,8 +275,7 @@
  * @apiGroup Cases
  * @apiVersion 1.0.0
  * @apiDescription Retrieve user's recent search queries stored in their session.
- * This endpoint provides search history functionality.
- * search queries with timestamps for user convenience and search pattern analysis.
+ * This endpoint provides search history functionality, tracking search queries with timestamps for user convenience and search pattern analysis.
  *
  * @apiPermission none
  * @apiPrivate false
