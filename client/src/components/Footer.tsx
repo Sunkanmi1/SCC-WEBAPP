@@ -1,6 +1,6 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import '../styles/Footer.css';
+import React from "react";
+import { Link } from "react-router-dom";
+import "../styles/Footer.css";
 
 interface FooterProps {
   onNavigateToAbout?: () => void;
@@ -14,7 +14,7 @@ const Footer: React.FC<FooterProps> = ({ onNavigateToAbout }) => {
       onNavigateToAbout();
     } else {
       // Dispatch custom event for navigation when prop is not available
-      window.dispatchEvent(new CustomEvent('navigateToAbout'));
+      window.dispatchEvent(new CustomEvent("navigateToAbout"));
     }
   };
 
@@ -31,17 +31,21 @@ const Footer: React.FC<FooterProps> = ({ onNavigateToAbout }) => {
         <div className="footer-content">
           <nav className="footer-nav">
             <div className="footer-nav-links">
-              <Link to="/about" onClick={handleAboutClick} className="footer-link">
+              <Link
+                to="/about"
+                onClick={handleAboutClick}
+                className="footer-link"
+              >
                 About Us
               </Link>
             </div>
           </nav>
 
           <div className="footer-external">
-            <a 
-              href="https://creativecommons.org/licenses/by-sa/4.0/" 
-              target="_blank" 
-              rel="noopener noreferrer" 
+            <a
+              href="https://creativecommons.org/licenses/by-sa/4.0/"
+              target="_blank"
+              rel="noopener noreferrer"
               className="footer-link footer-link-external"
             >
               CC BY-SA 4.0

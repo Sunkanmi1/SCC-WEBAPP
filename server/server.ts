@@ -6,6 +6,8 @@ import dotenv from "dotenv";
 // Load environment variables
 dotenv.config();
 
+
+
 const app = express();
 const PORT = process.env.PORT || 9090;
 const CORS_ORIGIN = process.env.CORS_ORIGIN || "http://localhost:5173";
@@ -64,7 +66,7 @@ app.get("/search", async (req: Request, res: Response) => {
     // Get the Wikidata ID for the selected country's Supreme Court
     const courtId = COUNTRY_COURTS[countryCode] || COUNTRY_COURTS['GH'];
 
-    const sparqlQuery = `
+  const sparqlQuery = `
     SELECT DISTINCT ?item ?itemLabel ?itemDescription ?date ?legal_citation ?courtLabel ?majority_opinionLabel ?sourceLabel (GROUP_CONCAT(DISTINCT ?judge; SEPARATOR = ", ") AS ?judges) WHERE {
       {
         SELECT DISTINCT * WHERE {
@@ -121,9 +123,32 @@ app.get("/search", async (req: Request, res: Response) => {
         console.error("❌ API Error:", error);
         res.status(500).json({ success: false, error: "Please check your internet connection!" });
     }
+
+    if (judge) {
+      cases = cases.filter((c) =>
+        c.judges.toLowerCase().includes(judge.toLowerCase())
+      );
+    }
+
+    if (country) {
+      cases = cases.filter((c) =>
+        c.court.toLowerCase().includes(country.toLowerCase())
+      );
+    }
+
+    res.json({
+      success: true,
+      mode: "browse",
+      filters: { year, judge, country },
+      results: cases,
+    });
+  } catch (error) {
+    console.error("Browse API Error:", error);
+    res.status(500).json({ success: false, error: "Browse request failed" });
+  }
 });
 
 // Start server
 app.listen(PORT, () => {
-    console.log(`✅ Server running on http://localhost:${PORT}`);
+  console.log(`✅ Server running on http://localhost:${PORT}`);
 });
