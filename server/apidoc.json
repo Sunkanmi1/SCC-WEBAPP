@@ -24,6 +24,7 @@
     "filename": "docs/header.md"
   },
 
+  "order": ["System", "Cases", "Authentication", "Utilities"],
   "definePattern": "DEFINE",
   "definePrefix": "Define_",
   "markdown": true,
