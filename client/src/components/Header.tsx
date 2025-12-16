@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import ThemeToggle from './ThemeToggle';
 import '../styles/Header.css';
 
 interface HeaderProps {
@@ -61,6 +62,7 @@ const Header: React.FC<HeaderProps> = ({ showBackButton = false, onBackClick, on
               <span>Back to Search</span>
             </button>
           )}
+          <ThemeToggle />
         </div>
       </nav>
     </header>

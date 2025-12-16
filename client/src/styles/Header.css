@@ -65,6 +65,10 @@
   gap: var(--space-4);
 }
 
+.nav-right > * {
+  flex-shrink: 0;
+}
+
 .nav-link {
   padding: var(--space-3) var(--space-5);
   background: transparent;
@@ -157,6 +161,10 @@
   .nav-link {
     padding: var(--space-2) var(--space-4);
     font-size: var(--font-size-xs);
+  }
+
+  .nav-right {
+    gap: var(--space-2);
   }
 }
 
