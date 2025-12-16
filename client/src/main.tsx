@@ -5,6 +5,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import App from './App.tsx';
 import './index.css';
 import './styles/dark-theme.css';
+import './styles/buttons.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

@@ -4,6 +4,8 @@ import Footer from './Footer';
 import CaseCard from './CaseCard';
 import LoadingSpinner from './LoadingSpinner';
 import FilterPanel, { FilterOptions } from './FilterPanel';
+import Pagination from './Pagination';
+import Breadcrumbs, { BreadcrumbItem } from './Breadcrumbs';
 import { SearchState, Case } from '../App';
 import '../styles/SearchResultsPage.css';
 
@@ -23,6 +25,8 @@ const SearchResultsPage: React.FC<SearchResultsPageProps> = ({
     judge: '',
     keyword: ''
   });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(20);
 
   // Extract unique years and judges from results
   const availableYears = useMemo(() => {
@@ -75,19 +79,39 @@ const SearchResultsPage: React.FC<SearchResultsPageProps> = ({
 
   const handleApplyFilters = (filters: FilterOptions) => {
     setActiveFilters(filters);
+    setCurrentPage(1); // Reset to first page when filters change
   };
 
   const handleRemoveFilter = (filterType: keyof FilterOptions) => {
     setActiveFilters(prev => ({ ...prev, [filterType]: '' }));
+    setCurrentPage(1);
   };
 
   const hasActiveFilters = activeFilters.year || activeFilters.judge || activeFilters.keyword;
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredResults.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedResults = filteredResults.slice(startIndex, endIndex);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  // Breadcrumbs
+  const breadcrumbs: BreadcrumbItem[] = [
+    { label: 'Home', path: '/', icon: 'fas fa-home' },
+    { label: 'Search Results', icon: 'fas fa-search' }
+  ];
 
   return (
     <div className="search-results-page">
       <Header showBackButton={true} onBackClick={onBackToSearch} />
 
       <main className="main-content">
+        <Breadcrumbs items={breadcrumbs} />
+        
         <section className="results-section">
           {loading ? (
             <LoadingSpinner />
@@ -188,14 +212,24 @@ const SearchResultsPage: React.FC<SearchResultsPageProps> = ({
                   </button>
                 </div>
               ) : (
-                <div className="results-grid">
-                  {filteredResults.map((caseItem, index) => (
-                    <CaseCard
-                      key={`${caseItem.caseId}-${index}`}
-                      case={caseItem}
-                    />
-                  ))}
-                </div>
+                <>
+                  <div className="results-grid">
+                    {paginatedResults.map((caseItem, index) => (
+                      <CaseCard
+                        key={`${caseItem.caseId}-${index}`}
+                        case={caseItem}
+                      />
+                    ))}
+                  </div>
+                  
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    totalItems={filteredResults.length}
+                    itemsPerPage={itemsPerPage}
+                    onPageChange={handlePageChange}
+                  />
+                </>
               )}
             </>
           )}

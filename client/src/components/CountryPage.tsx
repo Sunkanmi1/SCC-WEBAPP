@@ -5,6 +5,8 @@ import Footer from './Footer';
 import CaseCard from './CaseCard';
 import LoadingSpinner from './LoadingSpinner';
 import FilterPanel, { FilterOptions } from './FilterPanel';
+import Pagination from './Pagination';
+import Breadcrumbs, { BreadcrumbItem } from './Breadcrumbs';
 import { getCountryByCode } from '../config/countries';
 import { Case } from '../App';
 import '../styles/SearchResultsPage.css';
@@ -23,6 +25,8 @@ const CountryPage: React.FC = () => {
     judge: '',
     keyword: ''
   });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(20);
 
   const country = getCountryByCode(countryCode?.toUpperCase() || 'GH');
 
@@ -113,13 +117,31 @@ const CountryPage: React.FC = () => {
 
   const handleApplyFilters = (filters: FilterOptions) => {
     setActiveFilters(filters);
+    setCurrentPage(1); // Reset to first page when filters change
   };
 
   const handleRemoveFilter = (filterType: keyof FilterOptions) => {
     setActiveFilters(prev => ({ ...prev, [filterType]: '' }));
+    setCurrentPage(1);
   };
 
   const hasActiveFilters = activeFilters.year || activeFilters.judge || activeFilters.keyword;
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredResults.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedResults = filteredResults.slice(startIndex, endIndex);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  // Breadcrumbs
+  const breadcrumbs: BreadcrumbItem[] = [
+    { label: 'Home', path: '/', icon: 'fas fa-home' },
+    { label: country?.name || 'Country', icon: country?.flag }
+  ];
 
   if (!country) {
     return (
@@ -141,6 +163,8 @@ const CountryPage: React.FC = () => {
       <Header />
 
       <main className="main-content">
+        <Breadcrumbs items={breadcrumbs} />
+        
         <section className="results-section">
           {/* Country Header */}
           <div className="country-header">
@@ -279,14 +303,24 @@ const CountryPage: React.FC = () => {
                   </button>
                 </div>
               ) : (
-                <div className="results-grid">
-                  {filteredResults.map((caseItem, index) => (
-                    <CaseCard
-                      key={`${caseItem.caseId}-${index}`}
-                      case={caseItem}
-                    />
-                  ))}
-                </div>
+                <>
+                  <div className="results-grid">
+                    {paginatedResults.map((caseItem, index) => (
+                      <CaseCard
+                        key={`${caseItem.caseId}-${index}`}
+                        case={caseItem}
+                      />
+                    ))}
+                  </div>
+                  
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    totalItems={filteredResults.length}
+                    itemsPerPage={itemsPerPage}
+                    onPageChange={handlePageChange}
+                  />
+                </>
               )}
             </>
           )}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Tooltip from './Tooltip';
 import '../styles/FilterPanel.css';
 
 export interface FilterOptions {
@@ -63,6 +64,11 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
             <label htmlFor="year-filter">
               <i className="fas fa-calendar-alt"></i>
               Year
+              <Tooltip content="Filter cases by the year the decision was made. Select a specific year to narrow down your results.">
+                <span className="tooltip-icon">
+                  <i className="fas fa-question-circle"></i>
+                </span>
+              </Tooltip>
             </label>
             <select
               id="year-filter"
@@ -84,6 +90,11 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
             <label htmlFor="judge-filter">
               <i className="fas fa-gavel"></i>
               Judge
+              <Tooltip content="Filter cases by a specific judge or justice who presided over the case. This helps you find decisions by particular judges.">
+                <span className="tooltip-icon">
+                  <i className="fas fa-question-circle"></i>
+                </span>
+              </Tooltip>
             </label>
             <select
               id="judge-filter"
@@ -105,6 +116,11 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
             <label htmlFor="keyword-filter">
               <i className="fas fa-key"></i>
               Keyword
+              <Tooltip content="Search for specific words or phrases within the current results. This filters across titles, descriptions, citations, and other case details.">
+                <span className="tooltip-icon">
+                  <i className="fas fa-question-circle"></i>
+                </span>
+              </Tooltip>
             </label>
             <input
               type="text"
