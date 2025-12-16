@@ -27,6 +27,7 @@ const HomePage: React.FC<HomePageProps> = ({ onSearch }) => {
   const [judge, setJudge] = useState("");
   const [country, setCountry] = useState("");
   const [results, setResults] = useState<CourtCase[]>([]);
+  const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
   const [showRecent, setShowRecent] = useState(false);
 
@@ -89,6 +90,19 @@ const HomePage: React.FC<HomePageProps> = ({ onSearch }) => {
 
   const onNavigateToAbout = () => {
     console.log("Function not implemented.");
+  };
+
+  
+  const toggleCardExpansion = (caseId: string) => {
+    setExpandedCards((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(caseId)) {
+        newSet.delete(caseId);
+      } else {
+        newSet.add(caseId);
+      }
+      return newSet;
+    });
   };
 
   return (
@@ -169,47 +183,124 @@ const HomePage: React.FC<HomePageProps> = ({ onSearch }) => {
 
       <div className="results-section">
         {!loading && results.length > 0 && (
-          <div className="filter-table-wrapper">
-            <table className="filter-results-table">
-              <thead>
-                <tr>
-                  <th>Case ID</th>
-                  <th>Title</th>
-                  <th>Description</th>
-                  <th>Date</th>
-                  <th>Citation</th>
-                  <th>Court</th>
-                  <th>Judges</th>
-                  <th>Source</th>
-                  <th>Article</th>
-                </tr>
-              </thead>
+          <>
+         
+            <div className="mobile-results-cards">
+              {results.map((item) => (
+                <div key={item.caseId} className="case-card">
+                  <div className="card-header">
+                    <span className="card-case-id">{item.caseId}</span>
+                    <span className="card-date">{item.date}</span>
+                  </div>
+                  <h3 className="card-title">{item.title}</h3>
+                  <p className="card-description-preview">
+                    {item.description.substring(0, 150)}...
+                  </p>
+                  <div className="card-quick-info">
+                    <div className="card-info-item">
+                      <span className="card-info-label">Citation</span>
+                      <span className="card-info-value">{item.citation}</span>
+                    </div>
+                    <div className="card-info-item">
+                      <span className="card-info-label">Court</span>
+                      <span className="card-info-value">{item.court}</span>
+                    </div>
+                  </div>
 
-              <tbody>
-                {results.map((item) => (
-                  <tr key={item.caseId}>
-                    <td>{item.caseId}</td>
-                    <td>{item.title}</td>
-                    <td>{item.description}</td>
-                    <td>{item.date}</td>
-                    <td>{item.citation}</td>
-                    <td>{item.court}</td>
-                    <td className="judges-cell">{item.judges}</td>
-                    <td>{item.sourceLabel}</td>
-                    <td>
-                      <a
-                        href={item.articleUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        View
-                      </a>
-                    </td>
+
+                  
+                  <div className={`card-expandable-section ${expandedCards.has(item.caseId) ? 'expanded' : ''}`}>
+                    <div className="card-detail-item">
+                      <span className="card-detail-label">
+                        Full Description
+                      </span>
+                      <p className="card-detail-value">{item.description}</p>
+                    </div>
+                    <div className="card-detail-item">
+                      <span className="card-detail-label">Judges</span>
+                      <div className="card-judges card-detail-value">
+                        {item.judges}
+                      </div>
+                    </div>
+                    <div className="card-detail-item">
+                      <span className="card-detail-label">Source</span>
+                      <span className="card-detail-value">
+                        {item.sourceLabel}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="card-actions">
+                    <button
+                      className={`expand-toggle-btn ${
+                        expandedCards.has(item.caseId) ? "expanded" : ""
+                      }`}
+                      onClick={() => toggleCardExpansion(item.caseId)}
+                    >
+                      <i className="fas fa-chevron-down"></i>
+                      <span>
+                        {expandedCards.has(item.caseId)
+                          ? "Hide Details"
+                          : "Show Details"}
+                      </span>
+                    </button>
+                    <a
+                      href={item.articleUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="card-view-link"
+                    >
+                      <i className="fas fa-external-link-alt"></i>
+                      View Article
+                    </a>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+        
+            <div className="filter-table-wrapper">
+              <table className="filter-results-table">
+                
+                <thead>
+                  <tr>
+                    <th>Case ID</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Date</th>
+                    <th>Citation</th>
+                    <th>Court</th>
+                    <th>Judges</th>
+                    <th>Source</th>
+                    <th>Article</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {results.map((item) => (
+                    <tr key={item.caseId}>
+                      <td>{item.caseId}</td>
+                      <td className="title-cell">{item.title}</td>
+                      <td className="description-cell">{item.description}</td>
+                      <td className="date-cell">{item.date}</td>
+                      <td>{item.citation}</td>
+                      <td>{item.court}</td>
+                      <td className="judges-cell">{item.judges}</td>
+                      <td>{item.sourceLabel}</td>
+                      <td>
+                        <a
+                          href={item.articleUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          View
+                        </a>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
 
