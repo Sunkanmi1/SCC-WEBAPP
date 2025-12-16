@@ -74,7 +74,7 @@ app.get("/search", async (req: Request, res: Response) => {
 	const userQuery = (req.query.q as string)?.trim().toLowerCase() || "";
 
 	if (userQuery) {
-		storeSearch(req, userQuery);
+			storeSearch(req, userQuery);
 	}
 
 	const sparqlQuery = `
@@ -146,11 +146,106 @@ app.get("/search", async (req: Request, res: Response) => {
 	}
 });
 
+// Recent searches endpoint
 app.get("/recent-search", (req: Request, res: Response) => {
 	return res.json({
 		success: true,
 		results: req.session.recentSearches || [],
 	});
+});
+
+// Browse endpoint
+
+interface CourtCase {
+	caseId: string;
+	title: string;
+	description: string;
+	date: string;
+	citation: string;
+	court: string;
+	judges: string;
+	sourceLabel: string;
+	articleUrl: string;
+}
+
+app.get("/browse", async (req: Request, res: Response) => {
+	const year = req.query.year as string | undefined;
+	const judge = req.query.judge as string | undefined;
+	const country = req.query.country as string | undefined;
+
+	const sparqlQuery = `
+    SELECT DISTINCT ?item ?itemLabel ?itemDescription ?date ?legal_citation ?courtLabel ?sourceLabel
+           (GROUP_CONCAT(DISTINCT ?judge; SEPARATOR = ", ") AS ?judges)
+    WHERE {
+      {
+        SELECT DISTINCT * WHERE {
+          ?item (wdt:P31/(wdt:P279*)) wd:Q114079647;
+                (wdt:P17/(wdt:P279*)) wd:Q117;
+                (wdt:P1001/(wdt:P279*)) wd:Q117;
+                (wdt:P793/(wdt:P279*)) wd:Q7099379;
+                wdt:P4884 ?court.
+          ?court (wdt:P279*) wd:Q1513611.
+        }
+        LIMIT 5000
+      }
+      ?item wdt:P577 ?date;
+            wdt:P1031 ?legal_citation;
+            wdt:P1433 ?source;
+            wdt:P1594 _:b1.
+      _:b1 rdfs:label ?judge.
+      FILTER(LANG(?judge) = "en")
+      SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],mul,en". }
+    }
+    GROUP BY ?item ?itemLabel ?itemDescription ?date ?legal_citation ?courtLabel ?sourceLabel
+    ORDER BY (?date)
+    `;
+
+	try {
+		const url = `https://query.wikidata.org/sparql?query=${encodeURIComponent(
+			sparqlQuery,
+		)}&format=json`;
+		const { data } = await axios.get(url, { timeout: 10000 });
+
+		let cases: CourtCase[] = (data as any).results.bindings.map(
+			(item: any): CourtCase => ({
+				caseId: item.item?.value.split("/").pop() || "N/A",
+				title: item.itemLabel?.value || "N/A",
+				description: item.itemDescription?.value || "",
+				date: item.date?.value?.split("T")[0] || "",
+				citation: item.legal_citation?.value || "",
+				court: item.courtLabel?.value || "",
+				judges: item.judges?.value || "",
+				sourceLabel: item.sourceLabel?.value || "",
+				articleUrl: item.item?.value || "",
+			}),
+		);
+
+		if (year) {
+			cases = cases.filter((c) => c.date.startsWith(year));
+		}
+
+		if (judge) {
+			cases = cases.filter((c) =>
+				c.judges.toLowerCase().includes(judge.toLowerCase()),
+			);
+		}
+
+		if (country) {
+			cases = cases.filter((c) =>
+				c.court.toLowerCase().includes(country.toLowerCase()),
+			);
+		}
+
+		res.json({
+			success: true,
+			mode: "browse",
+			filters: { year, judge, country },
+			results: cases,
+		});
+	} catch (error) {
+		console.error("Browse API Error:", error);
+		res.status(500).json({ success: false, error: "Browse request failed" });
+	}
 });
 
 // Start server
