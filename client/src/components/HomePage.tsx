@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import "../styles/HomePage.css";
+import RecentSearches from "./RecentSearches";
 
 interface HomePageProps {
   onSearch: (query: string) => void;
@@ -27,6 +28,7 @@ const HomePage: React.FC<HomePageProps> = ({ onSearch }) => {
   const [country, setCountry] = useState("");
   const [results, setResults] = useState<CourtCase[]>([]);
   const [loading, setLoading] = useState(false);
+  const [showRecent, setShowRecent] = useState(false);
 
   const fetchSearchResults = async (searchQuery: string) => {
     setLoading(true);
@@ -107,12 +109,22 @@ const HomePage: React.FC<HomePageProps> = ({ onSearch }) => {
                 className="search-input"
                 autoComplete="off"
                 required
+                onFocus={() => setShowRecent(true)}
               />
               <button type="submit" className="search-button">
                 <i className="fas fa-search"></i>
               </button>
             </div>
           </form>
+
+          <RecentSearches
+            visible={showRecent}
+            onClose={() => setShowRecent(false)}
+            onSelect={(title) => {
+              setQuery(title);
+              fetchSearchResults(title);
+            }}
+          />
 
           <div className="filter-panel">
             <select value={year} onChange={(e) => setYear(e.target.value)}>
@@ -157,8 +169,8 @@ const HomePage: React.FC<HomePageProps> = ({ onSearch }) => {
 
       <div className="results-section">
         {!loading && results.length > 0 && (
-          <div className="table-wrapper">
-            <table className="results-table">
+          <div className="filter-table-wrapper">
+            <table className="filter-results-table">
               <thead>
                 <tr>
                   <th>Case ID</th>
