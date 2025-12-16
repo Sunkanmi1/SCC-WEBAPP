@@ -48,12 +48,24 @@ app.get("/", (req: Request, res: Response) => {
     });
 });
 
-// Country-specific Supreme Court Wikidata IDs
-const COUNTRY_COURTS: Record<string, string> = {
-    'GH': 'Q30261418', // Supreme Court of Ghana
-    'NG': 'Q16011598', // Supreme Court of Nigeria
-    'KE': 'Q7653543',  // Supreme Court of Kenya
-    'ZA': 'Q1360033'   // Constitutional Court of South Africa
+// Country-specific configurations
+const COUNTRY_CONFIG: Record<string, { courtId: string; countryId: string }> = {
+    'GH': { 
+        courtId: 'Q1513611',  // Supreme Court of Ghana (parent class)
+        countryId: 'Q117'     // Ghana
+    },
+    'NG': { 
+        courtId: 'Q16011598', // Supreme Court of Nigeria
+        countryId: 'Q1033'    // Nigeria
+    },
+    'KE': { 
+        courtId: 'Q7653543',  // Supreme Court of Kenya
+        countryId: 'Q114'     // Kenya
+    },
+    'ZA': { 
+        courtId: 'Q1360033',  // Constitutional Court of South Africa
+        countryId: 'Q258'     // South Africa
+    }
 };
 
 // ✅ Search endpoint with multi-country support
@@ -61,17 +73,19 @@ app.get("/search", async (req: Request, res: Response) => {
     const userQuery = (req.query.q as string)?.trim().toLowerCase() || "";
     const countryCode = (req.query.country as string)?.trim().toUpperCase() || "GH"; // Default to Ghana
     
-    // Get the Wikidata ID for the selected country's Supreme Court
-    const courtId = COUNTRY_COURTS[countryCode] || COUNTRY_COURTS['GH'];
+    // Get the config for the selected country
+    const config = COUNTRY_CONFIG[countryCode] || COUNTRY_CONFIG['GH'];
 
     const sparqlQuery = `
     SELECT DISTINCT ?item ?itemLabel ?itemDescription ?date ?legal_citation ?courtLabel ?majority_opinionLabel ?sourceLabel (GROUP_CONCAT(DISTINCT ?judge; SEPARATOR = ", ") AS ?judges) WHERE {
       {
         SELECT DISTINCT * WHERE {
           ?item (wdt:P31/(wdt:P279*)) wd:Q114079647;
+            (wdt:P17/(wdt:P279*)) wd:${config.countryId};
+            (wdt:P1001/(wdt:P279*)) wd:${config.countryId};
+            (wdt:P793/(wdt:P279*)) wd:Q7099379;
             wdt:P4884 ?court.
-          # Filter by country-specific Supreme Court
-          ?court (wdt:P279*) wd:${courtId}.
+          ?court (wdt:P279*) wd:${config.courtId}.
         }
         LIMIT 5000
       }
