@@ -68,17 +68,10 @@
   color: var(--gray-700);
   text-decoration: none;
   font-size: var(--font-size-base);
-  transition: all var(--transition-base);
   font-weight: 500;
   padding: var(--space-2) var(--space-3);
   border-radius: var(--border-radius-base);
   white-space: nowrap;
-}
-
-.footer-link:hover {
-  color: var(--primary-blue);
-  background-color: var(--gray-50);
-  text-decoration: none;
 }
 
 .footer-link-external {
