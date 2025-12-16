@@ -9,12 +9,15 @@ interface FooterProps {
 const Footer: React.FC<FooterProps> = ({ onNavigateToAbout }) => {
   const handleAboutClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    // Always try to use the prop if available
     if (onNavigateToAbout) {
       onNavigateToAbout();
     } else {
+<<<<<<< Updated upstream
       // Dispatch custom event for navigation when prop is not available
       window.dispatchEvent(new CustomEvent("navigateToAbout"));
+=======
+      window.dispatchEvent(new CustomEvent('navigateToAbout'));
+>>>>>>> Stashed changes
     }
   };
 
@@ -23,8 +26,22 @@ const Footer: React.FC<FooterProps> = ({ onNavigateToAbout }) => {
       <div className="footer-container">
         <div className="footer-logos">
           <img src="/logo.png" alt="Logo" className="footer-logo" />
+<<<<<<< Updated upstream
           <a href="https://www.wikidata.org/wiki/Wikidata:Introduction" target="_blank">
             <img src="wikidata.png" alt="Wikidata logo" className="footer-logo" />
+=======
+
+          <a
+            href="https://www.wikidata.org/wiki/Wikidata:Introduction"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src="wikidata.png"
+              alt="Wikidata logo"
+              className="footer-logo"
+            />
+>>>>>>> Stashed changes
           </a>
         </div>
 
