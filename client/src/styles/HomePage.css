@@ -17,7 +17,6 @@
     var(--accent-gold) 100%
   );
   background-size: 400% 400%;
-  animation: gradientShift 8s ease-in-out infinite;
   padding: var(--space-8) var(--space-4);
   min-height: calc(100vh - 140px);
 }
@@ -63,18 +62,6 @@
   text-align: center;
   max-width: 800px;
   width: 100%;
-  animation: fadeInUp 1s ease-out;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .hero-title {
@@ -99,18 +86,6 @@
 .search-container {
   display: flex;
   justify-content: center;
-  animation: slideInUp 1s ease-out 0.3s both;
-}
-
-@keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(40px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .search-box {
@@ -122,19 +97,13 @@
   border-radius: var(--border-radius-2xl);
   box-shadow: var(--shadow-xl);
   overflow: hidden;
-  transition: all var(--transition-base);
   transform: scale(1);
-}
-
-.search-box:hover {
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  transform: scale(1.02);
 }
 
 .search-box:focus-within {
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25),
     0 0 0 4px rgba(59, 130, 246, 0.2);
-  transform: scale(1.02);
+  transform: scale(1); /* removed zoom */
 }
 
 .search-input {
@@ -163,7 +132,6 @@
   color: var(--white);
   border: none;
   cursor: pointer;
-  transition: all var(--transition-base);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -180,7 +148,7 @@
 }
 
 .search-button:active {
-  transform: translateX(-2px) scale(0.98);
+  transform: none; /* removed scale/move */
 }
 
 .search-button i {
@@ -308,6 +276,7 @@
   .search-button {
     padding: var(--space-4) var(--space-6);
     min-width: 60px;
+    transition: none;
   }
 
   .search-button i {
@@ -329,6 +298,7 @@
   .search-button {
     padding: var(--space-3) var(--space-4);
     min-width: 50px;
+    transition: none;
   }
 }
 
