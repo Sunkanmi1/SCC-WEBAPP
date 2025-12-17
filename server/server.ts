@@ -4,6 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import session from "express-session";
 import { storeSearch } from "./utils";
+import { join } from "node:path";
 
 // Load environment variables
 dotenv.config();
@@ -34,6 +35,36 @@ app.use(
 			maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
 			httpOnly: true,
 			secure: process.env.NODE_ENV === "production",
+		},
+	}),
+);
+
+const docsPath = join(__dirname, "docs", "html");
+
+// Static middleware for serving documentation assets
+app.use(
+	"/docs",
+	express.static(docsPath, {
+		index: "index.html",
+		dotfiles: "deny",
+		etag: true,
+		lastModified: true,
+		maxAge: process.env.NODE_ENV === "production" ? "1d" : "0",
+		setHeaders: (res: Response, path: string) => {
+			// Security headers for documentation
+			res.setHeader("X-Content-Type-Options", "nosniff");
+			res.setHeader("X-Frame-Options", "SAMEORIGIN");
+			res.setHeader("X-XSS-Protection", "1; mode=block");
+
+			if (path.endsWith(".html")) {
+				res.setHeader("Content-Type", "text/html; charset=UTF-8");
+			} else if (path.endsWith(".css")) {
+				res.setHeader("Content-Type", "text/css; charset=UTF-8");
+			} else if (path.endsWith(".js")) {
+				res.setHeader("Content-Type", "application/javascript; charset=UTF-8");
+			} else if (path.endsWith(".json")) {
+				res.setHeader("Content-Type", "application/json; charset=UTF-8");
+			}
 		},
 	}),
 );
