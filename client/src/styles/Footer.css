@@ -1,84 +1,121 @@
+:root {
+  --footer-bg: #1a252f; /* Deep dark blue/slate */
+  --footer-text: #bdc3c7; /* Light gray text */
+  --footer-heading: #ffffff; /* White headings */
+  --footer-link-hover: #3498db; /* Bright blue hover state */
+  --footer-border: #2c3e50; /* Slightly lighter border color */
+}
+
+.site-footer {
+  background-color: var(--footer-bg);
+  color: var(--footer-text);
+  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  padding-top: 50px;
+  margin-top: auto; /* Pushes footer to bottom if page content is short */
 .footer {
-  background-color: #f8f9fa;
-  padding: 10px;
-  border-top: 1px solid #e7e7e7;
-  font-family: sans-serif;
+  background-color: var(--gray-50);
+  padding: var(--space-4);
+  border-top: 1px solid var(--gray-200);
+  font-family: var(--font-family);
 }
 
 .footer-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   max-width: 1400px;
   margin: 0 auto;
-  gap: var(--space-6);
-  padding: var(--space-6) var(--space-4);
-}
-
-.footer-logos {
+  padding: 0 20px 40px 20px;
   display: flex;
-  align-items: center;
-  gap: var(--space-8);
-  justify-content: center;
   flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 30px;
 }
 
-.footer-logo {
-  max-width: 150px;
-  height: 60px;
-  object-fit: contain;
+/* Footer Columns Setup */
+.footer-col {
+  flex: 1 1 250px; /* Grow, Shrink, Basis - ensures responsive wrapping for 4 columns */
+  margin-bottom: 20px;
 }
 
-.footer-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-4);
-  width: 100%;
+/* Headings */
+.footer-col h3 {
+  color: var(--footer-heading);
+  font-size: 18px;
+  margin-bottom: 20px;
+  position: relative;
+  padding-bottom: 10px;
 }
 
-.footer-nav {
-  width: 100%;
-  display: flex;
-  justify-content: center;
+/* Decorative underline for headings */
+.footer-col h3::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 50px;
+  height: 2px;
+  background-color: var(--footer-link-hover);
 }
 
-.footer-nav-links {
-  display: flex;
-  align-items: center;
-  gap: var(--space-6);
-  flex-wrap: wrap;
-  justify-content: center;
+/* Links */
+.footer-col ul {
   list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-.footer-external {
-  display: flex;
+.footer-col ul li {
+  margin-bottom: 12px;
+}
+
+.footer-col a {
+  color: var(--footer-text);
+  text-decoration: none;
+  transition: color 0.3s ease;
+  display: inline-flex;
   align-items: center;
-  gap: var(--space-4);
+}
+
+.footer-col a:hover {
+  color: var(--footer-link-hover);
+}
+
+.footer-col a svg {
+  margin-right: 10px;
+  min-width: 16px; /* Ensures alignment */
+}
+
+/* Specific Section Styles */
+
+/* Policies Column */
+.policies-col .policies-text {
+  /* font-size: 14px; */
+  line-height: 1.7;
+  margin-bottom: 15px;
+}
+
+.policies-col a {
+  color: var(--footer-link-hover);
+  text-decoration: underline;
+}
+
+/* License Column - Powered by logos */
+.powered-by-logos {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  margin-top: 15px;
   flex-wrap: wrap;
-  justify-content: center;
-  padding-top: var(--space-4);
-  border-top: 1px solid var(--gray-200);
-  width: 100%;
-  max-width: 600px;
 }
 
 .footer-link {
   color: var(--gray-700);
   text-decoration: none;
   font-size: var(--font-size-base);
-  transition: all var(--transition-base);
   font-weight: 500;
   padding: var(--space-2) var(--space-3);
   border-radius: var(--border-radius-base);
   white-space: nowrap;
-}
-
-.footer-link:hover {
-  color: var(--primary-blue);
-  background-color: var(--gray-50);
-  text-decoration: none;
 }
 
 .footer-link-external {
@@ -86,66 +123,80 @@
   font-size: var(--font-size-sm);
 }
 
-/* Responsive styles */
-@media (max-width: 768px) {
-  .footer-container {
-    gap: var(--space-4);
-    padding: var(--space-4) var(--space-3);
-  }
+/* Creative Commons Badge Area */
+.cc-badge-link {
+  display: inline-flex;
+  align-items: center;
+  background: #ffffff;
+  color: #333 !important; /* Override default link color for contrast */
+  padding: 10px 15px;
+  border-radius: 4px;
+  font-weight: bold;
+  margin: 15px 0;
+}
 
-  .footer-logos {
-    gap: var(--space-4);
-  }
+.cc-badge-link svg {
+  fill: #333;
+  margin-right: 10px;
+}
 
-  .footer-logo {
-    max-width: 120px;
-    height: 50px;
-  }
+.toolforge-credit {
+  margin-top: 20px;
+  font-size: 14px;
+}
+.toolforge-credit a {
+  text-decoration: underline;
+}
 
-  .footer-nav-links {
-    gap: var(--space-4);
-  }
+/* Footer Bottom Bar */
+.footer-bottom {
+  background-color: rgba(0, 0, 0, 0.3);
+  text-align: center;
+  padding: 20px;
+  font-size: 14px;
+  border-top: 1px solid var(--footer-border);
+}
 
-  .footer-link {
-    font-size: var(--font-size-sm);
-    padding: var(--space-1) var(--space-2);
-  }
+/* =======================
+   RESPONSIVE BREAKPOINTS
+======================== */
 
-  .footer-external {
-    padding-top: var(--space-3);
-    gap: var(--space-3);
+/* Large tablets and small laptops */
+@media (max-width: 1200px) {
+  .footer-col {
+    flex: 1 1 45%; /* Two columns on medium screens */
   }
 }
 
-@media (max-width: 480px) {
+/* Tablet Landscape */
+@media (max-width: 992px) {
   .footer-container {
-    padding: var(--space-3) var(--space-2);
+    justify-content: flex-start;
   }
+  .about-col,
+  .license-col {
+    flex: 1 1 45%; /* About and License share first row */
+  }
+  .policies-col,
+  .links-col {
+    flex: 1 1 45%; /* Policies and Links share second row */
+  }
+}
 
-  .footer-logos {
+/* Mobile Devices */
+@media (max-width: 600px) {
+  .footer-container {
     flex-direction: column;
-    gap: var(--space-3);
+    padding-bottom: 20px;
   }
 
-  .footer-logo {
-    max-width: 100px;
-    height: 40px;
+  .footer-col {
+    flex: 1 1 100%;
+    margin-bottom: 35px; /* More space between stacked sections */
   }
 
-  .footer-nav-links {
-    flex-direction: column;
-    gap: var(--space-2);
-    width: 100%;
-  }
-
-  .footer-link {
-    width: 100%;
-    text-align: center;
-    padding: var(--space-2);
-  }
-
-  .footer-external {
-    flex-direction: column;
-    gap: var(--space-2);
+  .footer-col h3::after {
+    width: 100%; /* Full width underline on mobile for neater look */
+    opacity: 0.3;
   }
 }
