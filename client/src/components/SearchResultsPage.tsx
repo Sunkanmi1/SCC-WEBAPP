@@ -1,13 +1,13 @@
-import React, { useState, useMemo } from 'react';
-import Header from './Header';
-import Footer from './Footer';
-import CaseCard from './CaseCard';
-import LoadingSpinner from './LoadingSpinner';
-import FilterPanel, { FilterOptions } from './FilterPanel';
-import Pagination from './Pagination';
-import Breadcrumbs, { BreadcrumbItem } from './Breadcrumbs';
-import { SearchState, Case } from '../App';
-import '../styles/SearchResultsPage.css';
+import React, { useState, useMemo } from "react";
+import Header from "./Header";
+import Footer from "./Footer";
+import CaseCard from "./CaseCard";
+import LoadingSpinner from "./LoadingSpinner";
+import FilterPanel, { FilterOptions } from "./FilterPanel";
+import Pagination from "./Pagination";
+import Breadcrumbs, { BreadcrumbItem } from "./Breadcrumbs";
+import { SearchState, Case } from "../App";
+import "../styles/SearchResultsPage.css";
 
 interface SearchResultsPageProps {
   searchState: SearchState;
@@ -16,14 +16,14 @@ interface SearchResultsPageProps {
 
 const SearchResultsPage: React.FC<SearchResultsPageProps> = ({
   searchState,
-  onBackToSearch
+  onBackToSearch,
 }) => {
   const { query, results, loading, error } = searchState;
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [activeFilters, setActiveFilters] = useState<FilterOptions>({
-    year: '',
-    judge: '',
-    keyword: ''
+    year: "",
+    judge: "",
+    keyword: "",
   });
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(20);
@@ -31,16 +31,16 @@ const SearchResultsPage: React.FC<SearchResultsPageProps> = ({
   // Extract unique years and judges from results
   const availableYears = useMemo(() => {
     const years = results
-      .map(c => c.date.split('-')[0])
-      .filter(year => year && year !== 'Date')
+      .map((c) => c.date.split("-")[0])
+      .filter((year) => year && year !== "Date")
       .sort((a, b) => b.localeCompare(a));
     return Array.from(new Set(years));
   }, [results]);
 
   const availableJudges = useMemo(() => {
     const judges = results
-      .flatMap(c => c.judges.split(',').map(j => j.trim()))
-      .filter(judge => judge && judge !== 'Judges unavailable')
+      .flatMap((c) => c.judges.split(",").map((j) => j.trim()))
+      .filter((judge) => judge && judge !== "Judges unavailable")
       .sort();
     return Array.from(new Set(judges));
   }, [results]);
@@ -50,7 +50,7 @@ const SearchResultsPage: React.FC<SearchResultsPageProps> = ({
     return results.filter((caseItem: Case) => {
       // Year filter
       if (activeFilters.year) {
-        const caseYear = caseItem.date.split('-')[0];
+        const caseYear = caseItem.date.split("-")[0];
         if (caseYear !== activeFilters.year) return false;
       }
 
@@ -67,9 +67,11 @@ const SearchResultsPage: React.FC<SearchResultsPageProps> = ({
           caseItem.description,
           caseItem.citation,
           caseItem.court,
-          caseItem.judges
-        ].join(' ').toLowerCase();
-        
+          caseItem.judges,
+        ]
+          .join(" ")
+          .toLowerCase();
+
         if (!searchableText.includes(keyword)) return false;
       }
 
@@ -83,11 +85,12 @@ const SearchResultsPage: React.FC<SearchResultsPageProps> = ({
   };
 
   const handleRemoveFilter = (filterType: keyof FilterOptions) => {
-    setActiveFilters(prev => ({ ...prev, [filterType]: '' }));
+    setActiveFilters((prev) => ({ ...prev, [filterType]: "" }));
     setCurrentPage(1);
   };
 
-  const hasActiveFilters = activeFilters.year || activeFilters.judge || activeFilters.keyword;
+  const hasActiveFilters =
+    activeFilters.year || activeFilters.judge || activeFilters.keyword;
 
   // Pagination logic
   const totalPages = Math.ceil(filteredResults.length / itemsPerPage);
@@ -99,10 +102,11 @@ const SearchResultsPage: React.FC<SearchResultsPageProps> = ({
     setCurrentPage(page);
   };
 
+
   // Breadcrumbs
   const breadcrumbs: BreadcrumbItem[] = [
-    { label: 'Home', path: '/', icon: 'fas fa-home' },
-    { label: 'Search Results', icon: 'fas fa-search' }
+    { label: "Home", path: "/", icon: "fas fa-home" },
+    { label: "Search Results", icon: "fas fa-search" },
   ];
 
   return (
@@ -111,7 +115,7 @@ const SearchResultsPage: React.FC<SearchResultsPageProps> = ({
 
       <main className="main-content">
         <Breadcrumbs items={breadcrumbs} />
-        
+
         <section className="results-section">
           {loading ? (
             <LoadingSpinner />
@@ -124,8 +128,12 @@ const SearchResultsPage: React.FC<SearchResultsPageProps> = ({
             <div className="alert info-alert">
               <i className="fas fa-search"></i>
               <h2>No cases found</h2>
-              <p>We couldn't find any cases matching "<strong>{query}</strong>".</p>
-              <p className="suggestions">Try different keywords or check your spelling.</p>
+              <p>
+                We couldn't find any cases matching "<strong>{query}</strong>".
+              </p>
+              <p className="suggestions">
+                Try different keywords or check your spelling.
+              </p>
             </div>
           ) : (
             <>
@@ -134,13 +142,19 @@ const SearchResultsPage: React.FC<SearchResultsPageProps> = ({
                   <div className="results-info">
                     <h2>Search Results</h2>
                     <p className="results-count">
-                      {hasActiveFilters 
-                        ? `Showing ${filteredResults.length} of ${results.length} case${results.length !== 1 ? 's' : ''} for "${query}"`
-                        : `Found ${results.length} case${results.length !== 1 ? 's' : ''} for "${query}"`
-                      }
+                      {hasActiveFilters
+                        ? `Showing ${filteredResults.length} of ${
+                            results.length
+                          } case${
+                            results.length !== 1 ? "s" : ""
+                          } for "${query}"`
+                        : `Found ${results.length} case${
+                            results.length !== 1 ? "s" : ""
+                          } for "${query}"`}
                     </p>
                   </div>
-                  <button 
+                  
+                  <button
                     className="filter-toggle-btn"
                     onClick={() => setIsFilterOpen(true)}
                   >
@@ -148,7 +162,13 @@ const SearchResultsPage: React.FC<SearchResultsPageProps> = ({
                     Filter
                     {hasActiveFilters && (
                       <span className="filter-count-badge">
-                        {[activeFilters.year, activeFilters.judge, activeFilters.keyword].filter(Boolean).length}
+                        {
+                          [
+                            activeFilters.year,
+                            activeFilters.judge,
+                            activeFilters.keyword,
+                          ].filter(Boolean).length
+                        }
                       </span>
                     )}
                   </button>
@@ -157,14 +177,16 @@ const SearchResultsPage: React.FC<SearchResultsPageProps> = ({
                 {/* Active Filters Display */}
                 {hasActiveFilters && (
                   <div className="active-filters">
-                    <span className="active-filters-label">Active Filters:</span>
+                    <span className="active-filters-label">
+                      Active Filters:
+                    </span>
                     {activeFilters.year && (
                       <div className="filter-badge">
                         <i className="fas fa-calendar-alt"></i>
                         Year: {activeFilters.year}
-                        <button 
+                        <button
                           className="filter-badge-close"
-                          onClick={() => handleRemoveFilter('year')}
+                          onClick={() => handleRemoveFilter("year")}
                         >
                           <i className="fas fa-times"></i>
                         </button>
@@ -174,9 +196,9 @@ const SearchResultsPage: React.FC<SearchResultsPageProps> = ({
                       <div className="filter-badge">
                         <i className="fas fa-gavel"></i>
                         Judge: {activeFilters.judge}
-                        <button 
+                        <button
                           className="filter-badge-close"
-                          onClick={() => handleRemoveFilter('judge')}
+                          onClick={() => handleRemoveFilter("judge")}
                         >
                           <i className="fas fa-times"></i>
                         </button>
@@ -186,9 +208,9 @@ const SearchResultsPage: React.FC<SearchResultsPageProps> = ({
                       <div className="filter-badge">
                         <i className="fas fa-key"></i>
                         Keyword: {activeFilters.keyword}
-                        <button 
+                        <button
                           className="filter-badge-close"
-                          onClick={() => handleRemoveFilter('keyword')}
+                          onClick={() => handleRemoveFilter("keyword")}
                         >
                           <i className="fas fa-times"></i>
                         </button>
@@ -202,10 +224,14 @@ const SearchResultsPage: React.FC<SearchResultsPageProps> = ({
                 <div className="alert empty-alert">
                   <i className="fas fa-filter"></i>
                   <h2>No cases match your filters</h2>
-                  <p>Try adjusting your filter criteria or clear all filters.</p>
-                  <button 
+                  <p>
+                    Try adjusting your filter criteria or clear all filters.
+                  </p>
+                  <button
                     className="clear-filters-btn"
-                    onClick={() => setActiveFilters({ year: '', judge: '', keyword: '' })}
+                    onClick={() =>
+                      setActiveFilters({ year: "", judge: "", keyword: "" })
+                    }
                   >
                     <i className="fas fa-eraser"></i>
                     Clear All Filters
@@ -221,7 +247,7 @@ const SearchResultsPage: React.FC<SearchResultsPageProps> = ({
                       />
                     ))}
                   </div>
-                  
+
                   <Pagination
                     currentPage={currentPage}
                     totalPages={totalPages}

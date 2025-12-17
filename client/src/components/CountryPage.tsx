@@ -125,6 +125,46 @@ const CountryPage: React.FC = () => {
     setCurrentPage(1);
   };
 
+    // Utility to convert cases to CSV
+  const exportToCSV = (cases: Case[]) => {
+    if (!cases || cases.length === 0) return;
+
+    const headers = [
+      "Title",
+      "Citation",
+      "Court",
+      "Date",
+      "Judges",
+      "Majority Opinion",
+      "Source",
+      "Description",
+    ];
+    const rows = cases.map((c) =>
+      [
+        `"${c.title}"`,
+        `"${c.citation}"`,
+        `"${c.court}"`,
+        `"${c.date}"`,
+        `"${c.judges}"`,
+        `"${c.majorityOpinion}"`,
+        `"${c.sourceLabel}"`,
+        `"${c.description || ""}"`,
+      ].join(",")
+    );
+
+    const csvContent = [headers.join(","), ...rows].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `cases_${new Date().toISOString()}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+
   const hasActiveFilters = activeFilters.year || activeFilters.judge || activeFilters.keyword;
 
   // Pagination logic
@@ -231,6 +271,15 @@ const CountryPage: React.FC = () => {
                       }
                     </p>
                   </div>
+
+                  <button
+                    className="export-csv-btn"
+                    onClick={() => exportToCSV(filteredResults)}
+                  >
+                    <i className="fas fa-file-csv"></i> Export CSV
+                  </button>
+
+
                   <button 
                     className="filter-toggle-btn"
                     onClick={() => setIsFilterOpen(true)}
