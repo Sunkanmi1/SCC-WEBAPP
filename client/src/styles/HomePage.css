@@ -155,15 +155,22 @@
 }
 
 .search-button:hover {
-  background: linear-gradient(
-    135deg,
-    var(--primary-blue-dark),
-    var(--primary-blue)
-  );
-  transform: translateX(-2px);
+  transform: translateX(-3px) scale(1.02);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.5);
+}
+
+.search-button:hover::before {
+  left: 100%;
 }
 
 .search-button:active {
+  transform: translateX(-1px) scale(0.98);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.search-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.3);
   transform: none; /* removed scale/move */
 }
 
