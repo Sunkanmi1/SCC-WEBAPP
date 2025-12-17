@@ -2,31 +2,50 @@ import express, { Request, Response } from "express";
 import axios from "axios";
 import cors from "cors";
 import dotenv from "dotenv";
+import session from "express-session";
+import { storeSearch } from "./utils";
 
 // Load environment variables
 dotenv.config();
-
-
 
 const app = express();
 const PORT = process.env.PORT || 9090;
 const CORS_ORIGIN = process.env.CORS_ORIGIN || "http://localhost:5173";
 
 // Configure CORS
-app.use(cors({
-    origin: CORS_ORIGIN,
-    credentials: true
-}));
+app.use(
+	cors({
+		origin: CORS_ORIGIN,
+		credentials: true,
+	}),
+);
 app.use(express.json());
+app.use(
+	session({
+		name: "search_session",
+		secret: process.env.SESSION_SECRET
+			? process.env.SESSION_SECRET
+			: (() => {
+					throw new Error("SESSION_SECRET not set in environment variables");
+				})(),
+		resave: false,
+		saveUninitialized: false,
+		cookie: {
+			maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+			httpOnly: true,
+			secure: process.env.NODE_ENV === "production",
+		},
+	}),
+);
 
 // ✅ Health check endpoint (required for deployment)
 app.get("/api/health", (req: Request, res: Response) => {
-    res.json({
-        status: "healthy",
-        timestamp: new Date().toISOString(),
-        uptime: process.uptime(),
-        environment: process.env.NODE_ENV || "development"
-    });
+	res.json({
+		status: "healthy",
+		timestamp: new Date().toISOString(),
+		uptime: process.uptime(),
+		environment: process.env.NODE_ENV || "development",
+	});
 });
 
 // ✅ Available countries endpoint
@@ -164,7 +183,7 @@ app.get("/search", async (req: Request, res: Response) => {
     // Get the config for the selected country (fallback to Ghana if not configured)
     const config = COUNTRY_CONFIG[countryParam] || COUNTRY_CONFIG['ghana'];
 
-  const sparqlQuery = `
+	const sparqlQuery = `
     SELECT DISTINCT ?item ?itemLabel ?itemDescription ?date ?legal_citation ?courtLabel ?majority_opinionLabel ?sourceLabel (GROUP_CONCAT(DISTINCT ?judge; SEPARATOR = ", ") AS ?judges) WHERE {
       {
         SELECT DISTINCT * WHERE {
@@ -591,5 +610,5 @@ app.get("/api/translations/:caseId", async (req: Request, res: Response) => {
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`✅ Server running on http://localhost:${PORT}`);
+	console.log(`✅ Server running on http://localhost:${PORT}`);
 });
