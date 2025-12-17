@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import "../styles/HomePage.css";
@@ -54,9 +54,7 @@ const HomePage: React.FC<HomePageProps> = ({ onSearch, onNavigateToAbout }) => {
     setCountry("");
   };
 
-  const onNavigateToAbout = () => {
-    console.log("Function not implemented.");
-  };
+  
 
   
   const toggleCardExpansion = (caseId: string) => {
@@ -237,3 +235,4 @@ const HomePage: React.FC<HomePageProps> = ({ onSearch, onNavigateToAbout }) => {
 };
 
 export default HomePage;
+
