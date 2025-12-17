@@ -1,5 +1,6 @@
 import React from 'react';
-import { Case } from '../../App';
+import { Case } from '../App';
+import Tooltip from './Tooltip';
 import '../styles/CaseCard.css';
 
 interface CaseCardProps {
@@ -34,6 +35,11 @@ const CaseCard: React.FC<CaseCardProps> = ({ case: caseItem }) => {
           <label className="field-label">
             <i className="fas fa-bookmark"></i>
             Citation
+            <Tooltip content="A legal citation is the standardized reference to a legal case. It helps identify and locate the specific legal document.">
+              <span className="tooltip-icon">
+                <i className="fas fa-question-circle"></i>
+              </span>
+            </Tooltip>
           </label>
           <p className="field-value">{caseItem.citation}</p>
         </div>
@@ -42,6 +48,11 @@ const CaseCard: React.FC<CaseCardProps> = ({ case: caseItem }) => {
           <label className="field-label">
             <i className="fas fa-building"></i>
             Court
+            <Tooltip content="The court that heard and decided the case. The Supreme Court is the highest court in the judicial system.">
+              <span className="tooltip-icon">
+                <i className="fas fa-question-circle"></i>
+              </span>
+            </Tooltip>
           </label>
           <p className="field-value">{caseItem.court}</p>
         </div>
@@ -50,6 +61,11 @@ const CaseCard: React.FC<CaseCardProps> = ({ case: caseItem }) => {
           <label className="field-label">
             <i className="fas fa-users"></i>
             Judges
+            <Tooltip content="The judges or justices who presided over the case and made the legal decision. Multiple judges typically sit on Supreme Court panels.">
+              <span className="tooltip-icon">
+                <i className="fas fa-question-circle"></i>
+              </span>
+            </Tooltip>
           </label>
           <p className="field-value">{caseItem.judges}</p>
         </div>
@@ -58,6 +74,11 @@ const CaseCard: React.FC<CaseCardProps> = ({ case: caseItem }) => {
           <label className="field-label">
             <i className="fas fa-gavel"></i>
             Majority Opinion
+            <Tooltip content="The official opinion of the court representing the view of the majority of judges. This becomes the binding legal precedent.">
+              <span className="tooltip-icon">
+                <i className="fas fa-question-circle"></i>
+              </span>
+            </Tooltip>
           </label>
           <p className="field-value">{caseItem.majorityOpinion}</p>
         </div>
@@ -66,6 +87,11 @@ const CaseCard: React.FC<CaseCardProps> = ({ case: caseItem }) => {
           <label className="field-label">
             <i className="fas fa-book"></i>
             Source
+            <Tooltip content="The publication or database where the full case details can be found.">
+              <span className="tooltip-icon">
+                <i className="fas fa-question-circle"></i>
+              </span>
+            </Tooltip>
           </label>
           <p className="field-value">{caseItem.sourceLabel}</p>
         </div>
