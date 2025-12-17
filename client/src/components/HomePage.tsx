@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import "../styles/HomePage.css";
@@ -6,78 +6,40 @@ import RecentSearches from "./RecentSearches";
 
 interface HomePageProps {
   onSearch: (query: string) => void;
+  onNavigateToBrowse: () => void;
   onNavigateToAbout?: () => void;
 }
 
-const HomePage: React.FC<HomePageProps> = ({ onSearch }) => {
-  interface CourtCase {
-    caseId: string;
-    title: string;
-    description: string;
-    date: string;
-    citation: string;
-    court: string;
-    judges: string;
-    sourceLabel: string;
-    articleUrl: string;
-  }
+const HomePage: React.FC<HomePageProps> = ({ onSearch, onNavigateToAbout }) => {
   const [query, setQuery] = useState("");
 
   const [year, setYear] = useState("");
   const [judge, setJudge] = useState("");
   const [country, setCountry] = useState("");
   const [results, setResults] = useState<CourtCase[]>([]);
+  const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
   const [showRecent, setShowRecent] = useState(false);
-
-  const fetchSearchResults = async (searchQuery: string) => {
-    setLoading(true);
-
-    try {
-      const response = await fetch(
-        `http://localhost:9090/search?q=${encodeURIComponent(searchQuery)}`
-      );
-      const data = await response.json();
-
-      if (data.success) {
-        setResults(data.results);
-      } else {
-        setResults([]);
-      }
-    } catch (error) {
-      console.error("Search error:", error);
-      setResults([]);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
       onSearch(query.trim());
-      fetchSearchResults(query.trim());
     }
   };
 
   const handleApplyFilters = async () => {
     const params = new URLSearchParams();
-
     if (year) params.append("year", year);
     if (judge) params.append("judge", judge);
     if (country) params.append("country", country);
 
     setLoading(true);
-
     const response = await fetch(
       `http://localhost:9090/browse?${params.toString()}`
     );
     const data = await response.json();
-
-    if (data.success) {
-      setResults(data.results);
-    }
-
+    if (data.success) setResults(data.results);
     setLoading(false);
   };
 
@@ -87,8 +49,19 @@ const HomePage: React.FC<HomePageProps> = ({ onSearch }) => {
     setCountry("");
   };
 
-  const onNavigateToAbout = () => {
-    console.log("Function not implemented.");
+  
+
+  
+  const toggleCardExpansion = (caseId: string) => {
+    setExpandedCards((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(caseId)) {
+        newSet.delete(caseId);
+      } else {
+        newSet.add(caseId);
+      }
+      return newSet;
+    });
   };
 
   return (
@@ -122,94 +95,133 @@ const HomePage: React.FC<HomePageProps> = ({ onSearch }) => {
             onClose={() => setShowRecent(false)}
             onSelect={(title) => {
               setQuery(title);
-              fetchSearchResults(title);
+              onSearch(title);
             }}
           />
-
-          <div className="filter-panel">
-            <select value={year} onChange={(e) => setYear(e.target.value)}>
-              <option value="">Select Year</option>
-              <option value="2010">2010</option>
-              <option value="2015">2015</option>
-              <option value="2020">2020</option>
-            </select>
-
-            <select value={judge} onChange={(e) => setJudge(e.target.value)}>
-              <option value="">Select Judge</option>
-              <option value="Atuguba">Atuguba</option>
-              <option value="Dotse">Dotse</option>
-            </select>
-
-            <select
-              value={country}
-              onChange={(e) => setCountry(e.target.value)}
-            >
-              <option value="">Select Country</option>
-              <option value="Ghana">Ghana</option>
-            </select>
-
-            <div className="filter-actions">
-              <button onClick={handleApplyFilters} className="apply-btn">
-                Apply Filters
-              </button>
-              <button onClick={handleResetFilters} className="reset-btn">
-                Reset
-              </button>
-            </div>
-          </div>
-          <br />
-
-          {loading && <p className="loading-text">Loading results...</p>}
-
-          {!loading && results.length === 0 && (
-            <p className="no-results">No results found.</p>
-          )}
         </div>
       </main>
 
+      {/* RESULTS TABLE (main preserved) */}
       <div className="results-section">
         {!loading && results.length > 0 && (
-          <div className="filter-table-wrapper">
-            <table className="filter-results-table">
-              <thead>
-                <tr>
-                  <th>Case ID</th>
-                  <th>Title</th>
-                  <th>Description</th>
-                  <th>Date</th>
-                  <th>Citation</th>
-                  <th>Court</th>
-                  <th>Judges</th>
-                  <th>Source</th>
-                  <th>Article</th>
-                </tr>
-              </thead>
+          <>
+         
+            <div className="mobile-results-cards">
+              {results.map((item) => (
+                <div key={item.caseId} className="case-card">
+                  <div className="card-header">
+                    <span className="card-case-id">{item.caseId}</span>
+                    <span className="card-date">{item.date}</span>
+                  </div>
+                  <h3 className="card-title">{item.title}</h3>
+                  <p className="card-description-preview">
+                    {item.description.substring(0, 150)}...
+                  </p>
+                  <div className="card-quick-info">
+                    <div className="card-info-item">
+                      <span className="card-info-label">Citation</span>
+                      <span className="card-info-value">{item.citation}</span>
+                    </div>
+                    <div className="card-info-item">
+                      <span className="card-info-label">Court</span>
+                      <span className="card-info-value">{item.court}</span>
+                    </div>
+                  </div>
 
-              <tbody>
-                {results.map((item) => (
-                  <tr key={item.caseId}>
-                    <td>{item.caseId}</td>
-                    <td>{item.title}</td>
-                    <td>{item.description}</td>
-                    <td>{item.date}</td>
-                    <td>{item.citation}</td>
-                    <td>{item.court}</td>
-                    <td className="judges-cell">{item.judges}</td>
-                    <td>{item.sourceLabel}</td>
-                    <td>
-                      <a
-                        href={item.articleUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        View
-                      </a>
-                    </td>
+
+                  
+                  <div className={`card-expandable-section ${expandedCards.has(item.caseId) ? 'expanded' : ''}`}>
+                    <div className="card-detail-item">
+                      <span className="card-detail-label">
+                        Full Description
+                      </span>
+                      <p className="card-detail-value">{item.description}</p>
+                    </div>
+                    <div className="card-detail-item">
+                      <span className="card-detail-label">Judges</span>
+                      <div className="card-judges card-detail-value">
+                        {item.judges}
+                      </div>
+                    </div>
+                    <div className="card-detail-item">
+                      <span className="card-detail-label">Source</span>
+                      <span className="card-detail-value">
+                        {item.sourceLabel}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="card-actions">
+                    <button
+                      className={`expand-toggle-btn ${
+                        expandedCards.has(item.caseId) ? "expanded" : ""
+                      }`}
+                      onClick={() => toggleCardExpansion(item.caseId)}
+                    >
+                      <i className="fas fa-chevron-down"></i>
+                      <span>
+                        {expandedCards.has(item.caseId)
+                          ? "Hide Details"
+                          : "Show Details"}
+                      </span>
+                    </button>
+                    <a
+                      href={item.articleUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="card-view-link"
+                    >
+                      <i className="fas fa-external-link-alt"></i>
+                      View Article
+                    </a>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+        
+            <div className="filter-table-wrapper">
+              <table className="filter-results-table">
+                
+                <thead>
+                  <tr>
+                    <th>Case ID</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Date</th>
+                    <th>Citation</th>
+                    <th>Court</th>
+                    <th>Judges</th>
+                    <th>Source</th>
+                    <th>Article</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {results.map((item) => (
+                    <tr key={item.caseId}>
+                      <td>{item.caseId}</td>
+                      <td className="title-cell">{item.title}</td>
+                      <td className="description-cell">{item.description}</td>
+                      <td className="date-cell">{item.date}</td>
+                      <td>{item.citation}</td>
+                      <td>{item.court}</td>
+                      <td className="judges-cell">{item.judges}</td>
+                      <td>{item.sourceLabel}</td>
+                      <td>
+                        <a
+                          href={item.articleUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          View
+                        </a>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
 
@@ -219,3 +231,4 @@ const HomePage: React.FC<HomePageProps> = ({ onSearch }) => {
 };
 
 export default HomePage;
+
