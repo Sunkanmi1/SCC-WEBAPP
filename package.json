@@ -1,31 +1,13 @@
 {
   "name": "scc-webapp",
-  "version": "1.0.0",
-  "description": "Supreme Court Cases Search Application - Full Stack",
   "private": true,
+  "workspaces": ["client", "server"],
   "scripts": {
-    "install:all": "npm install && cd client && npm install && cd ../server && npm install",
-    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
-    "dev:client": "cd client && npm run dev",
-    "dev:server": "cd server && npm run dev",
-    "build": "npm run build:server && npm run build:client",
-    "build:client": "cd client && npm run build",
-    "build:server": "cd server && npm run build",
-    "start": "cd server && npm start",
-    "start:dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
-    "lint": "cd client && npm run lint",
-    "test": "cd client && npm test"
+    "dev": "concurrently \"npm run dev -w server\" \"npm run dev -w client\"",
+    "build": "npm run build -w server && npm run build -w client",
+    "lint": "npm run lint -w client",
+    "test": "npm run test -w client"
   },
-  "keywords": [
-    "supreme-court",
-    "legal",
-    "search",
-    "wikidata",
-    "react",
-    "express"
-  ],
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
     "concurrently": "^8.2.2"
   }
