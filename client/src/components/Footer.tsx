@@ -23,12 +23,8 @@ const Footer: React.FC<FooterProps> = ({ onNavigateToAbout }) => {
       <div className="footer-container">
         <div className="footer-logos">
           <img src="/logo.png" alt="Logo" className="footer-logo" />
-          <a
-            href="https://www.wikidata.org/wiki/Wikidata:Introduction"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <img src="/wikidata.png" alt="Wikidata logo" className="footer-logo" />
+          <a href="https://www.wikidata.org/wiki/Wikidata:Introduction" target="_blank">
+            <img src="wikidata.png" alt="Wikidata logo" className="footer-logo" />
           </a>
         </div>
 
