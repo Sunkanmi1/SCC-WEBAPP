@@ -140,6 +140,29 @@ app.get("/search", async (req: Request, res: Response) => {
         console.error("❌ API Error:", error);
         res.status(500).json({ success: false, error: "Please check your internet connection!" });
     }
+
+    if (judge) {
+      cases = cases.filter((c) =>
+        c.judges.toLowerCase().includes(judge.toLowerCase())
+      );
+    }
+
+    if (country) {
+      cases = cases.filter((c) =>
+        c.court.toLowerCase().includes(country.toLowerCase())
+      );
+    }
+
+    res.json({
+      success: true,
+      mode: "browse",
+      filters: { year, judge, country },
+      results: cases,
+    });
+  } catch (error) {
+    console.error("Browse API Error:", error);
+    res.status(500).json({ success: false, error: "Browse request failed" });
+  }
 });
 
 // ✅ Translation availability endpoint - Get all available translations for cases
