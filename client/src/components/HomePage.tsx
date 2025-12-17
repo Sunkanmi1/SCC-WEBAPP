@@ -9,6 +9,18 @@ interface HomePageProps {
   onNavigateToAbout?: () => void;
 }
 
+interface CourtCase {
+  caseId: string;
+  title: string;
+  description: string;
+  date: string;
+  citation: string;
+  court: string;
+  judges: string;
+  sourceLabel: string;
+  articleUrl: string;
+}
+
 const HomePage: React.FC<HomePageProps> = ({ onSearch, onNavigateToAbout }) => {
   const [query, setQuery] = useState("");
 
@@ -54,9 +66,6 @@ const HomePage: React.FC<HomePageProps> = ({ onSearch, onNavigateToAbout }) => {
     setCountry("");
   };
 
-  const onNavigateToAbout = () => {
-    console.log("Function not implemented.");
-  };
 
   
   const toggleCardExpansion = (caseId: string) => {
