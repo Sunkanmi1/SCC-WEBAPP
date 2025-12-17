@@ -3,15 +3,8 @@
   border-radius: var(--border-radius-xl);
   box-shadow: var(--shadow-base);
   overflow: hidden;
-  transition: all var(--transition-base);
   border: 1px solid var(--gray-200);
   height: fit-content;
-}
-
-.case-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-xl);
-  border-color: var(--primary-blue-light);
 }
 
 .case-card-header {
@@ -98,21 +91,16 @@
   font-size: var(--font-size-sm);
   font-weight: 600;
   text-decoration: none;
-  transition: all var(--transition-fast);
 }
 
-.external-link:hover {
-  color: var(--primary-blue-dark);
-  transform: translateX(2px);
+.external-link:focus-visible {
+  outline: 2px solid var(--primary-blue);
+  outline-offset: 2px;
+  background: var(--gray-100);
 }
 
 .external-link i {
   font-size: var(--font-size-xs);
-  transition: transform var(--transition-fast);
-}
-
-.external-link:hover i {
-  transform: translateX(2px);
 }
 
 /* Mobile Responsiveness */
@@ -180,18 +168,6 @@
 @media (prefers-reduced-motion: reduce) {
   .case-card {
     transition: box-shadow var(--transition-fast);
-  }
-  
-  .case-card:hover {
-    transform: none;
-  }
-  
-  .external-link:hover {
-    transform: none;
-  }
-  
-  .external-link:hover i {
-    transform: none;
   }
 }
 

@@ -58,3 +58,6 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+
+integration-report/
+pr-audit-report/
