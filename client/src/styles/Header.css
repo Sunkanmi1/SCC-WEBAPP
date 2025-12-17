@@ -23,6 +23,7 @@
 .nav-left {
   display: flex;
   align-items: center;
+  gap: var(--space-4);
 }
 
 .logo-link {
@@ -38,6 +39,7 @@
   font-size: var(--font-size-xl);
   color: var(--primary-blue);
   cursor: pointer;
+  text-decoration: none;
 }
 
 .logo-text {
@@ -120,26 +122,26 @@
     padding: var(--space-3) var(--space-4);
     height: 60px;
   }
-  
+
   .logo {
     font-size: var(--font-size-lg);
     gap: var(--space-2);
   }
-  
+
   .logo-icon {
     font-size: var(--font-size-xl);
   }
-  
+
   .back-button {
     padding: var(--space-2) var(--space-4);
     font-size: var(--font-size-xs);
     gap: var(--space-1);
   }
-  
+
   .back-button span {
     display: none;
   }
-  
+
   .back-button i {
     font-size: var(--font-size-base);
   }
@@ -158,15 +160,15 @@
   .nav {
     padding: var(--space-2) var(--space-3);
   }
-  
+
   .logo {
     font-size: var(--font-size-base);
   }
-  
+
   .logo-icon {
     font-size: var(--font-size-lg);
   }
-  
+
   .back-button {
     padding: var(--space-2) var(--space-3);
   }
