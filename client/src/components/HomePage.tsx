@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import "../styles/HomePage.css";
@@ -10,56 +10,22 @@ interface HomePageProps {
   onNavigateToAbout?: () => void;
 }
 
-interface CourtCase {
-  caseId: string;
-  title: string;
-  description: string;
-  date: string;
-  citation: string;
-  court: string;
-  judges: string;
-  sourceLabel: string;
-  articleUrl: string;
-}
-
-type TabMode = "search" | "browse";
-
-const HomePage: React.FC<HomePageProps> = ({
-  onSearch,
-  onNavigateToBrowse,
-  onNavigateToAbout,
-}) => {
-  const [activeTab, setActiveTab] = useState<TabMode>("search");
+const HomePage: React.FC<HomePageProps> = ({ onSearch, onNavigateToAbout }) => {
   const [query, setQuery] = useState("");
 
   const [year, setYear] = useState("");
   const [judge, setJudge] = useState("");
   const [country, setCountry] = useState("");
   const [results, setResults] = useState<CourtCase[]>([]);
+  const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
   const [showRecent, setShowRecent] = useState(false);
 
-  const fetchSearchResults = async (searchQuery: string) => {
-    setLoading(true);
-    try {
-      const response = await fetch(
-        `http://localhost:9090/search?q=${encodeURIComponent(searchQuery)}`
-      );
-      const data = await response.json();
-      setResults(data.success ? data.results : []);
-    } catch (error) {
-      console.error("Search error:", error);
-      setResults([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!query.trim()) return;
-    onSearch(query.trim());
-    fetchSearchResults(query.trim());
+    if (query.trim()) {
+      onSearch(query.trim());
+    }
   };
 
   const handleApplyFilters = async () => {
@@ -83,8 +49,19 @@ const HomePage: React.FC<HomePageProps> = ({
     setCountry("");
   };
 
-  const handleBrowseClick = () => {
-    onNavigateToBrowse();
+  
+
+  
+  const toggleCardExpansion = (caseId: string) => {
+    setExpandedCards((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(caseId)) {
+        newSet.delete(caseId);
+      } else {
+        newSet.add(caseId);
+      }
+      return newSet;
+    });
   };
 
   return (
@@ -95,153 +72,156 @@ const HomePage: React.FC<HomePageProps> = ({
         <div className="hero-overlay">
           <h1 className="hero-title">SUPREME COURT CASES</h1>
 
-          {/* Tabs (YOUR FEATURE, reapplied cleanly) */}
-          <div className="tab-navigation">
-            <button
-              className={`tab-button ${activeTab === "search" ? "active" : ""}`}
-              onClick={() => setActiveTab("search")}
-            >
-              <i className="fas fa-search" />
-              <span>Search</span>
-            </button>
-
-            <button
-              className={`tab-button ${activeTab === "browse" ? "active" : ""}`}
-              onClick={() => setActiveTab("browse")}
-            >
-              <i className="fas fa-th-large" />
-              <span>Browse</span>
-            </button>
-          </div>
-
-          {/* SEARCH TAB (main logic preserved) */}
-          {activeTab === "search" && (
-            <>
-              <form className="search-container" onSubmit={handleSubmit}>
-                <div className="search-box">
-                  <input
-                    type="text"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Search for a case by name, number, or keyword"
-                    className="search-input"
-                    autoComplete="off"
-                    required
-                    onFocus={() => setShowRecent(true)}
-                  />
-                  <button type="submit" className="search-button">
-                    <i className="fas fa-search" />
-                  </button>
-                </div>
-              </form>
-
-              <RecentSearches
-                visible={showRecent}
-                onClose={() => setShowRecent(false)}
-                onSelect={(title) => {
-                  setQuery(title);
-                  fetchSearchResults(title);
-                }}
+          <form className="search-container" onSubmit={handleSubmit}>
+            <div className="search-box">
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search for a case by name, number, or keyword"
+                className="search-input"
+                autoComplete="off"
+                required
+                onFocus={() => setShowRecent(true)}
               />
-
-              <div className="filter-panel">
-                <select value={year} onChange={(e) => setYear(e.target.value)}>
-                  <option value="">Select Year</option>
-                  <option value="2010">2010</option>
-                  <option value="2015">2015</option>
-                  <option value="2020">2020</option>
-                </select>
-
-                <select value={judge} onChange={(e) => setJudge(e.target.value)}>
-                  <option value="">Select Judge</option>
-                  <option value="Atuguba">Atuguba</option>
-                  <option value="Dotse">Dotse</option>
-                </select>
-
-                <select
-                  value={country}
-                  onChange={(e) => setCountry(e.target.value)}
-                >
-                  <option value="">Select Country</option>
-                  <option value="Ghana">Ghana</option>
-                </select>
-
-                <div className="filter-actions">
-                  <button onClick={handleApplyFilters} className="apply-btn">
-                    Apply Filters
-                  </button>
-                  <button onClick={handleResetFilters} className="reset-btn">
-                    Reset
-                  </button>
-                </div>
-              </div>
-
-              {loading && <p className="loading-text">Loading results...</p>}
-              {!loading && results.length === 0 && (
-                <p className="no-results">No results found.</p>
-              )}
-            </>
-          )}
-
-          {/* BROWSE TAB (YOUR FEATURE, adapted to main) */}
-          {activeTab === "browse" && (
-            <div className="browse-container">
-              <p className="browse-description">
-                Explore Supreme Court cases organized by legal categories
-              </p>
-              <button className="browse-button" onClick={handleBrowseClick}>
-                <i className="fas fa-folder-open" />
-                <span>Browse by Category</span>
-                <i className="fas fa-arrow-right" />
+              <button type="submit" className="search-button">
+                <i className="fas fa-search"></i>
               </button>
             </div>
-          )}
+          </form>
+
+          <RecentSearches
+            visible={showRecent}
+            onClose={() => setShowRecent(false)}
+            onSelect={(title) => {
+              setQuery(title);
+              onSearch(title);
+            }}
+          />
         </div>
       </main>
 
       {/* RESULTS TABLE (main preserved) */}
       <div className="results-section">
         {!loading && results.length > 0 && (
-          <div className="filter-table-wrapper">
-            <table className="filter-results-table">
-              <thead>
-                <tr>
-                  <th>Case ID</th>
-                  <th>Title</th>
-                  <th>Description</th>
-                  <th>Date</th>
-                  <th>Citation</th>
-                  <th>Court</th>
-                  <th>Judges</th>
-                  <th>Source</th>
-                  <th>Article</th>
-                </tr>
-              </thead>
-              <tbody>
-                {results.map((item) => (
-                  <tr key={item.caseId}>
-                    <td>{item.caseId}</td>
-                    <td>{item.title}</td>
-                    <td>{item.description}</td>
-                    <td>{item.date}</td>
-                    <td>{item.citation}</td>
-                    <td>{item.court}</td>
-                    <td className="judges-cell">{item.judges}</td>
-                    <td>{item.sourceLabel}</td>
-                    <td>
-                      <a
-                        href={item.articleUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        View
-                      </a>
-                    </td>
+          <>
+         
+            <div className="mobile-results-cards">
+              {results.map((item) => (
+                <div key={item.caseId} className="case-card">
+                  <div className="card-header">
+                    <span className="card-case-id">{item.caseId}</span>
+                    <span className="card-date">{item.date}</span>
+                  </div>
+                  <h3 className="card-title">{item.title}</h3>
+                  <p className="card-description-preview">
+                    {item.description.substring(0, 150)}...
+                  </p>
+                  <div className="card-quick-info">
+                    <div className="card-info-item">
+                      <span className="card-info-label">Citation</span>
+                      <span className="card-info-value">{item.citation}</span>
+                    </div>
+                    <div className="card-info-item">
+                      <span className="card-info-label">Court</span>
+                      <span className="card-info-value">{item.court}</span>
+                    </div>
+                  </div>
+
+
+                  
+                  <div className={`card-expandable-section ${expandedCards.has(item.caseId) ? 'expanded' : ''}`}>
+                    <div className="card-detail-item">
+                      <span className="card-detail-label">
+                        Full Description
+                      </span>
+                      <p className="card-detail-value">{item.description}</p>
+                    </div>
+                    <div className="card-detail-item">
+                      <span className="card-detail-label">Judges</span>
+                      <div className="card-judges card-detail-value">
+                        {item.judges}
+                      </div>
+                    </div>
+                    <div className="card-detail-item">
+                      <span className="card-detail-label">Source</span>
+                      <span className="card-detail-value">
+                        {item.sourceLabel}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="card-actions">
+                    <button
+                      className={`expand-toggle-btn ${
+                        expandedCards.has(item.caseId) ? "expanded" : ""
+                      }`}
+                      onClick={() => toggleCardExpansion(item.caseId)}
+                    >
+                      <i className="fas fa-chevron-down"></i>
+                      <span>
+                        {expandedCards.has(item.caseId)
+                          ? "Hide Details"
+                          : "Show Details"}
+                      </span>
+                    </button>
+                    <a
+                      href={item.articleUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="card-view-link"
+                    >
+                      <i className="fas fa-external-link-alt"></i>
+                      View Article
+                    </a>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+        
+            <div className="filter-table-wrapper">
+              <table className="filter-results-table">
+                
+                <thead>
+                  <tr>
+                    <th>Case ID</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Date</th>
+                    <th>Citation</th>
+                    <th>Court</th>
+                    <th>Judges</th>
+                    <th>Source</th>
+                    <th>Article</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {results.map((item) => (
+                    <tr key={item.caseId}>
+                      <td>{item.caseId}</td>
+                      <td className="title-cell">{item.title}</td>
+                      <td className="description-cell">{item.description}</td>
+                      <td className="date-cell">{item.date}</td>
+                      <td>{item.citation}</td>
+                      <td>{item.court}</td>
+                      <td className="judges-cell">{item.judges}</td>
+                      <td>{item.sourceLabel}</td>
+                      <td>
+                        <a
+                          href={item.articleUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          View
+                        </a>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
 
@@ -251,3 +231,4 @@ const HomePage: React.FC<HomePageProps> = ({
 };
 
 export default HomePage;
+

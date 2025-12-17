@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import HomePage from './components/HomePage';
 import SearchResultsPage from './components/SearchResultsPage';
 import BrowsePage from './components/BrowsePage';
 import AboutUs from './components/AboutUs';
+import CountryPage from './components/CountryPage';
 import './styles/App.css';
 
 export interface Case {
@@ -26,7 +28,7 @@ export interface SearchState {
 }
 
 function App() {
-  const [currentView, setCurrentView] = useState<'home' | 'browse' | 'results' | 'about'>('home');
+  const navigate = useNavigate();
   const [searchState, setSearchState] = useState<SearchState>({
     query: '',
     results: [],
@@ -34,23 +36,11 @@ function App() {
     error: null
   });
 
-  // Listen for custom event from Footer to navigate to About page
-  useEffect(() => {
-    const handleNavigateToAbout = () => {
-      setCurrentView('about');
-    };
-
-    window.addEventListener('navigateToAbout', handleNavigateToAbout);
-    return () => {
-      window.removeEventListener('navigateToAbout', handleNavigateToAbout);
-    };
-  }, []);
-
   const handleSearch = async (query: string) => {
     if (!query.trim()) return;
 
     setSearchState(prev => ({ ...prev, loading: true, error: null, query }));
-    setCurrentView('results');
+    navigate('/search');
 
     try {
       const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:9090';
@@ -60,8 +50,6 @@ function App() {
         throw new Error('Search request failed');
       }
 
-      // Since the backend returns HTML, we'll need to parse it or modify the backend
-      // For now, let's simulate the expected response structure
       const data = await response.json();
       setSearchState(prev => ({
         ...prev,
@@ -84,40 +72,26 @@ function App() {
   };
 
   const handleBackToSearch = () => {
-    setCurrentView('home');
-    setSearchState(prev => ({ ...prev, query: '', results: [], error: null }));
-  };
-
-  const handleNavigateToAbout = () => {
-    setCurrentView('about');
-  };
-
-  const handleNavigateToHome = () => {
-    setCurrentView('home');
+    navigate('/');
     setSearchState(prev => ({ ...prev, query: '', results: [], error: null }));
   };
 
   return (
     <div className="app">
-      {currentView === 'home' ? (
-        <HomePage 
-          onSearch={handleSearch} 
-          onNavigateToBrowse={handleNavigateToBrowse}
-          onNavigateToAbout={handleNavigateToAbout} 
+      <Routes>
+        <Route path="/" element={<HomePage onSearch={handleSearch} />} />
+        <Route path="/about" element={<AboutUs />} />
+        <Route 
+          path="/search" 
+          element={
+            <SearchResultsPage
+              searchState={searchState}
+              onBackToSearch={handleBackToSearch}
+            />
+          } 
         />
-      ) : currentView === 'browse' ? (
-        <BrowsePage 
-          onNavigateToAbout={handleNavigateToAbout}
-          onBackToHome={handleNavigateToHome}
-        />
-      ) : currentView === 'about' ? (
-        <AboutUs onNavigateToHome={handleNavigateToHome} />
-      ) : (
-        <SearchResultsPage
-          searchState={searchState}
-          onBackToSearch={handleBackToSearch}
-        />
-      )}
+        <Route path="/country/:countryCode" element={<CountryPage />} />
+      </Routes>
     </div>
   );
 }
