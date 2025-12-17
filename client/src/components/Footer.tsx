@@ -9,10 +9,12 @@ interface FooterProps {
 const Footer: React.FC<FooterProps> = ({ onNavigateToAbout }) => {
   const handleAboutClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
+
     if (onNavigateToAbout) {
       onNavigateToAbout();
     } else {
-      window.dispatchEvent(new CustomEvent('navigateToAbout'));
+      // Dispatch custom event for navigation when prop is not available
+      window.dispatchEvent(new CustomEvent("navigateToAbout"));
     }
   };
 

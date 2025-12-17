@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
 import "../styles/HomePage.css";
@@ -66,8 +66,6 @@ const HomePage: React.FC<HomePageProps> = ({ onSearch, onNavigateToAbout }) => {
     setCountry("");
   };
 
-
-  
   const toggleCardExpansion = (caseId: string) => {
     setExpandedCards((prev) => {
       const newSet = new Set(prev);
@@ -120,7 +118,6 @@ const HomePage: React.FC<HomePageProps> = ({ onSearch, onNavigateToAbout }) => {
       <div className="results-section">
         {!loading && results.length > 0 && (
           <>
-         
             <div className="mobile-results-cards">
               {results.map((item) => (
                 <div key={item.caseId} className="case-card">
@@ -143,9 +140,11 @@ const HomePage: React.FC<HomePageProps> = ({ onSearch, onNavigateToAbout }) => {
                     </div>
                   </div>
 
-
-                  
-                  <div className={`card-expandable-section ${expandedCards.has(item.caseId) ? 'expanded' : ''}`}>
+                  <div
+                    className={`card-expandable-section ${
+                      expandedCards.has(item.caseId) ? "expanded" : ""
+                    }`}
+                  >
                     <div className="card-detail-item">
                       <span className="card-detail-label">
                         Full Description
@@ -194,10 +193,8 @@ const HomePage: React.FC<HomePageProps> = ({ onSearch, onNavigateToAbout }) => {
               ))}
             </div>
 
-        
             <div className="filter-table-wrapper">
               <table className="filter-results-table">
-                
                 <thead>
                   <tr>
                     <th>Case ID</th>
