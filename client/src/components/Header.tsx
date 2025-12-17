@@ -1,7 +1,8 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Globe } from "lucide-react";
-import LoadingModal from "./LoadingModal";
-import "../styles/Header.css";
+import React from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import ThemeToggle from './ThemeToggle';
+import CountryNav from './CountryNav';
+import '../styles/Header.css';
 
 interface HeaderProps {
   showBackButton?: boolean;
@@ -9,11 +10,9 @@ interface HeaderProps {
   currentCountryCode?: string;
 }
 
-interface Country {
-  code: string;
-  name: string;
-  flag: string;
-}
+const Header: React.FC<HeaderProps> = ({ showBackButton = false, onBackClick, onNavigateToAbout }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
 
 const countries: Country[] = [
   // { code: "ZA", name: "South Africa", flag: "🇿🇦" }, // Countries will be fetched from the backend
@@ -82,6 +81,10 @@ const Header: React.FC<HeaderProps> = ({
     }
   };
 
+  // Extract country code from URL if on country page
+  const countryMatch = location.pathname.match(/\/country\/([a-z]{2})/i);
+  const currentCountry = countryMatch ? countryMatch[1].toUpperCase() : 'GH';
+
   return (
     <header className="header">
       <LoadingModal
@@ -136,15 +139,22 @@ const Header: React.FC<HeaderProps> = ({
             )}
           </div>
         </div>
-
-        {showBackButton && (
-          <div className="nav-right">
-            <button onClick={onBackClick} className="back-button">
+        
+        <div className="nav-right">
+          <CountryNav currentCountry={currentCountry} />
+          {!showBackButton && (
+            <Link to="/about" onClick={handleAboutClick} className="nav-link">
+              About Us
+            </Link>
+          )}
+          {showBackButton && (
+            <button onClick={handleBackClick} className="back-button">
               <i className="fas fa-arrow-left"></i>
               <span>Back to Search</span>
             </button>
-          </div>
-        )}
+          )}
+          <ThemeToggle />
+        </div>
       </nav>
     </header>
   );

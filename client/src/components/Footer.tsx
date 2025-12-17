@@ -1,50 +1,62 @@
 import React from "react";
-import { Home, BookOpen, Info, Mail } from "lucide-react";
+import { Link } from "react-router-dom";
 import "../styles/Footer.css";
+
+interface FooterProps {
+  onNavigateToAbout?: () => void;
+}
+
+const Footer: React.FC<FooterProps> = ({ onNavigateToAbout }) => {
+  const handleAboutClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+
+    if (onNavigateToAbout) {
+      onNavigateToAbout();
+    } else {
+      // Dispatch custom event for navigation when prop is not available
+      window.dispatchEvent(new CustomEvent("navigateToAbout"));
+    }
+  };
 
 const Footer: React.FC = () => {
   return (
     <footer className="site-footer">
       <div className="footer-container">
-        {/* About Column */}
-        <div className="footer-col about-col">
-          <h3>Ghana Supreme Cases</h3>
-          <p>
+        <div className="footer-logos">
+          <img src="/logo.png" alt="Logo" className="footer-logo" />
+
+          <a
+            href="https://www.wikidata.org/wiki/Wikidata:Introduction"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <img
-              src="/logo.png"
-              alt="Logo"
-              style={{ width: "50px", marginBottom: "15px" }}
+              src="wikidata.png"
+              alt="Wikidata logo"
+              className="footer-logo"
             />
-          </p>
-          <p>
-            An open-source platform providing a searchable database of Supreme
-            Court cases in Ghana. Designed for legal professionals, students,
-            researchers, and the general public, offering easy access to case
-            details through an intuitive search and filtering system.
-          </p>
-          <p>
-            A{" "}
-            <a
-              href="https://toolforge.org"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ textDecoration: "underline", color: "#3498db" }}
-            >
-              Wikimedia Toolforge
-            </a>{" "}
-            project.
-          </p>
+          </a>
         </div>
 
-        {/* Licensing & Credits Column */}
-        <div className="footer-col license-col">
-          <h3>Licensing & Credits</h3>
-          <p>
+        <div className="footer-content">
+          <nav className="footer-nav">
+            <div className="footer-nav-links">
+              <Link
+                to="/about"
+                onClick={handleAboutClick}
+                className="footer-link"
+              >
+                About Us
+              </Link>
+            </div>
+          </nav>
+
+          <div className="footer-external">
             <a
               href="https://creativecommons.org/licenses/by-sa/4.0/"
               target="_blank"
               rel="noopener noreferrer"
-              className="cc-badge-link"
+              className="footer-link footer-link-external"
             >
               <svg width="20" height="20" viewBox="0 0 24 24">
                 <circle
