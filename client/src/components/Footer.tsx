@@ -1,6 +1,6 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import '../styles/Footer.css';
+import React from "react";
+import { Link } from "react-router-dom";
+import "../styles/Footer.css";
 
 interface FooterProps {
   onNavigateToAbout?: () => void;
@@ -9,12 +9,12 @@ interface FooterProps {
 const Footer: React.FC<FooterProps> = ({ onNavigateToAbout }) => {
   const handleAboutClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    // Always try to use the prop if available
+
     if (onNavigateToAbout) {
       onNavigateToAbout();
     } else {
       // Dispatch custom event for navigation when prop is not available
-      window.dispatchEvent(new CustomEvent('navigateToAbout'));
+      window.dispatchEvent(new CustomEvent("navigateToAbout"));
     }
   };
 
@@ -23,23 +23,38 @@ const Footer: React.FC<FooterProps> = ({ onNavigateToAbout }) => {
       <div className="footer-container">
         <div className="footer-logos">
           <img src="/logo.png" alt="Logo" className="footer-logo" />
-          <img src="wikidata.png" alt="Wikidata logo" className="footer-logo" />
+
+          <a
+            href="https://www.wikidata.org/wiki/Wikidata:Introduction"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src="wikidata.png"
+              alt="Wikidata logo"
+              className="footer-logo"
+            />
+          </a>
         </div>
 
         <div className="footer-content">
           <nav className="footer-nav">
             <div className="footer-nav-links">
-              <Link to="/about" onClick={handleAboutClick} className="footer-link">
+              <Link
+                to="/about"
+                onClick={handleAboutClick}
+                className="footer-link"
+              >
                 About Us
               </Link>
             </div>
           </nav>
 
           <div className="footer-external">
-            <a 
-              href="https://creativecommons.org/licenses/by-sa/4.0/" 
-              target="_blank" 
-              rel="noopener noreferrer" 
+            <a
+              href="https://creativecommons.org/licenses/by-sa/4.0/"
+              target="_blank"
+              rel="noopener noreferrer"
               className="footer-link footer-link-external"
             >
               CC BY-SA 4.0

@@ -6,6 +6,8 @@ import dotenv from "dotenv";
 // Load environment variables
 dotenv.config();
 
+
+
 const app = express();
 const PORT = process.env.PORT || 9090;
 const CORS_ORIGIN = process.env.CORS_ORIGIN || "http://localhost:5173";
@@ -48,20 +50,44 @@ app.get("/", (req: Request, res: Response) => {
     });
 });
 
-// ✅ Search endpoint returning JSON
+// Country-specific configurations
+const COUNTRY_CONFIG: Record<string, { courtId: string; countryId: string }> = {
+    'GH': { 
+        courtId: 'Q1513611',  // Supreme Court of Ghana (parent class)
+        countryId: 'Q117'     // Ghana
+    },
+    'NG': { 
+        courtId: 'Q16011598', // Supreme Court of Nigeria
+        countryId: 'Q1033'    // Nigeria
+    },
+    'KE': { 
+        courtId: 'Q7653543',  // Supreme Court of Kenya
+        countryId: 'Q114'     // Kenya
+    },
+    'ZA': { 
+        courtId: 'Q1360033',  // Constitutional Court of South Africa
+        countryId: 'Q258'     // South Africa
+    }
+};
+
+// ✅ Search endpoint with multi-country support
 app.get("/search", async (req: Request, res: Response) => {
     const userQuery = (req.query.q as string)?.trim().toLowerCase() || "";
+    const countryCode = (req.query.country as string)?.trim().toUpperCase() || "GH"; // Default to Ghana
+    
+    // Get the config for the selected country
+    const config = COUNTRY_CONFIG[countryCode] || COUNTRY_CONFIG['GH'];
 
-    const sparqlQuery = `
+  const sparqlQuery = `
     SELECT DISTINCT ?item ?itemLabel ?itemDescription ?date ?legal_citation ?courtLabel ?majority_opinionLabel ?sourceLabel (GROUP_CONCAT(DISTINCT ?judge; SEPARATOR = ", ") AS ?judges) WHERE {
       {
         SELECT DISTINCT * WHERE {
           ?item (wdt:P31/(wdt:P279*)) wd:Q114079647;
-            (wdt:P17/(wdt:P279*)) wd:Q117;
-            (wdt:P1001/(wdt:P279*)) wd:Q117;
+            (wdt:P17/(wdt:P279*)) wd:${config.countryId};
+            (wdt:P1001/(wdt:P279*)) wd:${config.countryId};
             (wdt:P793/(wdt:P279*)) wd:Q7099379;
             wdt:P4884 ?court.
-          ?court (wdt:P279*) wd:Q1513611.
+          ?court (wdt:P279*) wd:${config.courtId}.
         }
         LIMIT 5000
       }
@@ -91,7 +117,8 @@ app.get("/search", async (req: Request, res: Response) => {
                 majorityOpinion: item.majority_opinionLabel?.value || "Majority opinion unavailable",
                 sourceLabel: item.sourceLabel?.value || "Source unavailable",
                 judges: item.judges?.value || "Judges unavailable",
-                articleUrl: item.item?.value || ""
+                articleUrl: item.item?.value || "",
+                country: countryCode // Add country code to response
             }))
             .filter((caseData: any) => {
                 if (!userQuery) return true; // Return all if no query
@@ -105,7 +132,7 @@ app.get("/search", async (req: Request, res: Response) => {
                 );
             });
 
-        res.json({ success: true, results: cases });
+        res.json({ success: true, results: cases, country: countryCode });
     } catch (error) {
         console.error("❌ API Error:", error);
         res.status(500).json({ success: false, error: "Please check your internet connection!" });
@@ -114,5 +141,5 @@ app.get("/search", async (req: Request, res: Response) => {
 
 // Start server
 app.listen(PORT, () => {
-    console.log(`✅ Server running on http://localhost:${PORT}`);
+  console.log(`✅ Server running on http://localhost:${PORT}`);
 });

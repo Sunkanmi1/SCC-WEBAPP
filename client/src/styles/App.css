@@ -260,11 +260,6 @@ button:disabled {
 a {
   color: var(--primary-blue);
   text-decoration: none;
-  transition: color var(--transition-fast);
-}
-
-a:hover {
-  color: var(--primary-blue-dark);
 }
 
 /* Input Styles */
@@ -280,7 +275,7 @@ input, textarea {
 input:focus, textarea:focus {
   outline: none;
   border-color: var(--primary-blue);
-  box-shadow: 0 0 0 3px rgb(59 130 246 / 0.1);
+  box-shadow: none; /* optional */
 }
 
 /* Utility Classes */

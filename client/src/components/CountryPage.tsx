@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
 import CaseCard from './CaseCard';
@@ -6,19 +7,18 @@ import LoadingSpinner from './LoadingSpinner';
 import FilterPanel, { FilterOptions } from './FilterPanel';
 import Pagination from './Pagination';
 import Breadcrumbs, { BreadcrumbItem } from './Breadcrumbs';
-import { SearchState, Case } from '../App';
+import { getCountryByCode } from '../config/countries';
+import { Case } from '../App';
 import '../styles/SearchResultsPage.css';
 
-interface SearchResultsPageProps {
-  searchState: SearchState;
-  onBackToSearch: () => void;
-}
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:9090';
 
-const SearchResultsPage: React.FC<SearchResultsPageProps> = ({
-  searchState,
-  onBackToSearch
-}) => {
-  const { query, results, loading, error } = searchState;
+const CountryPage: React.FC = () => {
+  const { countryCode } = useParams<{ countryCode: string }>();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [results, setResults] = useState<Case[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [activeFilters, setActiveFilters] = useState<FilterOptions>({
     year: '',
@@ -28,8 +28,49 @@ const SearchResultsPage: React.FC<SearchResultsPageProps> = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(20);
 
+  const country = getCountryByCode(countryCode?.toUpperCase() || 'GH');
+
+  useEffect(() => {
+    fetchCountryCases();
+  }, [countryCode]);
+
+  const fetchCountryCases = async (query: string = '') => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const upperCountryCode = countryCode?.toUpperCase() || 'GH';
+      const url = `${API_BASE_URL}/search?country=${upperCountryCode}${query ? `&q=${encodeURIComponent(query)}` : ''}`;
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (data.success) {
+        setResults(data.results);
+      } else {
+        setError(data.error || 'Failed to fetch cases');
+      }
+    } catch (err) {
+      setError('Failed to connect to server. Please try again.');
+      console.error('Error fetching cases:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      fetchCountryCases(searchQuery.trim());
+    }
+  };
+
+  const handleClearSearch = () => {
+    setSearchQuery('');
+    fetchCountryCases();
+  };
+
   // Extract unique years and judges from results
-  const availableYears = useMemo(() => {
+  const availableYears = React.useMemo(() => {
     const years = results
       .map(c => c.date.split('-')[0])
       .filter(year => year && year !== 'Date')
@@ -37,7 +78,7 @@ const SearchResultsPage: React.FC<SearchResultsPageProps> = ({
     return Array.from(new Set(years));
   }, [results]);
 
-  const availableJudges = useMemo(() => {
+  const availableJudges = React.useMemo(() => {
     const judges = results
       .flatMap(c => c.judges.split(',').map(j => j.trim()))
       .filter(judge => judge && judge !== 'Judges unavailable')
@@ -46,20 +87,17 @@ const SearchResultsPage: React.FC<SearchResultsPageProps> = ({
   }, [results]);
 
   // Apply filters to results
-  const filteredResults = useMemo(() => {
+  const filteredResults = React.useMemo(() => {
     return results.filter((caseItem: Case) => {
-      // Year filter
       if (activeFilters.year) {
         const caseYear = caseItem.date.split('-')[0];
         if (caseYear !== activeFilters.year) return false;
       }
 
-      // Judge filter
       if (activeFilters.judge) {
         if (!caseItem.judges.includes(activeFilters.judge)) return false;
       }
 
-      // Keyword filter
       if (activeFilters.keyword) {
         const keyword = activeFilters.keyword.toLowerCase();
         const searchableText = [
@@ -102,17 +140,70 @@ const SearchResultsPage: React.FC<SearchResultsPageProps> = ({
   // Breadcrumbs
   const breadcrumbs: BreadcrumbItem[] = [
     { label: 'Home', path: '/', icon: 'fas fa-home' },
-    { label: 'Search Results', icon: 'fas fa-search' }
+    { label: country?.name || 'Country', icon: country?.flag }
   ];
+
+  if (!country) {
+    return (
+      <div className="search-results-page">
+        <Header />
+        <main className="main-content">
+          <div className="alert error-alert">
+            <i className="fas fa-exclamation-circle"></i>
+            <span>Invalid country code</span>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="search-results-page">
-      <Header showBackButton={true} onBackClick={onBackToSearch} />
+      <Header />
 
       <main className="main-content">
         <Breadcrumbs items={breadcrumbs} />
         
         <section className="results-section">
+          {/* Country Header */}
+          <div className="country-header">
+            <div className="country-header-content">
+              <span className="country-flag-large">{country.flag}</span>
+              <div className="country-header-info">
+                <h1>{country.name} Supreme Court Cases</h1>
+                <p>Explore legal precedents and Supreme Court decisions from {country.name}</p>
+              </div>
+            </div>
+
+            {/* Search Bar */}
+            <form onSubmit={handleSearch} className="country-search-form">
+              <div className="search-input-wrapper">
+                <i className="fas fa-search search-icon"></i>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder={`Search ${country.name} cases...`}
+                  className="country-search-input"
+                />
+                {searchQuery && (
+                  <button
+                    type="button"
+                    onClick={handleClearSearch}
+                    className="clear-search-btn"
+                  >
+                    <i className="fas fa-times"></i>
+                  </button>
+                )}
+              </div>
+              <button type="submit" className="country-search-btn">
+                <i className="fas fa-search"></i>
+                Search
+              </button>
+            </form>
+          </div>
+
           {loading ? (
             <LoadingSpinner />
           ) : error ? (
@@ -124,7 +215,7 @@ const SearchResultsPage: React.FC<SearchResultsPageProps> = ({
             <div className="alert info-alert">
               <i className="fas fa-search"></i>
               <h2>No cases found</h2>
-              <p>We couldn't find any cases matching "<strong>{query}</strong>".</p>
+              <p>We couldn't find any cases for {country.name}{searchQuery && ` matching "${searchQuery}"`}.</p>
               <p className="suggestions">Try different keywords or check your spelling.</p>
             </div>
           ) : (
@@ -135,8 +226,8 @@ const SearchResultsPage: React.FC<SearchResultsPageProps> = ({
                     <h2>Search Results</h2>
                     <p className="results-count">
                       {hasActiveFilters 
-                        ? `Showing ${filteredResults.length} of ${results.length} case${results.length !== 1 ? 's' : ''} for "${query}"`
-                        : `Found ${results.length} case${results.length !== 1 ? 's' : ''} for "${query}"`
+                        ? `Showing ${filteredResults.length} of ${results.length} case${results.length !== 1 ? 's' : ''}`
+                        : `Found ${results.length} case${results.length !== 1 ? 's' : ''}`
                       }
                     </p>
                   </div>
@@ -250,4 +341,4 @@ const SearchResultsPage: React.FC<SearchResultsPageProps> = ({
   );
 };
 
-export default SearchResultsPage;
+export default CountryPage;
