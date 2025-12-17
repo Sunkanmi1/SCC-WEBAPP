@@ -6,6 +6,7 @@ import RecentSearches from "./RecentSearches";
 
 interface HomePageProps {
   onSearch: (query: string) => void;
+  onNavigateToBrowse: () => void;
   onNavigateToAbout?: () => void;
 }
 
@@ -29,22 +30,16 @@ const HomePage: React.FC<HomePageProps> = ({ onSearch, onNavigateToAbout }) => {
 
   const handleApplyFilters = async () => {
     const params = new URLSearchParams();
-
     if (year) params.append("year", year);
     if (judge) params.append("judge", judge);
     if (country) params.append("country", country);
 
     setLoading(true);
-
     const response = await fetch(
       `http://localhost:9090/browse?${params.toString()}`
     );
     const data = await response.json();
-
-    if (data.success) {
-      setResults(data.results);
-    }
-
+    if (data.success) setResults(data.results);
     setLoading(false);
   };
 
@@ -106,6 +101,7 @@ const HomePage: React.FC<HomePageProps> = ({ onSearch, onNavigateToAbout }) => {
         </div>
       </main>
 
+      {/* RESULTS TABLE (main preserved) */}
       <div className="results-section">
         {!loading && results.length > 0 && (
           <>

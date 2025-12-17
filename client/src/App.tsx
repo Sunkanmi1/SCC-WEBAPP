@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
 import HomePage from './components/HomePage';
 import SearchResultsPage from './components/SearchResultsPage';
+import BrowsePage from './components/BrowsePage';
 import AboutUs from './components/AboutUs';
 import CountryPage from './components/CountryPage';
 import './styles/App.css';
@@ -64,6 +65,10 @@ function App() {
         error: 'Please check your internet connection!'
       }));
     }
+  };
+
+  const handleNavigateToBrowse = () => {
+    setCurrentView('browse');
   };
 
   const handleBackToSearch = () => {
