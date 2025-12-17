@@ -1,10 +1,14 @@
 :root {
-  --footer-bg: #1a252f; /* Deep dark blue/slate */
-  --footer-text: #bdc3c7; /* Light gray text */
-  --footer-heading: #ffffff; /* White headings */
-  --footer-link-hover: #3498db; /* Bright blue hover state */
-  --footer-border: #2c3e50; /* Slightly lighter border color */
+  --footer-bg: #1a252f;
+  --footer-text: #bdc3c7;
+  --footer-heading: #ffffff;
+  --footer-link-hover: #3498db;
+  --footer-border: #2c3e50;
 }
+
+/* =======================
+   FOOTER BASE
+======================= */
 
 .site-footer {
   background-color: var(--footer-bg);
@@ -13,31 +17,82 @@
   font-size: 15px;
   line-height: 1.6;
   padding-top: 50px;
-  margin-top: auto; /* Pushes footer to bottom if page content is short */
-.footer {
-  background-color: var(--gray-50);
-  padding: var(--space-4);
-  border-top: 1px solid var(--gray-200);
-  font-family: var(--font-family);
+  margin-top: auto;
 }
+
+/* =======================
+   LAYOUT
+======================= */
 
 .footer-container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 0 20px 40px 20px;
+  padding: 0 20px 40px;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  gap: 30px;
+  gap: 40px;
 }
 
-/* Footer Columns Setup */
 .footer-col {
-  flex: 1 1 250px; /* Grow, Shrink, Basis - ensures responsive wrapping for 4 columns */
+  flex: 1 1 260px;
   margin-bottom: 20px;
 }
 
-/* Headings */
+/* =======================
+   LOGOS
+======================= */
+
+.footer-logos {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.footer-logo {
+  height: 48px;
+  width: auto;
+}
+
+.footer-svg-logo {
+  height: 32px;
+  width: auto;
+}
+
+/* =======================
+   MAIN CONTENT
+======================= */
+
+.footer-content {
+  flex: 1 1 300px;
+}
+
+.footer-nav {
+  margin-bottom: 20px;
+}
+
+.footer-link {
+  color: var(--footer-text);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.footer-link:hover {
+  color: var(--footer-link-hover);
+}
+
+.footer-link-external {
+  color: var(--footer-text);
+  font-size: 14px;
+  display: inline-block;
+  margin-bottom: 8px;
+}
+
+/* =======================
+   HEADINGS
+======================= */
+
 .footer-col h3 {
   color: var(--footer-heading);
   font-size: 18px;
@@ -46,7 +101,6 @@
   padding-bottom: 10px;
 }
 
-/* Decorative underline for headings */
 .footer-col h3::after {
   content: "";
   position: absolute;
@@ -57,7 +111,10 @@
   background-color: var(--footer-link-hover);
 }
 
-/* Links */
+/* =======================
+   LINKS LISTS
+======================= */
+
 .footer-col ul {
   list-style: none;
   padding: 0;
@@ -68,28 +125,28 @@
   margin-bottom: 12px;
 }
 
-.footer-col a {
+.footer-col ul a {
   color: var(--footer-text);
   text-decoration: none;
-  transition: color 0.3s ease;
   display: inline-flex;
   align-items: center;
+  transition: color 0.3s ease;
 }
 
-.footer-col a:hover {
+.footer-col ul a:hover {
   color: var(--footer-link-hover);
 }
 
-.footer-col a svg {
+.footer-col ul a svg {
   margin-right: 10px;
-  min-width: 16px; /* Ensures alignment */
+  min-width: 16px;
 }
 
-/* Specific Section Styles */
+/* =======================
+   POLICIES
+======================= */
 
-/* Policies Column */
-.policies-col .policies-text {
-  /* font-size: 14px; */
+.policies-col p {
   line-height: 1.7;
   margin-bottom: 15px;
 }
@@ -99,56 +156,27 @@
   text-decoration: underline;
 }
 
-/* License Column - Powered by logos */
+/* =======================
+   LICENSE / POWERED BY
+======================= */
+
+.license-text {
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
 .powered-by-logos {
   display: flex;
   gap: 15px;
   align-items: center;
-  margin-top: 15px;
   flex-wrap: wrap;
+  margin-top: 10px;
 }
 
-.footer-link {
-  color: var(--gray-700);
-  text-decoration: none;
-  font-size: var(--font-size-base);
-  font-weight: 500;
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--border-radius-base);
-  white-space: nowrap;
-}
+/* =======================
+   FOOTER BOTTOM
+======================= */
 
-.footer-link-external {
-  color: var(--gray-600);
-  font-size: var(--font-size-sm);
-}
-
-/* Creative Commons Badge Area */
-.cc-badge-link {
-  display: inline-flex;
-  align-items: center;
-  background: #ffffff;
-  color: #333 !important; /* Override default link color for contrast */
-  padding: 10px 15px;
-  border-radius: 4px;
-  font-weight: bold;
-  margin: 15px 0;
-}
-
-.cc-badge-link svg {
-  fill: #333;
-  margin-right: 10px;
-}
-
-.toolforge-credit {
-  margin-top: 20px;
-  font-size: 14px;
-}
-.toolforge-credit a {
-  text-decoration: underline;
-}
-
-/* Footer Bottom Bar */
 .footer-bottom {
   background-color: rgba(0, 0, 0, 0.3);
   text-align: center;
@@ -158,32 +186,21 @@
 }
 
 /* =======================
-   RESPONSIVE BREAKPOINTS
-======================== */
+   RESPONSIVE
+======================= */
 
-/* Large tablets and small laptops */
 @media (max-width: 1200px) {
   .footer-col {
-    flex: 1 1 45%; /* Two columns on medium screens */
+    flex: 1 1 45%;
   }
 }
 
-/* Tablet Landscape */
 @media (max-width: 992px) {
   .footer-container {
     justify-content: flex-start;
   }
-  .about-col,
-  .license-col {
-    flex: 1 1 45%; /* About and License share first row */
-  }
-  .policies-col,
-  .links-col {
-    flex: 1 1 45%; /* Policies and Links share second row */
-  }
 }
 
-/* Mobile Devices */
 @media (max-width: 600px) {
   .footer-container {
     flex-direction: column;
@@ -192,11 +209,19 @@
 
   .footer-col {
     flex: 1 1 100%;
-    margin-bottom: 35px; /* More space between stacked sections */
+    margin-bottom: 35px;
   }
 
   .footer-col h3::after {
-    width: 100%; /* Full width underline on mobile for neater look */
+    width: 100%;
     opacity: 0.3;
+  }
+
+  .footer-logos {
+    justify-content: center;
+  }
+
+  .footer-bottom {
+    font-size: 13px;
   }
 }

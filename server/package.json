@@ -1,31 +1,29 @@
 {
-  "name": "supreme-court-cases-backend",
+  "name": "scc-webapp",
+  "description": "Supreme Court Cases Search Application - Full Stack",
   "version": "1.0.0",
-  "description": "Express + TypeScript backend for Supreme Court Cases search",
-  "main": "dist/server.js",
+  "private": true,
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only server.ts",
-    "build": "tsc",
-    "start": "node dist/server.js",
-    "docs:build": "apidoc -i . -o docs/html -c apidoc.json -f docs/api_documentation.js -f docs/_apidoc.js -f server.ts --verbose"
-  },
-  "dependencies": {
-    "axios": "^1.7.7",
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
-    "express": "^4.19.2",
-    "express-session": "^1.18.2"
+    "install:all": "npm install && cd client && npm install && cd ../server && npm install",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:client": "cd client && npm run dev",
+    "dev:server": "cd server && npm run dev",
+    "build": "npm run build:server && npm run build:client",
+    "build:client": "cd client && npm run build",
+    "build:server": "cd server && npm run build",
+    "start": "cd server && npm start",
+    "lint": "cd client && npm run lint",
+    "test": "cd client && npm test"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.17",
-    "@types/express": "^4.17.21",
-    "@types/express-session": "^1.18.2",
-    "@types/node": "^20.6.0",
-    "apidoc": "^1.2.0",
-    "ts-node-dev": "^2.0.0",
-    "typescript": "^5.5.4"
+    "concurrently": "^8.2.2"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "dependencies": {
+    "axios": "^1.13.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "express-session": "^1.18.2",
+    "morgan": "^1.10.1"
+  }
 }

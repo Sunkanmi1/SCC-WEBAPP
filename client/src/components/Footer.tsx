@@ -1,5 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { Home, BookOpen, Info, Mail } from "lucide-react";
+
 import "../styles/Footer.css";
 
 interface FooterProps {
@@ -8,20 +10,16 @@ interface FooterProps {
 
 const Footer: React.FC<FooterProps> = ({ onNavigateToAbout }) => {
   const handleAboutClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-
     if (onNavigateToAbout) {
+      e.preventDefault();
       onNavigateToAbout();
-    } else {
-      // Dispatch custom event for navigation when prop is not available
-      window.dispatchEvent(new CustomEvent("navigateToAbout"));
     }
   };
 
-const Footer: React.FC = () => {
   return (
     <footer className="site-footer">
       <div className="footer-container">
+        {/* Logos */}
         <div className="footer-logos">
           <img src="/logo.png" alt="Logo" className="footer-logo" />
 
@@ -31,24 +29,23 @@ const Footer: React.FC = () => {
             rel="noopener noreferrer"
           >
             <img
-              src="wikidata.png"
+              src="/wikidata.png"
               alt="Wikidata logo"
               className="footer-logo"
             />
           </a>
         </div>
 
+        {/* Main Content */}
         <div className="footer-content">
           <nav className="footer-nav">
-            <div className="footer-nav-links">
-              <Link
-                to="/about"
-                onClick={handleAboutClick}
-                className="footer-link"
-              >
-                About Us
-              </Link>
-            </div>
+            <Link
+              to="/about"
+              onClick={handleAboutClick}
+              className="footer-link"
+            >
+              About Us
+            </Link>
           </nav>
 
           <div className="footer-external">
@@ -58,96 +55,79 @@ const Footer: React.FC = () => {
               rel="noopener noreferrer"
               className="footer-link footer-link-external"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24">
-                <circle
-                  cx="12"
-                  cy="12"
-                  r="11"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                />
-                <text
-                  x="12"
-                  y="16"
-                  fontSize="12"
-                  textAnchor="middle"
-                  fill="currentColor"
-                >
-                  CC
-                </text>
-              </svg>
               CC BY-SA 4.0
             </a>
-          </p>
-          <p>Content licensed under CC BY-SA 4.0 unless otherwise noted.</p>
 
-          <div className="powered-by-logos">
-            <a
-              href="https://www.wikimedia.org/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <img
-                src="svgs/wikimedia-button.svg"
-                alt="Wikimedia"
-                className="footer-svg-logo"
-              />
-            </a>
-            <a
-              href="https://www.mediawiki.org/wiki/MediaWiki"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <img
-                src="svgs/poweredby_mediawiki.svg"
-                alt="Powered by MediaWiki"
-                className="footer-svg-logo"
-              />
-            </a>
+            <p className="license-text">
+              Content licensed under CC BY-SA 4.0 unless otherwise noted.
+            </p>
+
+            <div className="powered-by-logos">
+              <a
+                href="https://www.wikimedia.org/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img
+                  src="/svgs/wikimedia-button.svg"
+                  alt="Wikimedia"
+                  className="footer-svg-logo"
+                />
+              </a>
+
+              <a
+                href="https://www.mediawiki.org/wiki/MediaWiki"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img
+                  src="/svgs/poweredby_mediawiki.svg"
+                  alt="Powered by MediaWiki"
+                  className="footer-svg-logo"
+                />
+              </a>
+            </div>
           </div>
         </div>
 
-        {/* Policies Column */}
+        {/* Policies */}
         <div className="footer-col policies-col">
           <h3>Policies</h3>
-          <p className="policies-text">
+          <p>
             Files are available under licenses specified on their description
-            page. All structured data from the file namespace is available under
-            the Creative Commons CC0 License; all unstructured text is available
-            under the Creative Commons Attribution-ShareAlike License;
-            additional terms may apply.
+            page. Structured data is under CC0; unstructured text is under
+            CC BY-SA. Additional terms may apply.
           </p>
-          <p className="policies-text">
+          <p>
             By using this site, you agree to the{" "}
-            <a href="/terms">Terms of Use</a> and the{" "}
-            <a href="/privacy">Privacy Policy</a>.
+            <Link to="/terms">Terms of Use</Link> and{" "}
+            <Link to="/privacy">Privacy Policy</Link>.
           </p>
         </div>
 
-        {/* Quick Links Column */}
+        {/* Quick Links */}
         <div className="footer-col links-col">
           <h3>Quick Links</h3>
           <ul>
             <li>
-              <a href="/">
+              <Link to="/">
                 <Home size={16} /> Home
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="/browse">
+              <Link to="/browse">
                 <BookOpen size={16} /> Contribute
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="/about">
+              <Link to="/about">
                 <Info size={16} /> About GSC
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="/contact">
-                <Mail size={16} /> Contact team
-              </a>
+              <Link to="/contact">
+                <Mail size={16} /> Contact Team
+              </Link>
             </li>
           </ul>
         </div>
@@ -156,8 +136,7 @@ const Footer: React.FC = () => {
       {/* Footer Bottom */}
       <div className="footer-bottom">
         <p>
-          &copy; {new Date().getFullYear()} Ghana Supreme Cases. All rights
-          reserved.
+          © {new Date().getFullYear()} Ghana Supreme Cases. All rights reserved.
         </p>
       </div>
     </footer>

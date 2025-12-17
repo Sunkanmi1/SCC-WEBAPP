@@ -1,8 +1,17 @@
-import React from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import ThemeToggle from './ThemeToggle';
-import CountryNav from './CountryNav';
-import '../styles/Header.css';
+import React, { useEffect, useRef, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Globe } from "lucide-react";
+
+import ThemeToggle from "./ThemeToggle";
+import CountryNav from "./CountryNav";
+import LoadingModal from "./LoadingModal";
+import "../styles/Header.css";
+
+interface Country {
+  code: string;
+  name: string;
+  flag: string;
+}
 
 interface HeaderProps {
   showBackButton?: boolean;
@@ -23,26 +32,26 @@ const Header: React.FC<HeaderProps> = ({
   const location = useLocation();
 
 const countries: Country[] = [
-  // { code: "ZA", name: "South Africa", flag: "🇿🇦" }, // Countries will be fetched from the backend
   { code: "GH", name: "Ghana", flag: "🇬🇭" },
   { code: "NG", name: "Nigeria", flag: "🇳🇬" },
-  { code: "KE", name: "Kenya", flag: "🇰🇪" },
+  { code: "KE", name: "Kenya", flag: "🇰🇪" }
 ];
 
 const Header: React.FC<HeaderProps> = ({
   showBackButton = false,
   onBackClick,
-  currentCountryCode,
+  currentCountryCode
 }) => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [loadingCountry, setLoadingCountry] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const location = useLocation();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Get current country from URL or default to Ghana
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [loadingCountry, setLoadingCountry] = useState<string | null>(null);
+
   const getCountryFromUrl = (): string => {
     if (currentCountryCode) return currentCountryCode;
-    const path = window.location.pathname;
-    const match = path.match(/^\/(gh|ng|ke|za)$/i);
+    const match = location.pathname.match(/^\/(gh|ng|ke)$/i);
     return match ? match[1].toUpperCase() : "GH";
   };
 
@@ -64,9 +73,9 @@ const Header: React.FC<HeaderProps> = ({
     }
   };
 
-  // Extract country code from URL if on country page
-  const countryMatch = location.pathname.match(/\/country\/([a-z]{2})/i);
-  const currentCountry = countryMatch ? countryMatch[1].toUpperCase() : 'GH';
+  const handleBackClick = () => {
+    onBackClick ? onBackClick() : navigate(-1);
+  };
 
   return (
     <header className="header">
@@ -82,14 +91,11 @@ const Header: React.FC<HeaderProps> = ({
             <span className="logo-text">SCC</span>
           </a>
 
-          {/* Country Selector */}
           <div className="country-selector" ref={dropdownRef}>
             <button
               className="country-button active-country"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              aria-label="Select country"
               aria-expanded={isDropdownOpen}
-              title={`Currently viewing: ${currentCountry.name}`}
             >
               <Globe size={18} className="globe-icon" />
               <span className="country-flag">{currentCountry.flag}</span>
@@ -98,12 +104,12 @@ const Header: React.FC<HeaderProps> = ({
                 className={`fas fa-chevron-down dropdown-arrow ${
                   isDropdownOpen ? "open" : ""
                 }`}
-              ></i>
+              />
             </button>
 
             {isDropdownOpen && (
               <div className="country-dropdown">
-                {countries.map((country) => (
+                {countries.map(country => (
                   <button
                     key={country.code}
                     className={`country-option ${
@@ -114,7 +120,7 @@ const Header: React.FC<HeaderProps> = ({
                     <span className="country-flag">{country.flag}</span>
                     <span className="country-name">{country.name}</span>
                     {country.code === selectedCountry && (
-                      <i className="fas fa-check check-icon"></i>
+                      <i className="fas fa-check check-icon" />
                     )}
                   </button>
                 ))}
@@ -122,9 +128,10 @@ const Header: React.FC<HeaderProps> = ({
             )}
           </div>
         </div>
-        
+
         <div className="nav-right">
-          <CountryNav currentCountry={currentCountry} />
+          <CountryNav currentCountry={currentCountry.code} />
+
           {!showBackButton && (
             <>
               {showBookmarksLink && (
@@ -138,12 +145,14 @@ const Header: React.FC<HeaderProps> = ({
               </Link>
             </>
           )}
+
           {showBackButton && (
             <button onClick={handleBackClick} className="back-button">
-              <i className="fas fa-arrow-left"></i>
+              <i className="fas fa-arrow-left" />
               <span>Back to Search</span>
             </button>
           )}
+
           <ThemeToggle />
         </div>
       </nav>
