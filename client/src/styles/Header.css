@@ -90,6 +90,25 @@
   transform: translateY(0);
 }
 
+.nav-link.bookmarks-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light));
+  border-color: var(--accent-gold);
+  color: var(--white);
+}
+
+.nav-link.bookmarks-link:hover {
+  background: var(--accent-gold);
+  border-color: var(--accent-gold);
+  color: var(--white);
+}
+
+.nav-link.bookmarks-link i {
+  font-size: var(--font-size-sm);
+}
+
 .back-button {
   display: flex;
   align-items: center;

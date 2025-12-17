@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import HomePage from './components/HomePage';
 import SearchResultsPage from './components/SearchResultsPage';
 import AboutUs from './components/AboutUs';
+import BookmarksPage from './components/BookmarksPage';
 import './styles/App.css';
 
 export interface Case {
@@ -25,7 +26,7 @@ export interface SearchState {
 }
 
 function App() {
-  const [currentView, setCurrentView] = useState<'home' | 'results' | 'about'>('home');
+  const [currentView, setCurrentView] = useState<'home' | 'results' | 'about' | 'bookmarks'>('home');
   const [searchState, setSearchState] = useState<SearchState>({
     query: '',
     results: [],
@@ -92,16 +93,30 @@ function App() {
     setSearchState(prev => ({ ...prev, query: '', results: [], error: null }));
   };
 
+  const handleNavigateToBookmarks = () => {
+    setCurrentView('bookmarks');
+  };
+
   return (
     <div className="app">
       {currentView === 'home' ? (
-        <HomePage onSearch={handleSearch} onNavigateToAbout={handleNavigateToAbout} />
+        <HomePage 
+          onSearch={handleSearch} 
+          onNavigateToAbout={handleNavigateToAbout}
+          onNavigateToBookmarks={handleNavigateToBookmarks}
+        />
       ) : currentView === 'about' ? (
         <AboutUs onNavigateToHome={handleNavigateToHome} />
+      ) : currentView === 'bookmarks' ? (
+        <BookmarksPage 
+          onBackToHome={handleNavigateToHome}
+          onNavigateToAbout={handleNavigateToAbout}
+        />
       ) : (
         <SearchResultsPage
           searchState={searchState}
           onBackToSearch={handleBackToSearch}
+          onNavigateToBookmarks={handleNavigateToBookmarks}
         />
       )}
     </div>

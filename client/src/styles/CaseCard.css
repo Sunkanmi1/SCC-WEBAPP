@@ -6,12 +6,82 @@
   transition: all var(--transition-base);
   border: 1px solid var(--gray-200);
   height: fit-content;
+  position: relative;
 }
 
 .case-card:hover {
   transform: translateY(-4px);
   box-shadow: var(--shadow-xl);
   border-color: var(--primary-blue-light);
+}
+
+.case-card.bookmarked {
+  border-color: var(--accent-gold);
+}
+
+.case-card.bookmarked::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light));
+}
+
+/* Card Action Buttons */
+.case-card-actions {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  display: flex;
+  gap: var(--space-2);
+  z-index: 10;
+}
+
+.card-action-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--border-radius-full);
+  color: var(--gray-500);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-sm);
+}
+
+.card-action-btn:hover {
+  transform: scale(1.1);
+  box-shadow: var(--shadow-md);
+}
+
+.card-action-btn.bookmark-btn:hover {
+  color: var(--accent-gold);
+  border-color: var(--accent-gold);
+}
+
+.card-action-btn.bookmark-btn.active {
+  background: var(--accent-gold);
+  border-color: var(--accent-gold);
+  color: var(--white);
+}
+
+.card-action-btn.collection-btn:hover {
+  color: var(--primary-blue);
+  border-color: var(--primary-blue);
+}
+
+.card-action-btn.remove-btn:hover {
+  color: var(--error);
+  border-color: var(--error);
+}
+
+.card-action-btn i {
+  font-size: var(--font-size-sm);
 }
 
 .case-card-header {

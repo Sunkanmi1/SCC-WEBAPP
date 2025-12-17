@@ -6,9 +6,17 @@ interface HeaderProps {
   showBackButton?: boolean;
   onBackClick?: () => void;
   onNavigateToAbout?: () => void;
+  onNavigateToBookmarks?: () => void;
+  showBookmarksLink?: boolean;
 }
 
-const Header: React.FC<HeaderProps> = ({ showBackButton = false, onBackClick, onNavigateToAbout }) => {
+const Header: React.FC<HeaderProps> = ({ 
+  showBackButton = false, 
+  onBackClick, 
+  onNavigateToAbout,
+  onNavigateToBookmarks,
+  showBookmarksLink = true
+}) => {
   const navigate = useNavigate();
 
   const handleLogoClick = () => {
@@ -25,6 +33,15 @@ const Header: React.FC<HeaderProps> = ({ showBackButton = false, onBackClick, on
       onNavigateToAbout();
     } else {
       navigate('/about');
+    }
+  };
+
+  const handleBookmarksClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    if (onNavigateToBookmarks) {
+      onNavigateToBookmarks();
+    } else {
+      navigate('/bookmarks');
     }
   };
 
@@ -51,9 +68,17 @@ const Header: React.FC<HeaderProps> = ({ showBackButton = false, onBackClick, on
         
         <div className="nav-right">
           {!showBackButton && (
-            <Link to="/about" onClick={handleAboutClick} className="nav-link">
-              About Us
-            </Link>
+            <>
+              {showBookmarksLink && (
+                <Link to="/bookmarks" onClick={handleBookmarksClick} className="nav-link bookmarks-link">
+                  <i className="fas fa-bookmark"></i>
+                  <span>Bookmarks</span>
+                </Link>
+              )}
+              <Link to="/about" onClick={handleAboutClick} className="nav-link">
+                About Us
+              </Link>
+            </>
           )}
           {showBackButton && (
             <button onClick={handleBackClick} className="back-button">

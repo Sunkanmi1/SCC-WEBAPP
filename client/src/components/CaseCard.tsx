@@ -1,12 +1,22 @@
 import React from 'react';
-import { Case } from '../../App';
+import { Case } from '../App';
 import '../styles/CaseCard.css';
 
 interface CaseCardProps {
   case: Case;
+  isBookmarked?: boolean;
+  onToggleBookmark?: () => void;
+  onAddToCollection?: () => void;
+  onRemoveFromCollection?: () => void;
 }
 
-const CaseCard: React.FC<CaseCardProps> = ({ case: caseItem }) => {
+const CaseCard: React.FC<CaseCardProps> = ({ 
+  case: caseItem,
+  isBookmarked = false,
+  onToggleBookmark,
+  onAddToCollection,
+  onRemoveFromCollection
+}) => {
   const formatDate = (dateString: string) => {
     try {
       return new Date(dateString).toLocaleDateString('en-US', {
@@ -20,7 +30,43 @@ const CaseCard: React.FC<CaseCardProps> = ({ case: caseItem }) => {
   };
 
   return (
-    <div className="case-card">
+    <div className={`case-card ${isBookmarked ? 'bookmarked' : ''}`}>
+      {/* Bookmark Actions */}
+      {(onToggleBookmark || onAddToCollection || onRemoveFromCollection) && (
+        <div className="case-card-actions">
+          {onToggleBookmark && (
+            <button 
+              className={`card-action-btn bookmark-btn ${isBookmarked ? 'active' : ''}`}
+              onClick={onToggleBookmark}
+              title={isBookmarked ? 'Remove bookmark' : 'Add bookmark'}
+              aria-label={isBookmarked ? 'Remove bookmark' : 'Add bookmark'}
+            >
+              <i className={`${isBookmarked ? 'fas' : 'far'} fa-bookmark`}></i>
+            </button>
+          )}
+          {onAddToCollection && (
+            <button 
+              className="card-action-btn collection-btn"
+              onClick={onAddToCollection}
+              title="Add to collection"
+              aria-label="Add to collection"
+            >
+              <i className="fas fa-folder-plus"></i>
+            </button>
+          )}
+          {onRemoveFromCollection && (
+            <button 
+              className="card-action-btn remove-btn"
+              onClick={onRemoveFromCollection}
+              title="Remove from collection"
+              aria-label="Remove from collection"
+            >
+              <i className="fas fa-folder-minus"></i>
+            </button>
+          )}
+        </div>
+      )}
+
       <div className="case-card-header">
         <h3 className="case-title">{caseItem.title}</h3>
         <div className="case-date">
@@ -32,7 +78,7 @@ const CaseCard: React.FC<CaseCardProps> = ({ case: caseItem }) => {
       <div className="case-card-body">
         <div className="case-field">
           <label className="field-label">
-            <i className="fas fa-bookmark"></i>
+            <i className="fas fa-quote-left"></i>
             Citation
           </label>
           <p className="field-value">{caseItem.citation}</p>
