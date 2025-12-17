@@ -9,18 +9,7 @@ interface HomePageProps {
   onNavigateToAbout?: () => void;
 }
 
-const HomePage: React.FC<HomePageProps> = ({ onSearch }) => {
-  interface CourtCase {
-    caseId: string;
-    title: string;
-    description: string;
-    date: string;
-    citation: string;
-    court: string;
-    judges: string;
-    sourceLabel: string;
-    articleUrl: string;
-  }
+const HomePage: React.FC<HomePageProps> = ({ onSearch, onNavigateToAbout }) => {
   const [query, setQuery] = useState("");
 
   const [year, setYear] = useState("");
@@ -31,33 +20,10 @@ const HomePage: React.FC<HomePageProps> = ({ onSearch }) => {
   const [loading, setLoading] = useState(false);
   const [showRecent, setShowRecent] = useState(false);
 
-  const fetchSearchResults = async (searchQuery: string) => {
-    setLoading(true);
-
-    try {
-      const response = await fetch(
-        `http://localhost:9090/search?q=${encodeURIComponent(searchQuery)}`
-      );
-      const data = await response.json();
-
-      if (data.success) {
-        setResults(data.results);
-      } else {
-        setResults([]);
-      }
-    } catch (error) {
-      console.error("Search error:", error);
-      setResults([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
       onSearch(query.trim());
-      fetchSearchResults(query.trim());
     }
   };
 
@@ -136,48 +102,9 @@ const HomePage: React.FC<HomePageProps> = ({ onSearch }) => {
             onClose={() => setShowRecent(false)}
             onSelect={(title) => {
               setQuery(title);
-              fetchSearchResults(title);
+              onSearch(title);
             }}
           />
-
-          <div className="filter-panel">
-            <select value={year} onChange={(e) => setYear(e.target.value)}>
-              <option value="">Select Year</option>
-              <option value="2010">2010</option>
-              <option value="2015">2015</option>
-              <option value="2020">2020</option>
-            </select>
-
-            <select value={judge} onChange={(e) => setJudge(e.target.value)}>
-              <option value="">Select Judge</option>
-              <option value="Atuguba">Atuguba</option>
-              <option value="Dotse">Dotse</option>
-            </select>
-
-            <select
-              value={country}
-              onChange={(e) => setCountry(e.target.value)}
-            >
-              <option value="">Select Country</option>
-              <option value="Ghana">Ghana</option>
-            </select>
-
-            <div className="filter-actions">
-              <button onClick={handleApplyFilters} className="apply-btn">
-                Apply Filters
-              </button>
-              <button onClick={handleResetFilters} className="reset-btn">
-                Reset
-              </button>
-            </div>
-          </div>
-          <br />
-
-          {loading && <p className="loading-text">Loading results...</p>}
-
-          {!loading && results.length === 0 && (
-            <p className="no-results">No results found.</p>
-          )}
         </div>
       </main>
 
