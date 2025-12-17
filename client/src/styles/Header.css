@@ -65,11 +65,22 @@
   font-size: var(--font-size-sm);
   cursor: pointer;
   text-decoration: none;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  box-shadow: none;
 }
 
 .nav-link:active {
   transform: translateY(0);
+  box-shadow: var(--shadow-base);
+}
+
+.nav-link:focus-visible {
+  outline: 2px solid var(--primary-blue);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
 }
 
 .back-button {
@@ -77,17 +88,26 @@
   align-items: center;
   gap: var(--space-2);
   padding: var(--space-3) var(--space-5);
-  background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-light));
+  background: var(--primary-blue);
   color: var(--white);
   border-radius: var(--border-radius-full);
   font-weight: 600;
   font-size: var(--font-size-sm);
   box-shadow: var(--shadow-base);
+  min-height: 44px;
+  border: none;
+  cursor: pointer;
 }
 
 .back-button:active {
   transform: translateY(0);
   box-shadow: var(--shadow-base);
+}
+
+.back-button:focus-visible {
+  outline: 2px solid var(--white);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.3);
 }
 
 .back-button i {
