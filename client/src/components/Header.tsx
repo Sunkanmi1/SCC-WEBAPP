@@ -17,6 +17,7 @@ interface HeaderProps {
   showBackButton?: boolean;
   onBackClick?: () => void;
   currentCountryCode?: string;
+  onNavigateToAbout?: () => void;
 }
 
 const countries: Country[] = [
@@ -29,6 +30,7 @@ const Header: React.FC<HeaderProps> = ({
   showBackButton = false,
   onBackClick,
   currentCountryCode,
+  onNavigateToAbout,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
