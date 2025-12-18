@@ -71,6 +71,10 @@ function App() {
     }
   };
 
+  const handleNavigateToBrowse = () => {
+    setCurrentView('browse');
+  };
+
   const handleBackToSearch = () => {
     navigate("/");
     setSearchState((prev) => ({

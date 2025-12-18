@@ -21,7 +21,7 @@
 .about-hero {
   text-align: center;
   padding: var(--space-16) var(--space-4) var(--space-12);
-  background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-light) 50%, var(--accent-gold) 100%);
+  background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-light) 60%, var(--primary-blue-dark) 100%);
   background-size: 400% 400%;
   border-radius: var(--border-radius-2xl);
   margin-bottom: var(--space-12);
