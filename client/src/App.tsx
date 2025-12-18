@@ -37,6 +37,8 @@ function App() {
     error: null,
   });
 
+
+
   const handleSearch = async (query: string) => {
     if (!query.trim()) return;
 
@@ -71,6 +73,8 @@ function App() {
     }
   };
 
+
+
   const handleBackToSearch = () => {
     navigate("/");
     setSearchState((prev) => ({
@@ -84,7 +88,9 @@ function App() {
   return (
     <div className="app">
       <Routes>
-        <Route path="/" element={<HomePage onSearch={handleSearch} />} />
+        <Route path="/" element={<HomePage onSearch={handleSearch} onNavigateToBrowse={function (): void {
+          throw new Error("Function not implemented.");
+        } } />} />
         <Route path="/about" element={<AboutUs />} />
         <Route
           path="/statistics"
