@@ -1,8 +1,8 @@
-import React from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import ThemeToggle from './ThemeToggle';
-import CountryNav from './CountryNav';
-import '../styles/Header.css';
+import React from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import ThemeToggle from "./ThemeToggle";
+import CountryNav from "./CountryNav";
+import "../styles/Header.css";
 
 interface HeaderProps {
   showBackButton?: boolean;
@@ -10,7 +10,11 @@ interface HeaderProps {
   onNavigateToAbout?: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ showBackButton = false, onBackClick, onNavigateToAbout }) => {
+const Header: React.FC<HeaderProps> = ({
+  showBackButton = false,
+  onBackClick,
+  onNavigateToAbout,
+}) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -18,7 +22,7 @@ const Header: React.FC<HeaderProps> = ({ showBackButton = false, onBackClick, on
     if (onBackClick) {
       onBackClick();
     } else {
-      navigate('/');
+      navigate("/");
     }
   };
 
@@ -27,7 +31,7 @@ const Header: React.FC<HeaderProps> = ({ showBackButton = false, onBackClick, on
     if (onNavigateToAbout) {
       onNavigateToAbout();
     } else {
-      navigate('/about');
+      navigate("/about");
     }
   };
 
@@ -36,13 +40,13 @@ const Header: React.FC<HeaderProps> = ({ showBackButton = false, onBackClick, on
       onBackClick();
     } else {
       // Fallback navigation if onBackClick is not provided
-      navigate('/');
+      navigate("/");
     }
   };
 
   // Extract country code from URL if on country page
   const countryMatch = location.pathname.match(/\/country\/([a-z]{2})/i);
-  const currentCountry = countryMatch ? countryMatch[1].toUpperCase() : 'GH';
+  const currentCountry = countryMatch ? countryMatch[1].toUpperCase() : "GH";
 
   return (
     <header className="header">
@@ -55,8 +59,9 @@ const Header: React.FC<HeaderProps> = ({ showBackButton = false, onBackClick, on
             </div>
           </Link>
         </div>
-        
+
         <div className="nav-right">
+          <Link to="/statistics"> Dashbord</Link>
           <CountryNav currentCountry={currentCountry} />
           {!showBackButton && (
             <Link to="/about" onClick={handleAboutClick} className="nav-link">

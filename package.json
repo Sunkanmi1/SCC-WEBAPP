@@ -28,6 +28,9 @@
   "license": "ISC",
   "devDependencies": {
     "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "html2canvas": "^1.4.1",
+    "recharts": "^3.6.0"
   }
 }
-
