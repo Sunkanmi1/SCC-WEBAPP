@@ -15,20 +15,9 @@
   font-size: var(--font-size-sm);
   color: var(--primary-red);
   cursor: pointer;
-  transition: all var(--transition-base);
   white-space: nowrap;
 }
 
-.theme-switcher-button:hover {
-  background: var(--primary-red);
-  color: var(--white);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.theme-switcher-button:active {
-  transform: translateY(0);
-}
 
 .theme-flag {
   font-size: var(--font-size-lg);
@@ -41,7 +30,6 @@
 
 .theme-arrow {
   font-size: var(--font-size-xs);
-  transition: transform var(--transition-base);
   margin-left: var(--space-1);
 }
 
@@ -81,9 +69,6 @@
   border-radius: var(--border-radius-sm);
 }
 
-.theme-dropdown::-webkit-scrollbar-thumb:hover {
-  background: var(--primary-red-dark);
-}
 
 @keyframes slideDown {
   from {
@@ -107,7 +92,6 @@
   border-bottom: 1px solid var(--gray-200);
   text-align: left;
   cursor: pointer;
-  transition: all var(--transition-fast);
   font-size: var(--font-size-sm);
   color: var(--gray-700);
 }
@@ -116,10 +100,6 @@
   border-bottom: none;
 }
 
-.theme-option:hover {
-  background: var(--primary-red-subtle);
-  color: var(--primary-red);
-}
 
 .theme-option.active {
   background: var(--primary-red-subtle);

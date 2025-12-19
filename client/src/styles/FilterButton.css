@@ -11,19 +11,10 @@
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
   position: relative;
 }
 
-.filter-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-}
-
-.filter-button:active {
-  transform: translateY(0);
-}
 
 .filter-button.active {
   background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
@@ -139,14 +130,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
   font-size: 1.25rem;
 }
 
-.close-button:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: rotate(90deg);
-}
 
 /* Modal Body */
 .filter-modal-body {
@@ -185,7 +171,6 @@
   border: 2px solid #e0e0e0;
   border-radius: 8px;
   font-size: 0.95rem;
-  transition: all 0.2s ease;
   font-family: inherit;
 }
 
@@ -260,7 +245,6 @@
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
 }
 
 .clear-button {
@@ -269,10 +253,6 @@
   border: 2px solid #e0e0e0;
 }
 
-.clear-button:hover {
-  background: #e8e8e8;
-  border-color: #d0d0d0;
-}
 
 .apply-button {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -280,14 +260,6 @@
   box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
 }
 
-.apply-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-}
-
-.apply-button:active {
-  transform: translateY(0);
-}
 
 /* Responsive Design */
 @media (max-width: 768px) {

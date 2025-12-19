@@ -172,14 +172,8 @@
   border-radius: var(--border-radius-2xl);
   box-shadow: var(--shadow-xl);
   overflow: hidden; /* Keep hidden for rounded corners */
-  transition: all var(--transition-base);
-  transform: scale(1);
 }
 
-.search-box:hover {
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  transform: scale(1.00);
-}
 
 .search-box:focus-within {
   box-shadow: 
@@ -211,7 +205,6 @@
   color: var(--white);
   border: none;
   cursor: pointer;
-  transition: all var(--transition-base);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -268,11 +261,6 @@
 }
 
 
-.search-button:hover {
-  background: linear-gradient(135deg, var(--primary-red-dark), var(--primary-red));
-  transform: translateX(-0.1px);
-  box-shadow: 0 2px 14px rgba(206, 17, 38, 0.4);
-}
 
 .search-button:active {
   box-shadow: 0 2px 8px rgba(206, 17, 38, 0.3);
@@ -301,22 +289,10 @@
   font-size: var(--font-size-base);
   font-weight: 600;
   cursor: pointer;
-  transition: all var(--transition-base);
   box-shadow: var(--shadow-md);
   min-width: 140px;
 }
 
-.filter-toggle-button:hover {
-  background: var(--primary-red);
-  color: var(--white);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
-}
-
-.filter-toggle-button:active {
-  transform: translateY(0);
-  box-shadow: var(--shadow-md);
-}
 
 .filter-toggle-button:focus {
   outline: 2px solid var(--accent-gold);

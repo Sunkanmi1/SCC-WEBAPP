@@ -30,14 +30,9 @@
   color: var(--gray-600);
   text-decoration: none;
   border-radius: 6px;
-  transition: all 0.3s ease;
   font-weight: 500;
 }
 
-.breadcrumb-link:hover {
-  color: #667eea;
-  background: rgba(102, 126, 234, 0.08);
-}
 
 .breadcrumb-link i {
   font-size: 0.85rem;
@@ -73,10 +68,6 @@
   color: var(--text-secondary);
 }
 
-[data-theme="dark"] .breadcrumb-link:hover {
-  color: var(--primary-color);
-  background: rgba(167, 139, 250, 0.1);
-}
 
 [data-theme="dark"] .breadcrumb-current {
   color: var(--text-primary);

@@ -44,16 +44,11 @@
   cursor: pointer;
   padding: var(--space-1);
   border-radius: var(--border-radius-sm);
-  transition: all var(--transition-base);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.search-history-clear:hover {
-  background: var(--gray-200);
-  color: var(--gray-700);
-}
 
 .search-history-list {
   list-style: none;
@@ -67,14 +62,9 @@
   justify-content: space-between;
   padding: var(--space-3) var(--space-4);
   cursor: pointer;
-  transition: all var(--transition-base);
   border-left: 3px solid transparent;
 }
 
-.search-history-item:hover {
-  background: var(--primary-red-subtle);
-  border-left-color: var(--primary-red);
-}
 
 .search-history-content {
   display: flex;
@@ -89,9 +79,6 @@
   width: 16px;
 }
 
-.search-history-item:hover .search-history-content i {
-  color: var(--primary-red);
-}
 
 .search-history-query {
   color: var(--gray-800);
@@ -115,21 +102,16 @@
   cursor: pointer;
   padding: var(--space-2);
   border-radius: var(--border-radius-sm);
-  transition: all var(--transition-base);
   opacity: 0;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.search-history-item:hover .search-history-remove {
-  opacity: 1;
+.search-history-remove {
+  opacity: 0;
 }
 
-.search-history-remove:hover {
-  background: var(--gray-200);
-  color: var(--error);
-}
 
 /* Scrollbar styling */
 .search-history::-webkit-scrollbar {
@@ -146,9 +128,6 @@
   border-radius: var(--border-radius-sm);
 }
 
-.search-history::-webkit-scrollbar-thumb:hover {
-  background: var(--gray-400);
-}
 
 @media (max-width: 768px) {
   .search-history {

@@ -143,14 +143,9 @@
   color: #60a5fa;
   text-decoration: none;
   font-size: var(--font-size-sm);
-  transition: color var(--transition-base);
   font-weight: 500;
 }
 
-.footer-link:hover {
-  color: #93c5fd;
-  text-decoration: underline;
-}
 
 .footer-link:focus {
   outline: 2px solid var(--accent-gold);
@@ -168,13 +163,8 @@
   color: #60a5fa;
   text-decoration: none;
   font-weight: 500;
-  transition: color var(--transition-base);
 }
 
-.footer-link-inline:hover {
-  color: #93c5fd;
-  text-decoration: underline;
-}
 
 .footer-link-inline:focus {
   outline: 2px solid var(--accent-gold);
@@ -226,12 +216,8 @@
   align-items: center;
   gap: var(--space-2);
   text-decoration: none;
-  transition: opacity var(--transition-base);
 }
 
-.footer-credit-link:hover {
-  opacity: 0.8;
-}
 
 .footer-credit-link:focus {
   outline: 2px solid var(--accent-gold);
@@ -308,13 +294,9 @@
   color: #ffffff;
   text-decoration: none;
   font-size: var(--font-size-base);
-  transition: color var(--transition-base);
   padding: var(--space-2) 0;
 }
 
-.footer-quick-link:hover {
-  color: #60a5fa;
-}
 
 .footer-quick-link:focus {
   outline: 2px solid var(--accent-gold);
@@ -355,13 +337,8 @@
   color: #9ca3af;
   text-decoration: none;
   font-size: var(--font-size-xs);
-  transition: color var(--transition-base);
 }
 
-.footer-bottom-link:hover {
-  color: #d1d5db;
-  text-decoration: underline;
-}
 
 .footer-bottom-link:focus {
   outline: 2px solid var(--accent-gold);

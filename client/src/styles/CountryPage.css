@@ -58,14 +58,9 @@
   border: 1px solid var(--gray-200);
   border-radius: 12px;
   padding: 24px;
-  transition: all var(--transition-base);
   box-shadow: var(--shadow-sm);
 }
 
-.case-card:hover {
-  box-shadow: var(--shadow-lg);
-  transform: translateY(-4px);
-}
 
 .case-card h3 {
   font-size: 1.25rem;
@@ -123,14 +118,8 @@
   border-radius: var(--border-radius-full);
   font-weight: 600;
   cursor: pointer;
-  transition: all var(--transition-base);
 }
 
-.retry-button:hover {
-  background: var(--primary-blue-dark);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-}
 
 /* Empty State */
 .empty-state {

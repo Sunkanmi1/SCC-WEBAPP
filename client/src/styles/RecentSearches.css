@@ -42,7 +42,6 @@
   justify-content: flex-start;
   padding: 0;
   border-bottom: 1px solid #f8f9fa;
-  transition: background-color 0.15s ease;
   cursor: pointer;
 }
 
@@ -50,9 +49,6 @@
   border-bottom: none;
 }
 
-.recent-row:hover {
-  background-color: #f8f9fa;
-}
 
 .recent-item-info {
   flex: 1;
@@ -121,18 +117,13 @@
   font-weight: 300;
   border-radius: 6px;
   cursor: pointer;
-  transition: all 0.15s ease;
   opacity: 0;
 }
 
-.recent-row:hover .recent-delete {
+.recent-delete {
   opacity: 1;
 }
 
-.recent-delete:hover {
-  background-color: #f1f3f5;
-  color: #fa5252;
-}
 
 .recent-loading {
   display: flex;
@@ -205,6 +196,3 @@
   border-radius: 3px;
 }
 
-.recent-dropdown::-webkit-scrollbar-thumb:hover {
-  background: #adb5bd;
-}

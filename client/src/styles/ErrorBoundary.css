@@ -90,9 +90,6 @@
   user-select: none;
 }
 
-.error-boundary-details summary:hover {
-  color: var(--primary-color, var(--primary-red));
-}
 
 .error-boundary-stack {
   font-family: 'Courier New', monospace;
@@ -124,7 +121,6 @@
   font-size: var(--font-size-base);
   font-weight: 600;
   cursor: pointer;
-  transition: all var(--transition-base);
   text-decoration: none;
 }
 
@@ -133,11 +129,6 @@
   color: var(--white);
 }
 
-.error-boundary-button-primary:hover {
-  background: var(--primary-color-dark, var(--primary-red-dark));
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-}
 
 .error-boundary-button-secondary {
   background: var(--gray-100);
@@ -145,14 +136,7 @@
   border: 1px solid var(--gray-300);
 }
 
-.error-boundary-button-secondary:hover {
-  background: var(--gray-200);
-  border-color: var(--gray-400);
-}
 
-.error-boundary-button:active {
-  transform: translateY(0);
-}
 
 @media (max-width: 768px) {
   .error-boundary-content {

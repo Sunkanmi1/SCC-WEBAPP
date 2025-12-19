@@ -143,12 +143,8 @@
   margin-left: 4px;
   color: var(--gray-500);
   cursor: help;
-  transition: color 0.2s ease;
 }
 
-.tooltip-icon:hover {
-  color: #667eea;
-}
 
 .tooltip-icon i {
   font-size: 0.85rem;
@@ -158,9 +154,6 @@
   color: var(--text-muted);
 }
 
-[data-theme="dark"] .tooltip-icon:hover {
-  color: var(--primary-color);
-}
 
 /* Mobile - Larger touch targets */
 @media (max-width: 768px) {

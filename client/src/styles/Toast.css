@@ -90,14 +90,9 @@
   align-items: center;
   justify-content: center;
   border-radius: var(--border-radius-sm);
-  transition: all var(--transition-base);
   flex-shrink: 0;
 }
 
-.toast-close:hover {
-  background: var(--gray-100);
-  color: var(--gray-600);
-}
 
 @media (max-width: 768px) {
   .toast-container {
