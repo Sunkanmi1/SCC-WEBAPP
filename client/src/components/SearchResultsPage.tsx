@@ -1,250 +1,200 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useRef, useCallback, useMemo } from 'react';
 import Header from './Header';
 import Footer from './Footer';
 import CaseCard from './CaseCard';
 import LoadingSpinner from './LoadingSpinner';
-import FilterPanel, { FilterOptions } from './FilterPanel';
+import FilterPanel, { FilterValues } from './FilterPanel';
 import Pagination from './Pagination';
-import Breadcrumbs, { BreadcrumbItem } from './Breadcrumbs';
-import { SearchState, Case } from '../App';
+import SortOptions, { SortOption } from './SortOptions';
+import { SearchState } from '../types/search';
+import { sortCases } from '../utils/sortCases';
 import '../styles/SearchResultsPage.css';
+import '../styles/AppliedFilters.css';
+
 
 interface SearchResultsPageProps {
   searchState: SearchState;
   onBackToSearch: () => void;
+  onApplyFilters?: (filters: FilterValues, page?: number, limit?: number) => void;
+  onResetFilters?: () => void;
+  onNavigateToHome?: () => void;
+  onNavigateToAbout?: () => void;
+  onRetry?: () => void;
+  onSearch?: (query: string, page?: number, limit?: number) => void;
 }
 
 const SearchResultsPage: React.FC<SearchResultsPageProps> = ({
   searchState,
-  onBackToSearch
+  onBackToSearch,
+  onApplyFilters,
+  onResetFilters,
+  onNavigateToHome,
+  onNavigateToAbout,
+  onRetry,
+  onSearch
 }) => {
-  const { query, results, loading, error } = searchState;
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [activeFilters, setActiveFilters] = useState<FilterOptions>({
-    year: '',
-    judge: '',
-    keyword: ''
-  });
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(20);
+  const { query, results, loading, error, pagination, appliedFilters, totalCount } = searchState;
+  const [itemsPerPage, setItemsPerPage] = useState(pagination?.itemsPerPage || 20);
+  const [sortOption, setSortOption] = useState<SortOption>('relevance');
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  
+  // Sort results based on selected option
+  const sortedResults = useMemo(() => {
+    return sortCases(results, sortOption, query);
+  }, [results, sortOption, query]);
 
-  // Extract unique years and judges from results
-  const availableYears = useMemo(() => {
-    const years = results
-      .map(c => c.date.split('-')[0])
-      .filter(year => year && year !== 'Date')
-      .sort((a, b) => b.localeCompare(a));
-    return Array.from(new Set(years));
-  }, [results]);
-
-  const availableJudges = useMemo(() => {
-    const judges = results
-      .flatMap(c => c.judges.split(',').map(j => j.trim()))
-      .filter(judge => judge && judge !== 'Judges unavailable')
-      .sort();
-    return Array.from(new Set(judges));
-  }, [results]);
-
-  // Apply filters to results
-  const filteredResults = useMemo(() => {
-    return results.filter((caseItem: Case) => {
-      // Year filter
-      if (activeFilters.year) {
-        const caseYear = caseItem.date.split('-')[0];
-        if (caseYear !== activeFilters.year) return false;
+  const displayCount = totalCount !== undefined ? totalCount : (pagination?.totalItems || results.length);
+  
+  const lastCaseElementRef = useCallback((node: HTMLDivElement | null) => {
+    if (loading) return;
+    if (observerRef.current) observerRef.current.disconnect();
+    observerRef.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && pagination?.hasNextPage && onSearch && query) {
+        // Load next page when last item is visible (lazy loading)
+        onSearch(query, (pagination.currentPage || 1) + 1, itemsPerPage);
       }
-
-      // Judge filter
-      if (activeFilters.judge) {
-        if (!caseItem.judges.includes(activeFilters.judge)) return false;
-      }
-
-      // Keyword filter
-      if (activeFilters.keyword) {
-        const keyword = activeFilters.keyword.toLowerCase();
-        const searchableText = [
-          caseItem.title,
-          caseItem.description,
-          caseItem.citation,
-          caseItem.court,
-          caseItem.judges
-        ].join(' ').toLowerCase();
-        
-        if (!searchableText.includes(keyword)) return false;
-      }
-
-      return true;
     });
-  }, [results, activeFilters]);
-
-  const handleApplyFilters = (filters: FilterOptions) => {
-    setActiveFilters(filters);
-    setCurrentPage(1); // Reset to first page when filters change
-  };
-
-  const handleRemoveFilter = (filterType: keyof FilterOptions) => {
-    setActiveFilters(prev => ({ ...prev, [filterType]: '' }));
-    setCurrentPage(1);
-  };
-
-  const hasActiveFilters = activeFilters.year || activeFilters.judge || activeFilters.keyword;
-
-  // Pagination logic
-  const totalPages = Math.ceil(filteredResults.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const paginatedResults = filteredResults.slice(startIndex, endIndex);
+    if (node) observerRef.current.observe(node);
+  }, [loading, pagination, onSearch, query, itemsPerPage]);
 
   const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+    if (onSearch && query) {
+      onSearch(query, page, itemsPerPage);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (onApplyFilters) {
+      // If filtered, we need to maintain filter state
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
-  // Breadcrumbs
-  const breadcrumbs: BreadcrumbItem[] = [
-    { label: 'Home', path: '/', icon: 'fas fa-home' },
-    { label: 'Search Results', icon: 'fas fa-search' }
-  ];
+  const handleItemsPerPageChange = (items: number) => {
+    setItemsPerPage(items);
+    if (onSearch && query) {
+      onSearch(query, 1, items); // Reset to page 1 when changing items per page
+    }
+  };
 
   return (
     <div className="search-results-page">
       <Header showBackButton={true} onBackClick={onBackToSearch} />
 
       <main className="main-content">
-        <Breadcrumbs items={breadcrumbs} />
-        
         <section className="results-section">
+          {/* Filter Panel */}
+          {onApplyFilters && onResetFilters && (
+            <FilterPanel
+              onApplyFilters={onApplyFilters}
+              onResetFilters={onResetFilters}
+              isLoading={loading}
+            />
+          )}
+
           {loading ? (
             <LoadingSpinner />
           ) : error ? (
-            <div className="alert error-alert">
+            <div className="alert error-alert ">
               <i className="fas fa-exclamation-circle"></i>
               <span>{error}</span>
             </div>
           ) : results.length === 0 ? (
-            <div className="alert info-alert">
+            <div className="alert empty-alert">
               <i className="fas fa-search"></i>
               <h2>No cases found</h2>
-              <p>We couldn't find any cases matching "<strong>{query}</strong>".</p>
-              <p className="suggestions">Try different keywords or check your spelling.</p>
+              <p>Try adjusting your search terms or check your spelling.</p>
             </div>
           ) : (
             <>
-              <div className="results-header">
-                <div className="results-header-top">
-                  <div className="results-info">
-                    <h2>Search Results</h2>
-                    <p className="results-count">
-                      {hasActiveFilters 
-                        ? `Showing ${filteredResults.length} of ${results.length} case${results.length !== 1 ? 's' : ''} for "${query}"`
-                        : `Found ${results.length} case${results.length !== 1 ? 's' : ''} for "${query}"`
-                      }
-                    </p>
-                  </div>
-                  <button 
-                    className="filter-toggle-btn"
-                    onClick={() => setIsFilterOpen(true)}
-                  >
+              {/* Sort Options and Results Count */}
+              <SortOptions
+                currentSort={sortOption}
+                onSortChange={setSortOption}
+                totalResults={displayCount}
+              />
+
+              {/* Applied Filters Display */}
+              {appliedFilters && (
+                <div className="applied-filters">
+                  <h3 className="applied-filters-title">
                     <i className="fas fa-filter"></i>
-                    Filter
-                    {hasActiveFilters && (
-                      <span className="filter-count-badge">
-                        {[activeFilters.year, activeFilters.judge, activeFilters.keyword].filter(Boolean).length}
+                    Applied Filters:
+                  </h3>
+                  <div className="applied-filters-list">
+                    {appliedFilters.keyword && (
+                      <span className="filter-badge">
+                        <i className="fas fa-key"></i>
+                        Keyword: {appliedFilters.keyword}
                       </span>
                     )}
-                  </button>
-                </div>
-
-                {/* Active Filters Display */}
-                {hasActiveFilters && (
-                  <div className="active-filters">
-                    <span className="active-filters-label">Active Filters:</span>
-                    {activeFilters.year && (
-                      <div className="filter-badge">
-                        <i className="fas fa-calendar-alt"></i>
-                        Year: {activeFilters.year}
-                        <button 
-                          className="filter-badge-close"
-                          onClick={() => handleRemoveFilter('year')}
-                        >
-                          <i className="fas fa-times"></i>
-                        </button>
-                      </div>
+                    {appliedFilters.year && (
+                      <span className="filter-badge">
+                        <i className="fas fa-calendar"></i>
+                        Year: {appliedFilters.year}
+                      </span>
                     )}
-                    {activeFilters.judge && (
-                      <div className="filter-badge">
+                    {appliedFilters.judge && (
+                      <span className="filter-badge">
+                        <i className="fas fa-user-gavel"></i>
+                        Judge: {appliedFilters.judge}
+                      </span>
+                    )}
+                    {appliedFilters.caseType && (
+                      <span className="filter-badge">
                         <i className="fas fa-gavel"></i>
-                        Judge: {activeFilters.judge}
-                        <button 
-                          className="filter-badge-close"
-                          onClick={() => handleRemoveFilter('judge')}
-                        >
-                          <i className="fas fa-times"></i>
-                        </button>
-                      </div>
-                    )}
-                    {activeFilters.keyword && (
-                      <div className="filter-badge">
-                        <i className="fas fa-key"></i>
-                        Keyword: {activeFilters.keyword}
-                        <button 
-                          className="filter-badge-close"
-                          onClick={() => handleRemoveFilter('keyword')}
-                        >
-                          <i className="fas fa-times"></i>
-                        </button>
-                      </div>
+                        Type: {appliedFilters.caseType}
+                      </span>
                     )}
                   </div>
-                )}
-              </div>
-
-              {filteredResults.length === 0 ? (
-                <div className="alert empty-alert">
-                  <i className="fas fa-filter"></i>
-                  <h2>No cases match your filters</h2>
-                  <p>Try adjusting your filter criteria or clear all filters.</p>
-                  <button 
-                    className="clear-filters-btn"
-                    onClick={() => setActiveFilters({ year: '', judge: '', keyword: '' })}
-                  >
-                    <i className="fas fa-eraser"></i>
-                    Clear All Filters
-                  </button>
                 </div>
-              ) : (
-                <>
-                  <div className="results-grid">
-                    {paginatedResults.map((caseItem, index) => (
+              )}
+
+              <div className="results-header">
+                <h2>Search Results</h2>
+                <p className="results-count">
+                  {pagination 
+                    ? `Showing ${pagination.currentPage === 1 ? 1 : ((pagination.currentPage - 1) * itemsPerPage) + 1} to ${Math.min(pagination.currentPage * itemsPerPage, pagination.totalItems)} of ${pagination.totalItems} cases`
+                    : `Found ${displayCount} case${displayCount !== 1 ? 's' : ''}`
+                  }
+                  {query && ` for "${query}"`}
+                </p>
+              </div>
+              <div className="results-grid">
+                {sortedResults.map((caseItem, index) => {
+                  const isLastElement = index === sortedResults.length - 1;
+                  return (
+                    <div
+                      key={`${caseItem.caseId}-${index}`}
+                      ref={isLastElement ? lastCaseElementRef : null}
+                    >
                       <CaseCard
-                        key={`${caseItem.caseId}-${index}`}
                         case={caseItem}
+                        searchQuery={query}
                       />
-                    ))}
-                  </div>
-                  
-                  <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    totalItems={filteredResults.length}
-                    itemsPerPage={itemsPerPage}
-                    onPageChange={handlePageChange}
-                  />
-                </>
+                    </div>
+                  );
+                })}
+              </div>
+              
+              {/* Pagination Component */}
+              {pagination && pagination.totalPages > 1 && (
+                <Pagination
+                  currentPage={pagination.currentPage}
+                  totalPages={pagination.totalPages}
+                  onPageChange={handlePageChange}
+                  itemsPerPage={itemsPerPage}
+                  onItemsPerPageChange={handleItemsPerPageChange}
+                  totalItems={pagination.totalItems}
+                  startIndex={pagination.currentPage === 1 ? 1 : ((pagination.currentPage - 1) * itemsPerPage) + 1}
+                  endIndex={Math.min(pagination.currentPage * itemsPerPage, pagination.totalItems)}
+                />
               )}
             </>
           )}
         </section>
       </main>
 
-      <Footer />
-
-      <FilterPanel
-        isOpen={isFilterOpen}
-        onClose={() => setIsFilterOpen(false)}
-        onApplyFilters={handleApplyFilters}
-        availableYears={availableYears}
-        availableJudges={availableJudges}
-        currentFilters={activeFilters}
+      <Footer 
+        onNavigateToHome={onNavigateToHome}
+        onNavigateToAbout={onNavigateToAbout}
       />
     </div>
   );

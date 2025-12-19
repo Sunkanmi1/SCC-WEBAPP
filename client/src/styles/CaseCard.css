@@ -1,15 +1,31 @@
+/* Highlight styles for search terms */
+.case-card mark {
+  background: var(--accent-gold);
+  color: var(--gray-900);
+  padding: 0 2px;
+  border-radius: 2px;
+  font-weight: 600;
+}
+
 .case-card {
   background: var(--white);
   border-radius: var(--border-radius-xl);
   box-shadow: var(--shadow-base);
   overflow: hidden;
+  transition: all var(--transition-base);
   border: 1px solid var(--gray-200);
   height: fit-content;
 }
 
+.case-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--border-color, var(--primary-red-light));
+}
+
 .case-card-header {
   padding: var(--space-6);
-  background: linear-gradient(135deg, var(--secondary-blue), var(--white));
+  background: linear-gradient(135deg, var(--primary-red-subtle), var(--card-background, var(--white)));
   border-bottom: 1px solid var(--gray-100);
 }
 
@@ -31,7 +47,7 @@
 }
 
 .case-date i {
-  color: var(--primary-blue);
+  color: var(--text-primary, var(--primary-red));
   font-size: var(--font-size-xs);
 }
 
@@ -52,7 +68,7 @@
   gap: var(--space-2);
   font-size: var(--font-size-sm);
   font-weight: 600;
-  color: var(--primary-blue);
+  color: var(--text-primary, var(--primary-red));
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -87,20 +103,32 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  color: var(--primary-blue);
+  color: var(--text-primary, var(--primary-red));
   font-size: var(--font-size-sm);
   font-weight: 600;
   text-decoration: none;
+  transition: all var(--transition-fast);
 }
 
-.external-link:focus-visible {
-  outline: 2px solid var(--primary-blue);
+.external-link:hover {
+  color: var(--primary-red-dark);
+  transform: translateX(2px);
+  text-decoration: underline;
+}
+
+.external-link:focus {
+  outline: 2px solid var(--accent-gold);
   outline-offset: 2px;
-  background: var(--gray-100);
+  border-radius: 2px;
 }
 
 .external-link i {
   font-size: var(--font-size-xs);
+  transition: transform var(--transition-fast);
+}
+
+.external-link:hover i {
+  transform: translateX(2px);
 }
 
 /* Mobile Responsiveness */
@@ -168,6 +196,18 @@
 @media (prefers-reduced-motion: reduce) {
   .case-card {
     transition: box-shadow var(--transition-fast);
+  }
+  
+  .case-card:hover {
+    transform: none;
+  }
+  
+  .external-link:hover {
+    transform: none;
+  }
+  
+  .external-link:hover i {
+    transform: none;
   }
 }
 

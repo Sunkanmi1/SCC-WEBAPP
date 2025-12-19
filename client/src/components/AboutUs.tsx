@@ -1,7 +1,6 @@
 import React from 'react';
 import Header from './Header';
 import Footer from './Footer';
-import Breadcrumbs, { BreadcrumbItem } from './Breadcrumbs';
 import '../styles/AboutUs.css';
 
 interface AboutUsProps {
@@ -17,19 +16,12 @@ const AboutUs: React.FC<AboutUsProps> = ({ onNavigateToHome }) => {
     }
   };
 
-  // Breadcrumbs
-  const breadcrumbs: BreadcrumbItem[] = [
-    { label: 'Home', path: '/', icon: 'fas fa-home' },
-    { label: 'About Us', icon: 'fas fa-info-circle' }
-  ];
-
   return (
     <div className="about-page">
       <Header showBackButton={true} onBackClick={handleBackToHome} />
       
       <main className="about-main">
         <div className="about-container">
-          <Breadcrumbs items={breadcrumbs} />
           {/* Hero Section */}
           <section className="about-hero">
             <h1 className="about-title">About Supreme Court Cases</h1>
@@ -170,7 +162,7 @@ const AboutUs: React.FC<AboutUsProps> = ({ onNavigateToHome }) => {
         </div>
       </main>
 
-      <Footer />
+      <Footer onNavigateToHome={onNavigateToHome} />
     </div>
   );
 };

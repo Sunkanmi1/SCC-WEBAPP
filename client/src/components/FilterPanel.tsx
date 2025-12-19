@@ -1,84 +1,101 @@
-import React, { useState, useEffect } from 'react';
-import Tooltip from './Tooltip';
+import React, { useState } from 'react';
 import '../styles/FilterPanel.css';
 
-export interface FilterOptions {
+export interface FilterValues {
+  keyword: string;
   year: string;
   judge: string;
-  keyword: string;
+  caseType: string;
 }
 
 interface FilterPanelProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onApplyFilters: (filters: FilterOptions) => void;
-  availableYears: string[];
-  availableJudges: string[];
-  currentFilters: FilterOptions;
+  onApplyFilters: (filters: FilterValues) => void;
+  onResetFilters: () => void;
+  isLoading?: boolean;
 }
 
-const FilterPanel: React.FC<FilterPanelProps> = ({
-  isOpen,
-  onClose,
-  onApplyFilters,
-  availableYears,
-  availableJudges,
-  currentFilters
+const FilterPanel: React.FC<FilterPanelProps> = ({ 
+  onApplyFilters, 
+  onResetFilters,
+  isLoading = false 
 }) => {
-  const [filters, setFilters] = useState<FilterOptions>(currentFilters);
+  const [filters, setFilters] = useState<FilterValues>({
+    keyword: '',
+    year: '',
+    judge: '',
+    caseType: ''
+  });
 
-  useEffect(() => {
-    setFilters(currentFilters);
-  }, [currentFilters]);
+  const handleInputChange = (field: keyof FilterValues, value: string) => {
+    setFilters(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
 
-  const handleApply = () => {
+  const handleApply = (e: React.FormEvent) => {
+    e.preventDefault();
     onApplyFilters(filters);
-    onClose();
   };
 
-  const handleClear = () => {
-    const emptyFilters: FilterOptions = { year: '', judge: '', keyword: '' };
-    setFilters(emptyFilters);
-    onApplyFilters(emptyFilters);
+  const handleReset = () => {
+    setFilters({
+      keyword: '',
+      year: '',
+      judge: '',
+      caseType: ''
+    });
+    onResetFilters();
   };
 
-  if (!isOpen) return null;
+  const hasActiveFilters = filters.keyword || filters.year || filters.judge || filters.caseType;
+
+  // Generate year options (1960 to current year)
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: currentYear - 1959 }, (_, i) => currentYear - i);
 
   return (
-    <>
-      <div className="filter-overlay" onClick={onClose}></div>
-      <div className="filter-panel">
-        <div className="filter-header">
-          <h3>
-            <i className="fas fa-filter"></i>
-            Filter Cases
-          </h3>
-          <button className="filter-close-btn" onClick={onClose}>
-            <i className="fas fa-times"></i>
-          </button>
-        </div>
+    <div className="filter-panel">
+      <div className="filter-header">
+        <h3 className="filter-title">
+          <i className="fas fa-filter"></i>
+          Filter Results
+        </h3>
+      </div>
 
-        <div className="filter-body">
+      <form className="filter-form" onSubmit={handleApply}>
+        <div className="filter-grid">
+          {/* Keyword Filter */}
+          <div className="filter-group">
+            <label htmlFor="keyword" className="filter-label">
+              <i className="fas fa-search"></i>
+              Keyword
+            </label>
+            <input
+              type="text"
+              id="keyword"
+              value={filters.keyword}
+              onChange={(e) => handleInputChange('keyword', e.target.value)}
+              placeholder="Search in title, description..."
+              className="filter-input"
+            />
+          </div>
+
           {/* Year Filter */}
           <div className="filter-group">
-            <label htmlFor="year-filter">
+            <label htmlFor="year" className="filter-label">
               <i className="fas fa-calendar-alt"></i>
               Year
-              <Tooltip content="Filter cases by the year the decision was made. Select a specific year to narrow down your results.">
-                <span className="tooltip-icon">
-                  <i className="fas fa-question-circle"></i>
-                </span>
-              </Tooltip>
             </label>
             <select
-              id="year-filter"
+              id="year"
               value={filters.year}
-              onChange={(e) => setFilters({ ...filters, year: e.target.value })}
+              onChange={(e) => handleInputChange('year', e.target.value)}
               className="filter-select"
             >
               <option value="">All Years</option>
-              {availableYears.map((year) => (
-                <option key={year} value={year}>
+              {years.map(year => (
+                <option key={year} value={year.toString()}>
                   {year}
                 </option>
               ))}
@@ -87,65 +104,134 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
 
           {/* Judge Filter */}
           <div className="filter-group">
-            <label htmlFor="judge-filter">
-              <i className="fas fa-gavel"></i>
+            <label htmlFor="judge" className="filter-label">
+              <i className="fas fa-user-gavel"></i>
               Judge
-              <Tooltip content="Filter cases by a specific judge or justice who presided over the case. This helps you find decisions by particular judges.">
-                <span className="tooltip-icon">
-                  <i className="fas fa-question-circle"></i>
-                </span>
-              </Tooltip>
-            </label>
-            <select
-              id="judge-filter"
-              value={filters.judge}
-              onChange={(e) => setFilters({ ...filters, judge: e.target.value })}
-              className="filter-select"
-            >
-              <option value="">All Judges</option>
-              {availableJudges.map((judge) => (
-                <option key={judge} value={judge}>
-                  {judge}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Keyword Filter */}
-          <div className="filter-group">
-            <label htmlFor="keyword-filter">
-              <i className="fas fa-key"></i>
-              Keyword
-              <Tooltip content="Search for specific words or phrases within the current results. This filters across titles, descriptions, citations, and other case details.">
-                <span className="tooltip-icon">
-                  <i className="fas fa-question-circle"></i>
-                </span>
-              </Tooltip>
             </label>
             <input
               type="text"
-              id="keyword-filter"
-              value={filters.keyword}
-              onChange={(e) => setFilters({ ...filters, keyword: e.target.value })}
-              placeholder="Search in results..."
+              id="judge"
+              value={filters.judge}
+              onChange={(e) => handleInputChange('judge', e.target.value)}
+              placeholder="Enter judge name..."
               className="filter-input"
             />
           </div>
+
+          {/* Case Type Filter */}
+          <div className="filter-group">
+            <label htmlFor="caseType" className="filter-label">
+              <i className="fas fa-gavel"></i>
+              Case Type
+            </label>
+            <select
+              id="caseType"
+              value={filters.caseType}
+              onChange={(e) => handleInputChange('caseType', e.target.value)}
+              className="filter-select"
+            >
+              <option value="">All Types</option>
+              <option value="criminal">Criminal</option>
+              <option value="civil">Civil</option>
+              <option value="constitutional">Constitutional</option>
+              <option value="administrative">Administrative</option>
+              <option value="commercial">Commercial</option>
+              <option value="family">Family</option>
+              <option value="labor">Labor</option>
+              <option value="property">Property</option>
+            </select>
+          </div>
         </div>
 
-        <div className="filter-footer">
-          <button className="filter-btn filter-btn-clear" onClick={handleClear}>
-            <i className="fas fa-eraser"></i>
-            Clear All
+        <div className="filter-actions">
+          <button 
+            type="submit" 
+            className="filter-button filter-button-apply"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <i className="fas fa-spinner fa-spin"></i>
+                Applying...
+              </>
+            ) : (
+              <>
+                <i className="fas fa-check"></i>
+                Apply Filters
+              </>
+            )}
           </button>
-          <button className="filter-btn filter-btn-apply" onClick={handleApply}>
-            <i className="fas fa-check"></i>
-            Apply Filters
+          
+          <button 
+            type="button" 
+            onClick={handleReset}
+            className="filter-button filter-button-reset"
+            disabled={isLoading || !hasActiveFilters}
+          >
+            <i className="fas fa-redo"></i>
+            Reset
           </button>
         </div>
-      </div>
-    </>
+
+        {hasActiveFilters && (
+          <div className="active-filters">
+            <span className="active-filters-label">Active Filters:</span>
+            <div className="active-filters-tags">
+              {filters.keyword && (
+                <span className="filter-tag">
+                  Keyword: {filters.keyword}
+                  <button 
+                    type="button"
+                    onClick={() => handleInputChange('keyword', '')}
+                    className="filter-tag-remove"
+                  >
+                    ×
+                  </button>
+                </span>
+              )}
+              {filters.year && (
+                <span className="filter-tag">
+                  Year: {filters.year}
+                  <button 
+                    type="button"
+                    onClick={() => handleInputChange('year', '')}
+                    className="filter-tag-remove"
+                  >
+                    ×
+                  </button>
+                </span>
+              )}
+              {filters.judge && (
+                <span className="filter-tag">
+                  Judge: {filters.judge}
+                  <button 
+                    type="button"
+                    onClick={() => handleInputChange('judge', '')}
+                    className="filter-tag-remove"
+                  >
+                    ×
+                  </button>
+                </span>
+              )}
+              {filters.caseType && (
+                <span className="filter-tag">
+                  Type: {filters.caseType}
+                  <button 
+                    type="button"
+                    onClick={() => handleInputChange('caseType', '')}
+                    className="filter-tag-remove"
+                  >
+                    ×
+                  </button>
+                </span>
+              )}
+            </div>
+          </div>
+        )}
+      </form>
+    </div>
   );
 };
 
 export default FilterPanel;
+

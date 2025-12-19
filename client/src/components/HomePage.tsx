@@ -1,67 +1,131 @@
-﻿import React, { useState } from "react";
-import Header from "./Header";
-import Footer from "./Footer";
-import "../styles/HomePage.css";
-import RecentSearches from "./RecentSearches";
+import React, { useEffect, useRef, useState } from 'react';
+import Header from './Header';
+import Footer from './Footer';
+import FilterPanel, { FilterValues } from './FilterPanel';
+import SearchAutocomplete from './SearchAutocomplete';
+import { generateSuggestions } from '../utils/searchSuggestions';
+import { SearchHistoryManager } from '../utils/searchHistory';
+import { Case } from '../App';
+import '../styles/HomePage.css';
 
 interface HomePageProps {
-  onSearch: (query: string) => void;
-  onNavigateToBrowse: () => void;
+  onSearch: (query: string, page?: number, limit?: number) => void;
   onNavigateToAbout?: () => void;
+  onApplyFilters?: (filters: FilterValues, page?: number, limit?: number) => void;
+  onResetFilters?: () => void;
 }
 
-const HomePage: React.FC<HomePageProps> = ({ onSearch, onNavigateToAbout }) => {
-  const [query, setQuery] = useState("");
+const HomePage: React.FC<HomePageProps> = ({
+  onSearch,
+  onNavigateToAbout,
+  onApplyFilters,
+  onResetFilters,
+}) => {
+  const [query, setQuery] = useState('');
+  const [ghostQuery, setGhostQuery] = useState('');
+  const [suggestions, setSuggestions] = useState<
+    ReturnType<typeof generateSuggestions>
+  >([]);
+  const [allCases, setAllCases] = useState<Case[]>([]);
+  const [showAutocomplete, setShowAutocomplete] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
 
-  const [year, setYear] = useState("");
-  const [judge, setJudge] = useState("");
-  const [country, setCountry] = useState("");
-  const [results, setResults] = useState<CourtCase[]>([]);
-  const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
-  const [loading, setLoading] = useState(false);
-  const [showRecent, setShowRecent] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  /* Fetch cases once (for suggestions + featured) */
+  useEffect(() => {
+    const fetchCases = async () => {
+      try {
+        const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:9090';
+        const res = await fetch(`${base}/search?q=&limit=200`);
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data.results)) {
+            setAllCases(data.results);
+          }
+        }
+      } catch {
+        /* suggestions are optional */
+      }
+    };
+
+    fetchCases();
+  }, []);
+
+  /* Generate suggestions + ghost recent search */
+  useEffect(() => {
+    if (!query.trim()) {
+      setSuggestions([]);
+      setGhostQuery('');
+      setShowAutocomplete(false);
+      return;
+    }
+
+    const allRecentSearches = SearchHistoryManager.getHistory();
+    const recentSuggestions = allRecentSearches
+      .filter(item =>
+        item.query.toLowerCase().startsWith(query.toLowerCase())
+      )
+      .map(item => ({
+        text: item.query,
+        type: 'recent' as const,
+        highlight: query,
+      }));
+
+    const generated = generateSuggestions(query, allCases);
+
+    // Combine recent suggestions with generated suggestions, removing duplicates
+    const combinedSuggestionsMap = new Map<string, SearchSuggestion>();
+
+    recentSuggestions.forEach(s => combinedSuggestionsMap.set(s.text, s));
+    generated.forEach(s => combinedSuggestionsMap.set(s.text, s));
+
+    const finalSuggestions = Array.from(combinedSuggestionsMap.values());
+
+    setSuggestions(finalSuggestions);
+    setShowAutocomplete(finalSuggestions.length > 0 || allRecentSearches.length > 0);
+
+    const recentMatch = allRecentSearches.find(
+      r =>
+        r.query.toLowerCase().startsWith(query.toLowerCase()) &&
+        r.query.length > query.length
+    )?.query;
+
+    setGhostQuery(recentMatch || '');
+  }, [query, allCases]);
+
+  /* Accept ghost text */
+  const acceptGhost = () => {
+    if (ghostQuery) {
+      setQuery(ghostQuery);
+      setGhostQuery('');
+    }
+  };
+
+  /* Handle keyboard */
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const input = inputRef.current;
+    if (!input) return;
+
+    const caretAtEnd = input.selectionStart === query.length;
+
+    if (
+      ghostQuery &&
+      caretAtEnd &&
+      (e.key === 'Tab' || e.key === 'ArrowRight')
+    ) {
+      e.preventDefault();
+      acceptGhost();
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
       onSearch(query.trim());
+      setShowAutocomplete(false);
+      SearchHistoryManager.addToHistory(query.trim()); // Add to history on submit
     }
-  };
-
-  const handleApplyFilters = async () => {
-    const params = new URLSearchParams();
-    if (year) params.append("year", year);
-    if (judge) params.append("judge", judge);
-    if (country) params.append("country", country);
-
-    setLoading(true);
-    const response = await fetch(
-      `http://localhost:9090/browse?${params.toString()}`
-    );
-    const data = await response.json();
-    if (data.success) setResults(data.results);
-    setLoading(false);
-  };
-
-  const handleResetFilters = () => {
-    setYear("");
-    setJudge("");
-    setCountry("");
-  };
-
-  
-
-  
-  const toggleCardExpansion = (caseId: string) => {
-    setExpandedCards((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(caseId)) {
-        newSet.delete(caseId);
-      } else {
-        newSet.add(caseId);
-      }
-      return newSet;
-    });
   };
 
   return (
@@ -72,163 +136,78 @@ const HomePage: React.FC<HomePageProps> = ({ onSearch, onNavigateToAbout }) => {
         <div className="hero-overlay">
           <h1 className="hero-title">SUPREME COURT CASES</h1>
 
-          <form className="search-container" onSubmit={handleSubmit}>
-            <div className="search-box">
-              <input
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search for a case by name, number, or keyword"
-                className="search-input"
-                autoComplete="off"
-                required
-                onFocus={() => setShowRecent(true)}
-              />
-              <button type="submit" className="search-button">
-                <i className="fas fa-search"></i>
-              </button>
-            </div>
-          </form>
+          <div className="search-container">
+            <form className="search-form" onSubmit={handleSubmit}>
+              <div className="search-box-wrapper">
+                <div className="search-box">
+                  {/* Ghost autocomplete */}
+                  {ghostQuery && ghostQuery !== query && (
+                    <div className="search-ghost">
+                      <span className="ghost-typed">{query}</span>
+                      <span className="ghost-rest">
+                        {ghostQuery.slice(query.length)}
+                      </span>
+                    </div>
+                  )}
 
-          <RecentSearches
-            visible={showRecent}
-            onClose={() => setShowRecent(false)}
-            onSelect={(title) => {
-              setQuery(title);
-              onSearch(title);
-            }}
-          />
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    value={query}
+                    onChange={e => setQuery(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    placeholder="Search for a case by name, number, or keyword"
+                    className="search-input"
+                    autoComplete="off"
+                  />
+
+                  <button type="submit" className="search-button">
+                    <i className="fas fa-search" />
+                  </button>
+                </div>
+
+                <SearchAutocomplete
+                  query={query}
+                  suggestions={suggestions}
+                  isVisible={showAutocomplete}
+                  onSelectSuggestion={text => {
+                    setQuery(text);
+                    setShowAutocomplete(false);
+                    onSearch(text);
+                    SearchHistoryManager.addToHistory(text); // Add to history on suggestion select
+                  }}
+                  onClose={() => setShowAutocomplete(false)}
+                  searchHistory={SearchHistoryManager.getHistory().map(item => item.query)}
+                  onClearHistory={SearchHistoryManager.clearHistory}
+                />
+              </div>
+            </form>
+
+            <button
+              type="button"
+              className="filter-toggle-button"
+              onClick={() => setShowFilters(p => !p)}
+            >
+              <i className="fas fa-filter" />
+              <span>Filters</span>
+            </button>
+          </div>
+
+          {showFilters && onApplyFilters && onResetFilters && (
+            <div className="homepage-filters-container">
+              <FilterPanel
+                onApplyFilters={onApplyFilters}
+                onResetFilters={onResetFilters}
+                isLoading={false}
+              />
+            </div>
+          )}
         </div>
       </main>
 
-      {/* RESULTS TABLE (main preserved) */}
-      <div className="results-section">
-        {!loading && results.length > 0 && (
-          <>
-         
-            <div className="mobile-results-cards">
-              {results.map((item) => (
-                <div key={item.caseId} className="case-card">
-                  <div className="card-header">
-                    <span className="card-case-id">{item.caseId}</span>
-                    <span className="card-date">{item.date}</span>
-                  </div>
-                  <h3 className="card-title">{item.title}</h3>
-                  <p className="card-description-preview">
-                    {item.description.substring(0, 150)}...
-                  </p>
-                  <div className="card-quick-info">
-                    <div className="card-info-item">
-                      <span className="card-info-label">Citation</span>
-                      <span className="card-info-value">{item.citation}</span>
-                    </div>
-                    <div className="card-info-item">
-                      <span className="card-info-label">Court</span>
-                      <span className="card-info-value">{item.court}</span>
-                    </div>
-                  </div>
-
-
-                  
-                  <div className={`card-expandable-section ${expandedCards.has(item.caseId) ? 'expanded' : ''}`}>
-                    <div className="card-detail-item">
-                      <span className="card-detail-label">
-                        Full Description
-                      </span>
-                      <p className="card-detail-value">{item.description}</p>
-                    </div>
-                    <div className="card-detail-item">
-                      <span className="card-detail-label">Judges</span>
-                      <div className="card-judges card-detail-value">
-                        {item.judges}
-                      </div>
-                    </div>
-                    <div className="card-detail-item">
-                      <span className="card-detail-label">Source</span>
-                      <span className="card-detail-value">
-                        {item.sourceLabel}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="card-actions">
-                    <button
-                      className={`expand-toggle-btn ${
-                        expandedCards.has(item.caseId) ? "expanded" : ""
-                      }`}
-                      onClick={() => toggleCardExpansion(item.caseId)}
-                    >
-                      <i className="fas fa-chevron-down"></i>
-                      <span>
-                        {expandedCards.has(item.caseId)
-                          ? "Hide Details"
-                          : "Show Details"}
-                      </span>
-                    </button>
-                    <a
-                      href={item.articleUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="card-view-link"
-                    >
-                      <i className="fas fa-external-link-alt"></i>
-                      View Article
-                    </a>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-        
-            <div className="filter-table-wrapper">
-              <table className="filter-results-table">
-                
-                <thead>
-                  <tr>
-                    <th>Case ID</th>
-                    <th>Title</th>
-                    <th>Description</th>
-                    <th>Date</th>
-                    <th>Citation</th>
-                    <th>Court</th>
-                    <th>Judges</th>
-                    <th>Source</th>
-                    <th>Article</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {results.map((item) => (
-                    <tr key={item.caseId}>
-                      <td>{item.caseId}</td>
-                      <td className="title-cell">{item.title}</td>
-                      <td className="description-cell">{item.description}</td>
-                      <td className="date-cell">{item.date}</td>
-                      <td>{item.citation}</td>
-                      <td>{item.court}</td>
-                      <td className="judges-cell">{item.judges}</td>
-                      <td>{item.sourceLabel}</td>
-                      <td>
-                        <a
-                          href={item.articleUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          View
-                        </a>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </>
-        )}
-      </div>
-
-      <Footer />
+      <Footer onNavigateToAbout={onNavigateToAbout} />
     </div>
   );
 };
 
 export default HomePage;
-
