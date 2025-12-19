@@ -4,6 +4,11 @@
  * apiDoc automatically includes this information when generating documentation.
  */
 
+
+// "dev": "nodemon --watch './**/*.ts' --exec node --loader ts-node/esm server.ts"
+
+// "dev": "nodemon --watch './**/*.ts' --exec ts-node server.ts",
+
 /**
  * @api {get} /api/health Health Check
  * @apiVersion 0.9.0
