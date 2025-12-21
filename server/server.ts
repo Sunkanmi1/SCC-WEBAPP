@@ -45,6 +45,12 @@ app.use(
   })
 );
 
+// Serve frontend files from the client/dist directory
+if (isProd) {
+    const clientDistPath = join(__dirname, "../../client/dist");
+    app.use(express.static(clientDistPath));
+}
+
 // --------------------
 // Static docs
 // --------------------
@@ -279,6 +285,14 @@ ORDER BY (?date)
     console.error("❌ Translation API Error:", error);
     res.status(500).json({ success: false, error: "Failed to fetch translation data." });
   }
+}
+
+// All other GET requests not handled before will return the React app
+if (isProd) {
+    const clientDistPath = join(__dirname, "../../client/dist");
+    app.get('*', (_req, res) => {
+        res.sendFile(join(clientDistPath, 'index.html'));
+    });
 }
 
 // --------------------
