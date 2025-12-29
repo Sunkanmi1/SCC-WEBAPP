@@ -12,8 +12,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
-const PORT = 9090;
-const CORS_ORIGIN = "http://localhost:5173";
+const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 9090;
+const CORS_ORIGIN = process.env.CORS_ORIGIN || "http://localhost:5173";
+const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 const isProd = process.env.NODE_ENV === "production";
 
 // --------------------
@@ -101,11 +102,11 @@ app.get("/", (_req, res) => {
     message: "Supreme Court Cases API",
     version: "1.0.0",
     endpoints: {
-      health: `GET http://localhost:${PORT}/api/health`,
-      search_all_cases: `GET http://localhost:${PORT}/search`,
-      search_with_query: `GET http://localhost:${PORT}/search?q={query}`,
-      translations_all: `GET http://localhost:${PORT}/api/translations`,
-      translations_case: `GET http://localhost:${PORT}/api/translations/{caseId}`,
+      health: `GET ${BASE_URL}/api/health`,
+      search_all_cases: `GET ${BASE_URL}/search`,
+      search_with_query: `GET ${BASE_URL}/search?q={query}`,
+      translations_all: `GET ${BASE_URL}/api/translations`,
+      translations_case: `GET ${BASE_URL}/api/translations/{caseId}`,
     },
   });
 });
@@ -299,5 +300,5 @@ if (isProd) {
 // Start server
 // --------------------
 app.listen(PORT, () => {
-  console.log(`✅ Server running at http://localhost:${PORT}`);
+  console.log(`✅ Server running on port ${PORT}`);
 });

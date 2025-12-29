@@ -75,7 +75,7 @@ function App() {
     setCurrentView("results");
 
     try {
-      const apiBaseUrl = "http://localhost:9090";
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "https://tools.wmflabs.org/<TOOL_NAME>";
       const response = await fetch(
         `${apiBaseUrl}/search?q=${encodeURIComponent(
           query
@@ -143,7 +143,7 @@ function App() {
         error.message.includes("fetch")
       ) {
         errorMessage =
-          "Cannot connect to backend server. Please ensure the server is running on port 9090.";
+          "Cannot connect to backend server. Please ensure the backend is reachable.";
       } else if (error.message) {
         errorMessage = error.message;
       } else {
@@ -194,7 +194,7 @@ function App() {
     setCurrentView("results");
 
     try {
-      const apiBaseUrl = "http://localhost:9090";
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "https://tools.wmflabs.org/<TOOL_NAME>";
 
       // Build query parameters
       const params = new URLSearchParams();
@@ -272,7 +272,7 @@ function App() {
         error.message.includes("fetch")
       ) {
         errorMessage =
-          "Cannot connect to backend server. Please ensure the server is running on port 9090.";
+          "Cannot connect to backend server. Please ensure the backend is reachable.";
       } else if (error.message) {
         errorMessage = error.message;
       } else {
