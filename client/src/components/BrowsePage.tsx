@@ -81,7 +81,7 @@ const BrowsePage: React.FC<BrowsePageProps> = ({ onNavigateToAbout, onBackToHome
     setError(null);
 
     try {
-      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'https://tools.wmflabs.org/<TOOL_NAME>';
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'https://tools.wmflabs.org/ghanasupremecases';
       const response = await fetch(`${apiBaseUrl}/browse?category=${encodeURIComponent(categoryId)}`);
 
       if (!response.ok) {

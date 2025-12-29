@@ -88,7 +88,7 @@ define(['./workbox-137dedbd'], (function (workbox) { 'use strict';
   workbox.registerRoute(new workbox.NavigationRoute(workbox.createHandlerBoundToURL("index.html"), {
     allowlist: [/^\/$/]
   }));
-  workbox.registerRoute(/^https?:\/\/tools\.wmflabs\.org\/<TOOL_NAME>\/(search|cases|statistics|judges).*/, new workbox.NetworkFirst({
+  workbox.registerRoute(/^https?:\/\/tools\.wmflabs\.org\/ghanasupremecases\/(search|cases|statistics|judges).*/, new workbox.NetworkFirst({
     "cacheName": "api-search-cache",
     plugins: [new workbox.ExpirationPlugin({
       maxEntries: 50,

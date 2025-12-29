@@ -75,7 +75,7 @@ function App() {
     setCurrentView("results");
 
     try {
-      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "https://tools.wmflabs.org/<TOOL_NAME>";
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "https://tools.wmflabs.org/ghanasupremecases";
       const response = await fetch(
         `${apiBaseUrl}/search?q=${encodeURIComponent(
           query
@@ -194,7 +194,7 @@ function App() {
     setCurrentView("results");
 
     try {
-      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "https://tools.wmflabs.org/<TOOL_NAME>";
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "https://tools.wmflabs.org/ghanasupremecases";
 
       // Build query parameters
       const params = new URLSearchParams();

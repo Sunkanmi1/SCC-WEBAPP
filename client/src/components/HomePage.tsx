@@ -41,7 +41,7 @@ const HomePage: React.FC<HomePageProps> = ({
   useEffect(() => {
     const fetchCases = async () => {
       try {
-        const base = import.meta.env.VITE_API_BASE_URL || "https://tools.wmflabs.org/<TOOL_NAME>";
+        const base = import.meta.env.VITE_API_BASE_URL || "https://tools.wmflabs.org/ghanasupremecases";
         const res = await fetch(`${base}/search?q=&limit=200`);
         if (res.ok) {
           const data = await res.json();

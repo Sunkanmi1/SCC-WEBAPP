@@ -11,7 +11,7 @@ import { getCountryByCode } from '../config/countries';
 import { Case } from '../App';
 import '../styles/SearchResultsPage.css';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://tools.wmflabs.org/<TOOL_NAME>';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://tools.wmflabs.org/ghanasupremecases';
 
 const CountryPage: React.FC = () => {
   const { countryCode } = useParams<{ countryCode: string }>();

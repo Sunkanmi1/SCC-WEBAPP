@@ -28,9 +28,7 @@ client/node_modules/
 server/node_modules/
 
 # Build outputs
-dist/
-client/dist/
-server/dist/
+# (dist folders are intentionally committed for Toolforge storage constraints)
 
 # Environment variables
 .env

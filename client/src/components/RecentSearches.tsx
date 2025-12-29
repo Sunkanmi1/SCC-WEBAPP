@@ -46,7 +46,7 @@ const RecentSearches: React.FC<RecentSearchesProps> = ({
     
     setIsLoading(true);
     try {
-      const apiBase = import.meta.env.VITE_API_BASE_URL || "https://tools.wmflabs.org/<TOOL_NAME>";
+      const apiBase = import.meta.env.VITE_API_BASE_URL || "https://tools.wmflabs.org/ghanasupremecases";
       const res = await fetch(`${apiBase}/search`);
       const json = await res.json();
 
