@@ -52,6 +52,22 @@ function App() {
   });
   const [isOffline, setIsOffline] = useState(false);
 
+  // --- HELPER: Get the correct API URL automatically ---
+  const getApiBaseUrl = () => {
+    // 1. If we set a specific URL in .env, use that (e.g. for testing)
+    if (import.meta.env.VITE_API_BASE_URL) {
+      return import.meta.env.VITE_API_BASE_URL;
+    }
+    // 2. In Production (Toolforge), use an empty string.
+    //    This makes requests relative (e.g., "/search" instead of "https://.../search").
+    //    The browser will automatically append "https://sccghana.toolforge.org".
+    if (import.meta.env.PROD) {
+      return "";
+    }
+    // 3. In Development, point to your local backend port
+    return "http://localhost:9090";
+  };
+
   // Listen for custom event from Footer to navigate to About page
   useEffect(() => {
     const handleNavigateToAbout = () => {
@@ -75,7 +91,8 @@ function App() {
     setCurrentView("results");
 
     try {
-      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "https://tools.wmflabs.org/ghanasupremecases";
+      const apiBaseUrl = getApiBaseUrl(); // <--- UPDATED THIS LINE
+      
       const response = await fetch(
         `${apiBaseUrl}/search?q=${encodeURIComponent(
           query
@@ -194,7 +211,7 @@ function App() {
     setCurrentView("results");
 
     try {
-      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "https://tools.wmflabs.org/ghanasupremecases";
+      const apiBaseUrl = getApiBaseUrl(); // <--- UPDATED THIS LINE
 
       // Build query parameters
       const params = new URLSearchParams();
