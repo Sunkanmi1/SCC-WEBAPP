@@ -12,15 +12,27 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 9090;
+
+// Configuration from environment variables
+const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+const HOST = process.env.HOST || "0.0.0.0"; // Bind to all interfaces for reverse proxy compatibility
 const CORS_ORIGIN = process.env.CORS_ORIGIN || "http://localhost:5174";
 const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 const isProd = process.env.NODE_ENV === "production";
+const SESSION_SECRET = process.env.SESSION_SECRET || "dev-session-secret";
+
+// Trust proxy for Toolforge and other reverse proxy setups
+app.set("trust proxy", 1);
 
 // --------------------
 // Middleware
 // --------------------
 
+// Logging middleware - minimal in production
+const morganFormat = isProd ? "combined" : "dev";
+app.use(morgan(morganFormat));
+
+// CORS - use process.env.CORS_ORIGIN with fallback to hardcoded Toolforge origins
 const allowedOrigins = [
   CORS_ORIGIN,
   "https://sccghana.toolforge.org",
@@ -44,12 +56,12 @@ app.use(
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(morgan("combined"));
 
+// Session configuration with NODE_ENV-based security settings
 app.use(
   session({
     name: "search_session",
-    secret: "dev-session-secret",
+    secret: SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -61,10 +73,22 @@ app.use(
   })
 );
 
-// Serve frontend files from the client/dist directory
+// Serve frontend static files from the client/dist directory (production only)
 if (isProd) {
   const clientDistPath = join(__dirname, "../../client/dist");
-  app.use(express.static(clientDistPath));
+  app.use(express.static(clientDistPath, {
+    maxAge: "1d",
+    etag: true,
+    lastModified: true,
+    setHeaders: (res: Response, filePath: string) => {
+      // Cache static assets longer (js, css, images)
+      if (/\.(js|css|png|jpg|jpeg|gif|svg|woff2?)$/.test(filePath)) {
+        res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+      }
+      // Prevent MIME type sniffing
+      res.setHeader("X-Content-Type-Options", "nosniff");
+    },
+  }));
 }
 
 // --------------------
@@ -303,17 +327,29 @@ ORDER BY (?date)
   }
 }
 
-// All other GET requests not handled before will return the React app
+// Catch-all route for frontend SPA routing (production only)
+// This ensures all non-API routes return index.html for client-side routing
 if (isProd) {
   const clientDistPath = join(__dirname, "../../client/dist");
-  app.get(/.*/, (_req, res) => {
-    res.sendFile(join(clientDistPath, 'index.html'));
+  app.get(/^(?!\/api\/).*/, (_req, res) => {
+    const indexPath = join(clientDistPath, "index.html");
+    res.sendFile(indexPath, (err) => {
+      if (err) {
+        console.error("Error serving index.html:", err);
+        res.status(500).json({ success: false, error: "Failed to load application" });
+      }
+    });
   });
 }
 
 // --------------------
 // Start server
 // --------------------
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+app.listen(PORT, HOST, () => {
+  if (!isProd) {
+    console.log(`Server running on ${HOST}:${PORT}`);
+    console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
+    console.log(`CORS Origin: ${CORS_ORIGIN}`);
+    console.log(`Base URL: ${BASE_URL}`);
+  }
 });
