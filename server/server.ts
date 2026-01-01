@@ -16,7 +16,7 @@ const app = express();
 // Configuration from environment variables
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 const HOST = process.env.HOST || "0.0.0.0"; // Bind to all interfaces for reverse proxy compatibility
-const CORS_ORIGIN = process.env.CORS_ORIGIN || "http://localhost:5174";
+const CORS_ORIGIN = process.env.CORS_ORIGIN || "http://localhost:5173";
 const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 const isProd = process.env.NODE_ENV === "production";
 const SESSION_SECRET = process.env.SESSION_SECRET || "dev-session-secret";

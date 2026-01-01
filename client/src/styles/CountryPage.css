@@ -6,7 +6,7 @@
 
 .country-content {
   flex: 1;
-  padding-top: 100px; /* Account for fixed header */
+  margin-top: 70px; /* Add space below fixed header */
   padding-bottom: 60px;
 }
 
