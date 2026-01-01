@@ -13,16 +13,31 @@ const __dirname = dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 9090;
-const CORS_ORIGIN = process.env.CORS_ORIGIN || "http://localhost:5173";
+const CORS_ORIGIN = process.env.CORS_ORIGIN || "http://localhost:5174";
 const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 const isProd = process.env.NODE_ENV === "production";
 
 // --------------------
 // Middleware
 // --------------------
+
+const allowedOrigins = [
+  CORS_ORIGIN,
+  "https://sccghana.toolforge.org",
+  "http://sccghana.toolforge.org",
+  "https://ghanasupremecases.toolforge.org",
+  "http://ghanasupremecases.toolforge.org",
+];
 app.use(
   cors({
-    origin: CORS_ORIGIN,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) === -1) {
+        return callback(new Error('The CORS policy for this site does not allow access from the specified Origin.'));
+      }
+      return callback(null, true);
+    },
     credentials: true,
   })
 );
@@ -48,8 +63,8 @@ app.use(
 
 // Serve frontend files from the client/dist directory
 if (isProd) {
-    const clientDistPath = join(__dirname, "../../client/dist");
-    app.use(express.static(clientDistPath));
+  const clientDistPath = join(__dirname, "../../client/dist");
+  app.use(express.static(clientDistPath));
 }
 
 // --------------------
@@ -290,15 +305,15 @@ ORDER BY (?date)
 
 // All other GET requests not handled before will return the React app
 if (isProd) {
-    const clientDistPath = join(__dirname, "../../client/dist");
-    app.get(/.*/, (_req, res) => {
-      res.sendFile(join(clientDistPath, 'index.html'));
-    });
+  const clientDistPath = join(__dirname, "../../client/dist");
+  app.get(/.*/, (_req, res) => {
+    res.sendFile(join(clientDistPath, 'index.html'));
+  });
 }
 
 // --------------------
 // Start server
 // --------------------
 app.listen(PORT, () => {
-  console.log(`✅ Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
