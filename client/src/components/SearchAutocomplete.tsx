@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, RefObject } from 'react';
+import { createPortal } from 'react-dom';
 import { SearchSuggestion } from '../utils/searchSuggestions';
 import '../styles/SearchAutocomplete.css';
 
@@ -10,6 +11,8 @@ interface SearchAutocompleteProps {
   onClose: () => void;
   searchHistory?: string[];
   onClearHistory?: () => void;
+  /** Optional anchor element (input) to position the portal next to */
+  anchorRef?: RefObject<HTMLElement>;
 }
 
 const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({
@@ -20,9 +23,12 @@ const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({
   onClose,
   searchHistory = [],
   onClearHistory,
+  anchorRef,
 }) => {
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
+  const portalRef = useRef<HTMLDivElement | null>(null);
+  const [portalStyle, setPortalStyle] = useState<React.CSSProperties | null>(null);
 
   useEffect(() => {
     setSelectedIndex(-1);
@@ -30,7 +36,10 @@ const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      const clickedInsideContainer = containerRef.current?.contains(target);
+      const clickedInsidePortal = portalRef.current?.contains(target);
+      if (!clickedInsideContainer && !clickedInsidePortal) {
         onClose();
       }
     };
@@ -40,6 +49,35 @@ const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }
   }, [isVisible, onClose]);
+
+  // Position portal relative to anchorRef if provided, otherwise position normally
+  useEffect(() => {
+    if (!isVisible) return;
+
+    const computePosition = () => {
+      const anchor = (anchorRef as any)?.current || containerRef.current?.parentElement;
+      const rect = anchor ? anchor.getBoundingClientRect() : null;
+      if (rect) {
+        setPortalStyle({
+          position: 'absolute',
+          top: rect.bottom + window.scrollY,
+          left: rect.left + window.scrollX,
+          width: rect.width,
+          zIndex: 9999,
+        });
+      } else {
+        setPortalStyle(null);
+      }
+    };
+
+    computePosition();
+    window.addEventListener('resize', computePosition);
+    window.addEventListener('scroll', computePosition, true);
+    return () => {
+      window.removeEventListener('resize', computePosition);
+      window.removeEventListener('scroll', computePosition, true);
+    };
+  }, [isVisible, query, suggestions]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!isVisible || suggestions.length === 0) return;
@@ -96,12 +134,13 @@ const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({
     return null;
   }
 
-  return (
+  const content = (
     <div
       ref={containerRef}
       className="search-autocomplete"
       onKeyDown={handleKeyDown}
       tabIndex={-1}
+      style={portalStyle || undefined}
     >
       <div className="autocomplete-header">
         <span className="autocomplete-title">
@@ -148,6 +187,18 @@ const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({
       )}
     </div>
   );
+
+  // Render into document.body so it overlays all content (including footer)
+  if (typeof document !== 'undefined') {
+    return createPortal(
+      <div ref={(el) => (portalRef.current = el)} style={{ position: 'absolute', top: 0, left: 0, right: 0 }}>
+        {content}
+      </div>,
+      document.body
+    );
+  }
+
+  return content;
 };
 
 export default SearchAutocomplete;

@@ -1,6 +1,6 @@
 import React from 'react';
 import Header from './Header';
-import Footer from './Footer';
+import CompactFooter from './CompactFooter';
 import '../styles/AboutUs.css';
 
 interface AboutUsProps {
@@ -162,7 +162,7 @@ const AboutUs: React.FC<AboutUsProps> = ({ onNavigateToHome }) => {
         </div>
       </main>
 
-      <Footer onNavigateToHome={onNavigateToHome} />
+      <CompactFooter onNavigateToHome={onNavigateToHome} />
     </div>
   );
 };

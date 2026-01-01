@@ -188,6 +188,7 @@ const HomePage: React.FC<HomePageProps> = ({
                     (item) => item.query
                   )}
                   onClearHistory={SearchHistoryManager.clearHistory}
+                  anchorRef={inputRef}
                 />
               </div>
             </form>

@@ -7,7 +7,11 @@
   background: var(--white);
   border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-xl);
-  z-index: 1000;
+  /* Ensure the suggestions overlay all page content including the footer */
+  z-index: 9999;
+  /* Promote to its own rendering layer to avoid stacking context surprises */
+  transform: translateZ(0);
+  will-change: transform, opacity;
   max-height: 400px;
   overflow-y: auto;
   animation: slideDown 0.2s ease-out;

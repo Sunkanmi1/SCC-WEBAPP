@@ -60,6 +60,7 @@
 }
 
 .nav-link {
+  text-decoration: none;
   padding: var(--space-3) var(--space-5);
   background: transparent;
   color: var(--text-primary, var(--primary-red));
@@ -74,6 +75,7 @@
 }
 
 .nav-link:hover {
+  text-decoration: none;
   background: var(--primary-red);
   color: var(--white);
   transform: translateY(-2px);
