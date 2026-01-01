@@ -291,8 +291,8 @@ ORDER BY (?date)
 // All other GET requests not handled before will return the React app
 if (isProd) {
     const clientDistPath = join(__dirname, "../../client/dist");
-    app.get('*', (_req, res) => {
-        res.sendFile(join(clientDistPath, 'index.html'));
+    app.get(/.*/, (_req, res) => {
+      res.sendFile(join(clientDistPath, 'index.html'));
     });
 }
 
